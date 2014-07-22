@@ -1,0 +1,163 @@
+<link rel="import" href="components/polymer/polymer.html">
+
+<link rel="import" href="components/paper-input/paper-input.html">
+
+<link rel="import" href="components/core-header-panel/core-header-panel.html">
+<link rel="import" href="components/core-toolbar/core-toolbar.html">
+<link rel="import" href="components/core-icon-button/core-icon-button.html">
+<link rel="import" href="components/paper-toast/paper-toast.html">
+<link rel="import" href="components/paper-button/paper-button.html" >
+
+<link rel="import" href="components/core-drawer-panel/core-drawer-panel.html">
+
+<!--
+Element providing solution to no problem in particular.
+
+##### Example
+
+    <ttstore-admin></ttstore-admin>
+
+@element ttstore-admin
+@blurb Element providing solution to no problem in particular.
+@status alpha
+@homepage http://jmorille.github.io/ttstore-admin
+-->
+<polymer-element name="ttstore-admin">
+
+  <template>
+
+    <link rel="stylesheet" href="ttstore-admin.css" />
+    <style>
+
+        [drawer] {
+            background-color: #B99588;
+            border-right: 1px solid #ccc;
+        }
+
+        [main] {
+
+            height: 100vh;
+            background-color: #fee4ff;
+        }
+
+        #main_menu_button {
+            display: none;
+        }
+        core-drawer-panel[narrow] #main_menu_button {
+            display: inline-block
+        }
+        core-drawer-panel[narrow] #sub_menu {
+            display: none;
+        }
+        core-drawer-panel[narrow] #hpanel {
+            width: 100vw;
+        }
+        #sub_menu {
+            right: 10vw;
+            position: absolute;
+        }
+
+        #main_menu {
+            width: 100vw;
+        }
+
+    </style>
+
+
+      <core-drawer-panel id="main_menu">
+        <div drawer >  CouCouille <content></content> </div>
+          <div main>
+              <core-header-panel id="hpanel">
+                  <core-toolbar>
+                      <div horizontal layout>
+                              <core-icon-button id="main_menu_button"  icon="menu" on-tap="{{mainMenu}}" ></core-icon-button>
+                              <div>Formulaire</div>
+                          <div id="sub_menu">
+                              <core-icon-button   icon="bug-report" on-tap="{{menuAction}}"></core-icon-button>
+                              <core-icon-button   icon="favorite" on-tap="{{menuAction}}"></core-icon-button>
+                              <core-icon-button   icon="search" on-tap="{{menuAction}}"></core-icon-button>
+                              <core-icon-button   icon="android" on-tap="{{menuAction}}"></core-icon-button>
+                              <core-icon-button   icon="book" on-tap="{{menuAction}}"></core-icon-button>
+                              <button  >Tuto tout con</button>
+                          </div>
+                      </div>
+                  </core-toolbar>
+
+                  <div vertical layout>
+                      <paper-button raisedButton onclick="document.querySelector('#test1').shadowRoot.querySelector('#toast1').show()" label="Discard Draft"></paper-button>
+
+                      <paper-input floatingLabel label="Nom" validate="^[A-Za-zà-ÿ\s-]*$" error="Input is not a string!"></paper-input>
+
+                      <paper-input floatingLabel label="Prénom" validate="^[A-Za-z]*$" error="Input is not a string!"></paper-input>
+                  </div>
+              </core-header-panel>
+
+
+              <paper-toast id="toast_wtf" text="What the fuck !!"></paper-toast>
+
+
+
+              <paper-toast id="toast1" text="Your draft has been discarded."></paper-toast>
+
+           </div>
+
+     </core-drawer-panel>
+
+
+
+
+  </template>
+
+  <script>
+
+    Polymer('ttstore-admin', {
+      /**
+       * The `noevent` event is not actually fired from here,
+       * we document it as an example of documenting events.
+       *
+       * @event noevent
+       */
+
+      /**
+       * The `notitle` attribute does not yet have a purpose.
+       *
+       * @attribute notitle
+       * @type string
+       */
+      notitle: '',
+
+      /**
+       * The `aProp` is a property that does something cool.
+       *
+       * @property aProp
+       * @type bool
+       */
+      aProp: false,
+
+      ready: function() {
+      },
+
+      /**
+       * The `task` method does no work at this time.
+       *
+       * @method task
+       * @return {Object} Returns undefined.
+       * @param {String} dummy Serves no purpose today.
+       */
+      task: function(dummy) {
+      },
+
+      menuAction : function(event) {
+         // alert("What the fuck !!");
+          this.$.toast_wtf.show();
+      },
+
+      mainMenu : function(event) {
+        this.$.main_menu.togglePanel();
+      }
+
+    });
+
+  </script>
+
+</polymer-element>

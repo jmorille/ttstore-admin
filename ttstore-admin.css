@@ -1,0 +1,45 @@
+core-header-panel {
+    float: left;
+    width: calc(100vw - 275px);
+    height: 100vh;
+    margin: 5px;
+}
+
+core-header-panel[mode=cover]::shadow #mainContainer {
+    left: 70px;
+}
+
+
+.core-header {
+    height: 60px;
+    line-height: 60px;
+    font-size: 18px;
+    padding: 0 10px;
+    background-color: #4F7DC9;
+    color: #FFF;
+    transition: height 0.2s;
+}
+
+.core-header.tall {
+    height: 180px;
+}
+
+.core-header.medium-tall {
+    height: 120px;
+}
+
+.content {
+    height: 2000px;
+    background: linear-gradient(rgb(214, 227, 231), lightblue);
+}
+
+core-toolbar {
+    background-color: #CFA0E9;
+
+}
+
+core-toolbar.dark-theme {
+    background-color: #7D25AC;
+    color: #f1f1f1;
+    fill: #f1f1f1;
+}
