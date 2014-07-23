@@ -4,3 +4,4 @@ dist
 .tmp
 components
 .idea
+*.iml

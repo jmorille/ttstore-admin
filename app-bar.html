@@ -1,0 +1,232 @@
+<link rel="import" href="components/paper-button/paper-button.html" >
+<link rel="import" href="components/polymer/polymer.html">
+
+<polymer-element name="app-bar" attributes="theme" assetpath="">
+    <template>
+        <style>
+
+            :host {
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -moz-flex;
+                display: -ms-flex;
+                display: -o-flex;
+                display: flex;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                -moz-align-items: center;
+                -ms-align-items: center;
+                -o-align-items: center;
+                align-items: center;
+                -webkit-box-pack: flex-end;
+                -webkit-justify-content: flex-end;
+                -moz-justify-content: flex-end;
+                -ms-justify-content: flex-end;
+                -o-justify-content: flex-end;
+                justify-content: flex-end;
+                -webkit-box-flex: 1;
+                -webkit-flex: 1 0 auto;
+                -moz-flex: 1 0 auto;
+                -ms-flex: 1 0 auto;
+                -o-flex: 1 0 auto;
+                flex: 1 0 auto;
+                z-index: 100;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                font-size: 14px;
+                color: #000;
+                fill: currentcolor
+            }
+
+            :host([theme=light]) {
+                color: inherit
+            }
+
+            :host-context(site-banner[navgroup=start],site-banner[type=start],site-banner[navgroup=resources]) ::content .active, :host-context(site-banner[navgroup=start],site-banner[type=start],site-banner[navgroup=resources]) ::content .paper-button:hover {
+                box-shadow: 0 1px 1px #000 inset, 0 -1px 1px #000 inset, 0 2px 0 #000 inset;
+                background: -webkit-gradient(linear, to bottom, to top, color-stop(0%, rgba(0, 0, 0, 0)), color-stop(40%, rgba(0, 0, 0, .8)));
+                background: -webkit-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .8) 40%);
+                background: -moz-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .8) 40%);
+                background: -o-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .8) 40%);
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .8) 40%)
+            }
+
+            polyfill-unscoped-rule {
+                content: 'site-banner[navgroup=start] app-bar .active, site-banner[type=start] app-bar .active, site-banner[navgroup=resources] app-bar .active, site-banner[navgroup=start] app-bar .paper-button:hover, site-banner[type=start] app-bar .paper-button:hover, site-banner[navgroup=resources] app-bar .paper-button:hover';
+                box-shadow: 0 1px 1px #000 inset, 0 -1px 1px #000 inset, 0 2px 0 #000 inset !important;
+                background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .8) 40%) !important;
+                background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .8) 40%) !important;
+                background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .8) 40%) !important;
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .8) 40%) !important
+            }
+
+            :host(.search-on) {
+                left: 0;
+                background: inherit;
+                z-index: 1001
+            }
+
+            :host([theme=dark].search-on) {
+                border-bottom: 1px solid rgba(0, 0, 0, .14902);
+                box-shadow: #ccc 0 1px 5px
+            }
+
+            :host(.fixed) {
+                position: fixed
+            }
+
+            :host-context(site-banner) {
+                right: 0;
+                top: 0;
+                position: absolute
+            }
+
+            polyfill-next-selector {
+                content: ':host a'
+            }
+
+            :host ::content a {
+                -webkit-box-flex: 1;
+                -webkit-flex: 1 0 auto;
+                -moz-flex: 1 0 auto;
+                -ms-flex: 1 0 auto;
+                -o-flex: 1 0 auto;
+                flex: 1 0 auto;
+                text-transform: none !important
+            }
+
+            #search {
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -moz-flex;
+                display: -ms-flex;
+                display: -o-flex;
+                display: flex;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                -moz-align-items: center;
+                -ms-align-items: center;
+                -o-align-items: center;
+                align-items: center;
+                -webkit-box-flex: 1;
+                -webkit-flex: 0 0 auto;
+                -moz-flex: 0 0 auto;
+                -ms-flex: 0 0 auto;
+                -o-flex: 0 0 auto;
+                flex: 0 0 auto;
+                width: 40px;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                background-color: inherit
+            }
+
+            #search[show] {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                left: 0;
+                top: 0;
+                padding: 0 16px;
+                margin-left: 0
+            }
+
+            #search[show] input {
+                padding: 10px;
+                visibility: visible
+            }
+
+            input {
+                background-color: inherit;
+                border: none;
+                font-size: 20px;
+                outline: 0;
+                padding: 0;
+                color: inherit;
+                -webkit-box-flex: 1;
+                -webkit-flex: 1 0 0;
+                -moz-flex: 1 0 0;
+                -ms-flex: 1 0 0;
+                -o-flex: 1 0 0;
+                flex: 1 0 0;
+                visibility: hidden;
+                -webkit-appearance: none
+            }
+
+            #hamburger {
+                display: none
+            }
+
+            @media only screen and (max-width: 850px) {
+                :host {
+                    -webkit-box-pack: space-between;
+                    -webkit-justify-content: space-between;
+                    -moz-justify-content: space-between;
+                    -ms-justify-content: space-between;
+                    -o-justify-content: space-between;
+                    justify-content: space-between;
+                    width: 100%;
+                    background: initial
+                }
+
+                :host-context(#welcome) {
+                    -webkit-box-pack: flex-end;
+                    -webkit-justify-content: flex-end;
+                    -moz-justify-content: flex-end;
+                    -ms-justify-content: flex-end;
+                    -o-justify-content: flex-end;
+                    justify-content: flex-end
+                }
+
+                polyfill-next-selector {
+                    content: ':host a'
+                }
+
+                ::content a {
+                    display: none !important
+                }
+
+                #hamburger {
+                    display: inline-block
+                }
+
+                :host-context(#welcome) #hamburger {
+                    display: none
+                }
+            }
+        </style>
+        <content></content>
+        <paper-icon-button id="hamburger" on-click="{{onMenuClick}}" icon="menu"></paper-icon-button>
+        <div id="search" show?="{{showingSearch}}" on-click="{{toggleSearch}}">
+            <paper-icon-button icon="search"></paper-icon-button>
+            <input type="search" id="input" on-keyup="{{onKeyPress}}" autocomplete="off">
+        </div>
+    </template>
+    <script>Polymer("app-bar", { // App Bar
+        theme: "dark",
+        showingSearch: false,
+        toggleSearch: function (e, detail, sender) {
+            if (e) {
+                e.stopPropagation()
+            }
+            if (e.target === this.$.input) {
+                return
+            }
+            this.showingSearch = !this.showingSearch;
+            this.classList.toggle("search-on");
+            this.async(function () {
+                this.$.input.focus()
+            })
+        }, onKeyPress: function (e, detail, sender) {
+        if (e.keyCode == 13) {
+            if (sender.value) {
+                var q = "site:polymer-project.org+" + sender.value;
+                window.open("https://www.google.com/search?q=" + q)
+            }
+        }
+    }, onMenuClick: function () {
+        this.fire("hamburger-time")
+    }
+    });</script>
+</polymer-element>
