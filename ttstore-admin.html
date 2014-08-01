@@ -6,7 +6,7 @@
 <link rel="import" href="components/core-toolbar/core-toolbar.html">
 <link rel="import" href="components/core-icon-button/core-icon-button.html">
 <link rel="import" href="components/paper-toast/paper-toast.html">
-<link rel="import" href="components/paper-button/paper-button.html" >
+<link rel="import" href="components/paper-button/paper-button.html">
 
 <link rel="import" href="components/core-drawer-panel/core-drawer-panel.html">
 
@@ -24,140 +24,227 @@ Element providing solution to no problem in particular.
 -->
 <polymer-element name="ttstore-admin">
 
-  <template>
+    <template>
 
-    <link rel="stylesheet" href="ttstore-admin.css" />
-    <style>
+        <link rel="stylesheet" href="ttstore-admin.css"/>
+        <style>
 
-        [drawer] {
-            background-color: #B99588;
-            border-right: 1px solid #ccc;
-        }
+            [drawer] {
+                background-color: #6231b9;
+                border-right: 1px solid #ccc;
+                color: antiquewhite;
+            }
 
-        [main] {
+            [main] {
 
-            height: 100vh;
-            background-color: #fee4ff;
-        }
+                height: 100vh;
+                background-color: #fee4ff;
+            }
 
-        #main_menu_button {
-            display: none;
-        }
-        core-drawer-panel[narrow] #main_menu_button {
-            display: inline-block
-        }
-        core-drawer-panel[narrow] #sub_menu {
-            display: none;
-        }
-        core-drawer-panel[narrow] #hpanel {
-            width: 100vw;
-        }
-        #sub_menu {
-            right: 10vw;
-            position: absolute;
-        }
+            #main_menu_button {
+                display: none;
+            }
 
-        #main_menu {
-            width: 100vw;
-        }
+            core-drawer-panel[narrow] #main_menu_button {
+                display: inline-block
+            }
 
-    </style>
+            core-drawer-panel[narrow] #sub_menu {
+                display: none;
+            }
+
+            core-drawer-panel[narrow] #hpanel {
+                width: 100vw;
+            }
+
+            #toolbar_menu {
+                width: 100vw;
+            }
+
+            #sub_menu {
+                right: 2vw;
+                margin-left: 45%;
+                width: 100vw;
+            }
+
+            #main_menu {
+                width: 100vw;
+            }
+
+            #title_menu {
+                width: 15vw;
+                margin-top: 10px;
+            }
+
+            core-icon-button[icon="android"] {
+                color: #9aed00;
+            }
+            core-icon-button[icon="favorite"] {
+                color: #ed1108;
+            }
+
+            input:valid {
+                color: green;
+            }
+
+            input:invalid {
+                color: red;
+            }
+
+            #tab_key {
+                width: 15%;
+                position: relative;
+            }
+
+            #tab_val {
+                width: 50%;
+                position: relative;
+            }
+           p {
+                height: 21px;
+                text-align: right;
+               margin: 5px;
+            }
+
+        </style>
 
 
-      <core-drawer-panel id="main_menu">
-        <div drawer >  CouCouille <content></content> </div>
-          <div main>
-              <core-header-panel id="hpanel">
-                  <core-toolbar>
-                      <div horizontal layout>
-                              <core-icon-button id="main_menu_button"  icon="menu" on-tap="{{mainMenu}}" ></core-icon-button>
-                              <div>Formulaire</div>
-                          <div id="sub_menu">
-                              <core-icon-button   icon="bug-report" on-tap="{{menuAction}}"></core-icon-button>
-                              <core-icon-button   icon="favorite" on-tap="{{menuAction}}"></core-icon-button>
-                              <core-icon-button   icon="search" on-tap="{{menuAction}}"></core-icon-button>
-                              <core-icon-button   icon="android" on-tap="{{menuAction}}"></core-icon-button>
-                              <core-icon-button   icon="book" on-tap="{{menuAction}}"></core-icon-button>
-                              <button  >Tuto tout con</button>
-                          </div>
-                      </div>
-                  </core-toolbar>
+        <core-drawer-panel id="main_menu">
+            <div drawer> CouCouille
+                <content></content>
+            </div>
+            <div main>
+                <core-header-panel id="hpanel">
+                    <div horizontal layout>
+                        <core-toolbar id="toolbar_menu">
 
-                  <div vertical layout>
-                      <paper-button raisedButton onclick="document.querySelector('#test1').shadowRoot.querySelector('#toast1').show()" label="Discard Draft"></paper-button>
+                            <core-icon-button id="main_menu_button" icon="menu"
+                                              on-tap="{{mainMenu}}"></core-icon-button>
+                            <div id="title_menu">Formulaire</div>
+                            <div id="sub_menu">
+                                <core-icon-button icon="bug-report" on-tap="{{menuAction}}"></core-icon-button>
+                                <core-icon-button icon="favorite" on-tap="{{menuAction}}"></core-icon-button>
+                                <core-icon-button icon="search" on-tap="{{menuAction}}"></core-icon-button>
+                                <core-icon-button icon="android" on-tap="{{menuAction}}"></core-icon-button>
+                                <core-icon-button icon="book" on-tap="{{menuAction}}"></core-icon-button>
+                                <button>Tuto tout con</button>
+                            </div>
 
-                      <paper-input floatingLabel label="Nom" validate="^[A-Za-zà-ÿ\s-]*$" error="Input is not a string!"></paper-input>
+                        </core-toolbar>
+                    </div>
+                    <div vertical layout>
+                        <paper-button raisedButton
+                                      onclick="document.querySelector('#test1').shadowRoot.querySelector('#toast1').show()"
+                                      label="Discard Draft"></paper-button>
 
-                      <paper-input floatingLabel label="Prénom" validate="^[A-Za-z]*$" error="Input is not a string!"></paper-input>
-                  </div>
-              </core-header-panel>
+                        <paper-input floatingLabel label="Nom" validate="^[A-Za-zà-ÿ\s-]*$"
+                                     error="Input is not a string!"></paper-input>
+
+                        <paper-input floatingLabel label="Prénom" validate="^[A-Za-z]*$"
+                                     error="Input is not a string!"></paper-input>
+                        <div id="table_inp" horizontal layout>
+                            <div id="tab_key">
+                                <p>text :</p>
+                                <p>url :</p>
+                                <p>email :</p>
+                                <p>tel :</p>
+                                <p>Date :</p>
+                                <p>Time :</p>
+                                <p>Time : Date :</p>
+                                <p>File :</p>
+                                <p>Color :</p>
+                                <p>Range :</p>
+                                <p>Voice:</p>
+                            </div>
+                            <div id="tab_val">
+                                <input type="text" id="test_text" spellcheck="true" lang="fr"/><br/>
+                                <input type="url" id="test_url"/><br/>
+                                <input type="email" id="test_email"/><br/>
+                                <input type="tel" id="test_tel" pattern="[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}"
+                                       placeholder="France 01-12-23-45-56"/><br/>
+                                <input type="date" id="test_date"/><br/>
+                                <input type="time" id="test_time" /><br/>
+                                <input type="datetime-local" id="test_date_time"   /><br/>
+                                <input type="file" id="test_file"/><br/>
+                                <input type="color" id="test_color"/><br/>
+                                <input type="range" id="test_range"/><br/>
+                                <input type="text" id="test_voice" x-webkit-speech/><br/>
+                            </div>
+                        </div>
+                        <div>
+                            <ul id="liste_courses"  contenteditable="{{monContentEditable}}">
+                                <li>café</li>
+                                <li>fraise</li>
+                            </ul>
+                        </div>
+                        <p contenteditable="{{monContentEditable}}">Text de coucouille ma bite</p>
+                        <input type="text" value="{{monContentEditable}}">
+                        <p>{{monContentEditable}}</p>
+                        <label contenteditable="true">My Label</label>
+                    </div>
+                </core-header-panel>
+
+                <paper-toast id="toast_wtf" text="What the fuck !!"></paper-toast>
+                <paper-toast id="toast1" text="Your draft has been discarded."></paper-toast>
+
+            </div>
+
+        </core-drawer-panel>
 
 
-              <paper-toast id="toast_wtf" text="What the fuck !!"></paper-toast>
+    </template>
 
+    <script>
 
+        Polymer('ttstore-admin', {
+            /**
+             * The `noevent` event is not actually fired from here,
+             * we document it as an example of documenting events.
+             *
+             * @event noevent
+             */
 
-              <paper-toast id="toast1" text="Your draft has been discarded."></paper-toast>
+            /**
+             * The `notitle` attribute does not yet have a purpose.
+             *
+             * @attribute notitle
+             * @type string
+             */
+            notitle: '',
+            monContentEditable : 'false',
 
-           </div>
+            /**
+             * The `aProp` is a property that does something cool.
+             *
+             * @property aProp
+             * @type bool
+             */
+            aProp: false,
 
-     </core-drawer-panel>
+            ready: function () {
+            },
 
+            /**
+             * The `task` method does no work at this time.
+             *
+             * @method task
+             * @return {Object} Returns undefined.
+             * @param {String} dummy Serves no purpose today.
+             */
+            task: function (dummy) {
+            },
 
+            menuAction: function (event) {
+                // alert("What the fuck !!");
+                this.$.toast_wtf.show();
+            },
 
+            mainMenu: function (event) {
+                this.$.main_menu.togglePanel();
+            }
 
-  </template>
+        });
 
-  <script>
-
-    Polymer('ttstore-admin', {
-      /**
-       * The `noevent` event is not actually fired from here,
-       * we document it as an example of documenting events.
-       *
-       * @event noevent
-       */
-
-      /**
-       * The `notitle` attribute does not yet have a purpose.
-       *
-       * @attribute notitle
-       * @type string
-       */
-      notitle: '',
-
-      /**
-       * The `aProp` is a property that does something cool.
-       *
-       * @property aProp
-       * @type bool
-       */
-      aProp: false,
-
-      ready: function() {
-      },
-
-      /**
-       * The `task` method does no work at this time.
-       *
-       * @method task
-       * @return {Object} Returns undefined.
-       * @param {String} dummy Serves no purpose today.
-       */
-      task: function(dummy) {
-      },
-
-      menuAction : function(event) {
-         // alert("What the fuck !!");
-          this.$.toast_wtf.show();
-      },
-
-      mainMenu : function(event) {
-        this.$.main_menu.togglePanel();
-      }
-
-    });
-
-  </script>
+    </script>
 
 </polymer-element>
