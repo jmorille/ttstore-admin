@@ -1,0 +1,30 @@
+
+<link rel="import" href="user-service.html">
+<link rel="import" href="user-list.html">
+
+
+<polymer-element name="user-admin" attributes="">
+
+
+    <template>
+        <user-service response="{{data}}"></user-service>
+
+        <user-list id="list"></user-list>
+
+
+    </template>
+    <script>
+
+        Polymer('user-admin', {
+
+
+            ready: function () {
+
+            }
+
+        });
+
+    </script>
+
+
+</polymer-element>

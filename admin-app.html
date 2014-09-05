@@ -9,6 +9,10 @@
 
 <link rel="import" href="components/paper-shadow/paper-shadow.html">
 
+<link rel="import" href="admin-menu.html">
+<link rel="import" href="user-admin.html">
+
+
 <polymer-element name="admin-app" vertical layout>
     <template>
 
@@ -49,12 +53,7 @@
                 <core-toolbar>
                     <div>Menu</div>
                 </core-toolbar>
-                <div vertical layout>
-                    <paper-button disabled="{{selected=='splash'}}" label="Splash"
-                                  on-click="{{showSplash}}"></paper-button>
-                    <paper-button disabled="{{selected=='categories'}}" label="Categories"
-                                  on-click="{{showCategories}}"></paper-button>
-                </div>
+                <admin-menu selected="{{selected}}"></admin-menu>
             </core-header-panel>
             <core-header-panel main>
 
@@ -63,11 +62,11 @@
                 </core-toolbar>
 
                 <core-animated-pages selected="{{selected}}"
-                                     flex auto on-core-animated-pages-transition-end="{{transitionEndAction}}">
+                                     flex auto  >
 
 
-                    <section name="splash" class="card">Splash</section>
-                    <section name="categories">Categories
+                    <user-admin name="users"      class="card"></user-admin>
+                    <section   name="categories"  class="card">Categories
                         <paper-shadow z="2"></paper-shadow>
                     </section>
 
@@ -81,13 +80,10 @@
     <script>
 
         Polymer('admin-app', {
-            selected: 'splash',
+            selected: 'users',
             responsiveWidth: '900px',
 
             ready: function () {
-            },
-            transitionEndAction: function () {
-
             },
             showSplash: function () {
                 this.selected = 'splash';

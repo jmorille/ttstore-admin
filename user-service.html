@@ -1,0 +1,50 @@
+
+ 
+
+<polymer-element name="user-service" attributes="host index response">
+
+    <template>
+        <script src="components/elasticsearch/elasticsearch.js"></script>
+
+    </template>
+
+    <script>
+
+        Polymer('user-service', {
+            host: 'localhost:9200',
+            index: 'user',
+
+            client : null,
+
+            data: [],
+            ready: function () {
+                this.response = this.generateData();
+
+//                this.client = new elasticsearch.Client({
+//                    host: 'localhost:9200',
+//                    log: 'trace'
+//                });
+
+
+            },
+            generateData: function () {
+                var data = [];
+                for (var i = 0; i < 10; i++) {
+                    var name = 'User Name ' + i;
+                    data.push({
+                        index: i,
+                        name: name,
+                        time: '8:29pm'
+                    });
+
+                }
+                return data;
+            }
+
+
+        });
+
+    </script>
+
+
+</polymer-element>

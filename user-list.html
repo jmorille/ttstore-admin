@@ -1,0 +1,57 @@
+<link rel="import" href="components/core-list/core-list.html">
+<link rel="import" href="user-service.html">
+
+
+<polymer-element name="user-list" attributes="">
+    <style>
+        core-list {
+            height: 100%;
+        }
+
+
+        .item {
+            box-sizing: border-box;
+            height: 80px;
+            border-bottom: 1px solid #ddd;
+            padding: 4px;
+            cursor: default;
+            background-color: white;
+            overflow: hidden;
+        }
+
+        .selected {
+            background: silver;
+        }
+
+
+    </style>
+
+    <template>
+        <user-service response="{{data}}"></user-service>
+
+        <core-list id="list" data="{{data}}" >
+            <template>
+                <div class="item {{ {selected: selected} | tokenList }">
+                    <span class="from">{{name}}</span>
+                    <span class="timestamp">{{time}}</span>
+                </div>
+            </template>
+        </core-list>
+
+
+    </template>
+    <script>
+
+        Polymer('user-list', {
+
+            data: [],
+            ready: function () {
+
+            }
+
+        });
+
+    </script>
+
+
+</polymer-element>

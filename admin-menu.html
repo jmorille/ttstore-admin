@@ -2,10 +2,10 @@
 <link rel="import" href="components/core-menu/core-menu.html">
 <link rel="import" href="components/paper-item/paper-item.html">
 
-<polymer-element name="admin-menu"  >
+<polymer-element name="admin-menu" attributes="selected" >
     <template>
-        <core-menu>
-            <paper-button disabled="{{selected=='splash'}}" label="Splash" on-click="{{showSplash}}"></paper-button>
+        <core-menu  vertical layout>
+            <paper-button disabled="{{selected=='users'}}" label="Users" on-click="{{showUsers}}"></paper-button>
             <paper-button disabled="{{selected=='categories'}}" label="Categories" on-click="{{showCategories}}"></paper-button>
         </core-menu>
 
@@ -13,17 +13,15 @@
     <script>
 
         Polymer('admin-menu', {
-            selected: 'splash',
-            responsiveWidth: '900px',
+
 
             ready: function () {
             },
-            transitionEndAction: function() {
 
+            showUsers: function() {
+                this.selected = 'users';
             },
-            showSplash: function() {
-                this.selected = 'splash';
-            },
+
             showCategories: function() {
                 this.selected = 'categories';
             }
