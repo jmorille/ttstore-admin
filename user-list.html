@@ -29,7 +29,7 @@
     <template>
         <user-service response="{{data}}"></user-service>
 
-        <core-list id="list" data="{{data}}" >
+        <core-list id="list" data="{{data}}"  on-core-activate="{{itemSelected}}">
             <template>
                 <div class="item {{ {selected: selected} | tokenList }">
                     <span class="from">{{name}}</span>
@@ -47,6 +47,9 @@
             data: [],
             ready: function () {
 
+            },
+            itemSelected : function(event) {
+                console.dir(event.detail.data);
             }
 
         });
