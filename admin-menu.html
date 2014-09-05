@@ -1,0 +1,37 @@
+
+<link rel="import" href="components/core-menu/core-menu.html">
+<link rel="import" href="components/paper-item/paper-item.html">
+
+<polymer-element name="admin-menu"  >
+    <template>
+        <core-menu>
+            <paper-item disabled="{{selected=='splash'}}" label="Splash" on-click="{{showSplash}}"></paper-button>
+            <paper-item disabled="{{selected=='categories'}}" label="Categories" on-click="{{showCategories}}"></paper-button>
+        </core-menu>
+
+    </template>
+    <script>
+
+        Polymer('admin-menu', {
+            selected: 'splash',
+            responsiveWidth: '900px',
+
+            ready: function () {
+            },
+            transitionEndAction: function() {
+
+            },
+            showSplash: function() {
+                this.selected = 'splash';
+            },
+            showCategories: function() {
+                this.selected = 'categories';
+            }
+
+        });
+
+    </script>
+
+
+
+</polymer-element>

@@ -1,0 +1,66 @@
+<link rel="import" href="components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="components/core-media-query/core-media-query.html">
+<link rel="import" href="components/paper-button/paper-button.html">
+
+<link rel="import" href="components/paper-shadow/paper-shadow.html">
+
+<polymer-element name="admin-app" vertical layout>
+    <template>
+        <style>
+            section { 
+                width: 80%;
+                margin: 16px;
+            }
+            .card {
+                background: white;
+                width: 300px;
+                height: 300px;
+                position: relative;
+                margin: 16px;
+                border-radius: 2px;
+            }
+
+
+        </style>
+
+        <div>
+            <paper-button disabled="{{selected=='splash'}}" label="Splash" on-click="{{showSplash}}"></paper-button>
+            <paper-button disabled="{{selected=='categories'}}" label="Categories" on-click="{{showCategories}}"></paper-button>
+        </div>
+
+        <core-animated-pages selected="{{selected}}"
+                             flex auto on-core-animated-pages-transition-end="{{transitionEndAction}}">
+
+
+            <section name="splash" class="card">Splash</section>
+            <section name="categories">Categories
+                <paper-shadow z="2"></paper-shadow>
+            </section>
+        </core-animated-pages>
+        <core-media-query query="min-width: {{responsiveWidth}}" queryMatches="{{wide}}"></core-media-query>
+    </template>
+    <script>
+
+        Polymer('admin-app', {
+            selected: 'splash',
+            responsiveWidth: '900px',
+
+            ready: function () {
+            },
+            transitionEndAction: function() {
+
+            },
+            showSplash: function() {
+                this.selected = 'splash';
+            },
+            showCategories: function() {
+                this.selected = 'categories';
+            }
+
+        });
+
+    </script>
+
+
+
+</polymer-element>
