@@ -1,0 +1,56 @@
+<link rel="import" href="../components/paper-input/paper-input.html">
+<link rel="import" href="../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../components/paper-shadow/paper-shadow.html">
+
+<polymer-element name="user-edit" attributes="id entity">
+
+
+    <template>
+        <style>
+            :host {
+                display: block;
+                background-color: white;
+            }
+
+            .card {
+                display: block;
+            }
+
+        </style>
+        <div>
+            <paper-icon-button icon="check" on-tap="{{onSave}}" ></paper-icon-button>
+            <paper-icon-button icon="close" on-tap="{{onCLose}}"></paper-icon-button>
+        </div>
+
+        <div class="card">
+            <paper-input floatingLabel label="First name" inputValue="{{entity._source.firstname}}"></paper-input>
+            <paper-input floatingLabel label="Last name" inputValue="{{entity._source.lastname}}"></paper-input>
+            <paper-input floatingLabel label="Email" type="email" inputValue="{{entity._source.email}}"
+                         error="Input is not an email!"></paper-input>
+            <paper-shadow z="2"></paper-shadow>
+        </div>
+
+    </template>
+    <script>
+
+        Polymer('user-edit', {
+            ready: function () {
+
+            },
+            onSave : function() {
+                this.fire('entity-save', this.entity);
+                
+            },
+            onCLose : function () {
+                this.fire('entity-cancel', this.entity);
+            },
+            myFunc : function () {
+                
+            }
+
+        });
+
+    </script>
+
+
+</polymer-element>

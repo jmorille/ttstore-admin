@@ -7,23 +7,23 @@
     <script>
 
         Polymer('user-service-mock', {
-            host: 'localhost:9200',
-            index: 'user',
-
-            client : null,
-
-            data: [],
             ready: function () {
                 this.response = this.generateData();
+                console.dir(this.response);
             },
             generateData: function () {
                 var data = [];
                 for (var i = 0; i < 10; i++) {
                     var name = 'User Name ' + i;
+                    var last = 'LastName ' + i;
                     data.push({
-                        index: i,
-                        name: name,
-                        time: '8:29pm'
+                        id : i,
+                        _source : {
+                            index: i,
+                            firstname: name,
+                            lastname: last,
+                            time: '8:29pm'
+                        }
                     });
 
                 }
