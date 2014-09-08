@@ -1,0 +1,11 @@
+{"index":{"_index":"users","_type":"user","_id":1}}
+{"firstname":"Bilbon","lastname":"Sacquet","email":"b.sacquet@gmail.com"}
+{"index":{"_index":"users","_type":"user","_id":2}}
+{"firstname":"Frodon","lastname":"Sacquet","email":"f.sacquet@gmail.com"}
+{"index":{"_index":"users","_type":"user","_id":3}}
+{"firstname":"Sam","lastname":"Gamegie","email":"s.gamegie@gmail.com"}
+{"index":{"_index":"users","_type":"user","_id":4}}
+{"firstname":"Peregrin","lastname":"Touque","email":"p.touque@gmail.com"}
+{"index":{"_index":"users","_type":"user","_id":5}}
+{"firstname":"Peregrin","lastname":"Brandebouc","email":"p.brandebouc@gmail.com"}
+

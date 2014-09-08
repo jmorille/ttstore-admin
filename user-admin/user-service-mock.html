@@ -1,0 +1,39 @@
+
+
+
+<polymer-element name="user-service-mock" attributes="host index response">
+
+
+    <script>
+
+        Polymer('user-service-mock', {
+            ready: function () {
+                this.response = this.generateData();
+                console.dir(this.response);
+            },
+            generateData: function () {
+                var data = [];
+                for (var i = 0; i < 10; i++) {
+                    var name = 'User Name ' + i;
+                    var last = 'LastName ' + i;
+                    data.push({
+                        id : i,
+                        _source : {
+                            index: i,
+                            firstname: name,
+                            lastname: last,
+                            time: '8:29pm'
+                        }
+                    });
+
+                }
+                return data;
+            }
+
+
+        });
+
+    </script>
+
+
+</polymer-element>
