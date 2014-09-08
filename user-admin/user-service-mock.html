@@ -1,16 +1,12 @@
 
 
 
-<polymer-element name="user-service" attributes="host index response">
-
-    <template>
+<polymer-element name="user-service-mock" attributes="host index response">
 
 
-    </template>
-    <script src="../components/elasticsearch/elasticsearch.js"></script>
     <script>
 
-        Polymer('user-service', {
+        Polymer('user-service-mock', {
             host: 'localhost:9200',
             index: 'user',
 
@@ -19,13 +15,6 @@
             data: [],
             ready: function () {
                 this.response = this.generateData();
-
-//                this.client = new elasticsearch.Client({
-//                    host: 'localhost:9200',
-//                    log: 'trace'
-//                });
-
-
             },
             generateData: function () {
                 var data = [];
