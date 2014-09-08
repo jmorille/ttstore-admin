@@ -1,29 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <script src="components/platform/platform.js"></script>
-  <link rel="import" href="ttstore-admin.html">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script style="text/javascript">
-      function alacon(elem) {
-          alert(elem);
-      }
-  </script>
-  <style>
-      html, body {
-          width: 100vw;
-          height: 100vh;
-          margin: 0;
-          font-family: sans-serif;
-      }
-  </style>
-</head>
+<head lang="en">
+    <meta charset="UTF-8">
 
+
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent" >
+    <meta name="format-detection" content="telephone=no">
+
+    <meta name="application-name" content="Admin App">
+    <title>Admin App</title>
+
+    <script src="components/platform/platform.js"></script>
+    <link rel="stylesheet" href="theme.css" shim-shadowdom>
+    <link rel="import" href="admin-app.html">
+
+</head>
 <body unresolved>
 
-<div style="background: red;">
-  <ttstore-admin id="test1"> ma bite</ttstore-admin>
-</div>
+    <template is="auto-binding">
+         <admin-app></admin-app>
+    </template>
 
 </body>
 </html>

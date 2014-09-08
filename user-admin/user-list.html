@@ -1,11 +1,11 @@
-<link rel="import" href="components/core-list/core-list.html">
-<link rel="import" href="user-service.html">
+<link rel="import" href="../components/core-list/core-list.html">
+<link rel="import" href="../user-admin/user-service.html">
 
 
 <polymer-element name="user-list" attributes="">
     <style>
         core-list {
-            height: 100%;
+            width: 80%;
         }
 
 
@@ -31,7 +31,7 @@
 
         <core-list id="list" data="{{data}}"  on-core-activate="{{itemSelected}}">
             <template>
-                <div class="item {{ {selected: selected} | tokenList }">
+                <div class="item">
                     <span class="from">{{name}}</span>
                     <span class="timestamp">{{time}}</span>
                 </div>
@@ -44,12 +44,17 @@
 
         Polymer('user-list', {
 
-            data: [],
-            ready: function () {
+            // Bad
+            data : [],
 
+            ready: function () {
+              // Good  this.data =  [];
             },
             itemSelected : function(event) {
-                console.dir(event.detail.data);
+                var itemSelected = event.detail.data;
+                console.dir(itemSelected);
+                // fire(inType, inDetail, inToNode)
+                this.fire('select-item', { item: itemSelected });
             }
 
         });

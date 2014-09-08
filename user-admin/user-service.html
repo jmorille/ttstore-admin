@@ -4,9 +4,9 @@
 <polymer-element name="user-service" attributes="host index response">
 
     <template>
-        <script src="components/elasticsearch/elasticsearch.js"></script>
 
     </template>
+    <script src="../components/elasticsearch/elasticsearch.js"></script>
 
     <script>
 
@@ -16,7 +16,7 @@
 
             client : null,
 
-            data: [],
+
             ready: function () {
                 this.response = this.generateData();
 
@@ -31,9 +31,12 @@
                 var data = [];
                 for (var i = 0; i < 10; i++) {
                     var name = 'User Name ' + i;
+                    var email = 'user' + i + '@email.fr';
+
                     data.push({
                         index: i,
                         name: name,
+                        email: email,
                         time: '8:29pm'
                     });
 

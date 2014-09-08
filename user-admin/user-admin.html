@@ -1,6 +1,7 @@
 
 <link rel="import" href="../user-admin/user-service.html">
 <link rel="import" href="../user-admin/user-list.html">
+<link rel="import" href="../user-admin/user-edit.html">
 
 
 <polymer-element name="user-admin" attributes="">
@@ -9,7 +10,9 @@
     <template>
         <user-service response="{{data}}"></user-service>
 
-        <user-list id="list"></user-list>
+        <user-list id="list" on-select-item="{{entitySelected}}"></user-list>
+
+        <user-edit></user-edit>
 
 
     </template>
@@ -20,6 +23,10 @@
 
             ready: function () {
 
+            },
+            entitySelected : function(e) {
+                var itemSelected = e.detail.item;
+                console.log(itemSelected);
             }
 
         });
