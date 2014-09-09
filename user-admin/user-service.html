@@ -61,18 +61,11 @@
                         that.response = resp;
                     }
                 });
-            },
-              entityCreate : function(entity) {
-                var that = this;
-                that.client.create({
-                    index: that.index,
-                    type: that.type,
-                    body: entity
-                }, that.entityError);
-            },
+            }, 
             entityUpdate : function(entity, err) {
                 var that = this;
                 that.client.index({
+                    refresh : true,
                     index: that.index,
                     type: that.type,
                     id: entity._id,
@@ -80,13 +73,14 @@
                     body: entity._source
                 }, err);
             },
-              entityDelete : function(id) {
+              entityDelete : function(id, callback) {
                 var that = this;
                 that.client.delete({
+                    refresh : true,
                     index: that.index,
                     type: that.type,
                     id: '1'
-                }, that.entityError);
+                }, callback);
             },
             entityError : function (err, resp) {
                 if (err) {

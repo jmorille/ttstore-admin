@@ -32,7 +32,9 @@
 
 
             <user-edit entity="{{entity}}" name="entityEdit"
-                       on-entity-save="{{onSave}}" on-entity-cancel="{{onCancel}}">
+                       on-entity-save="{{onSave}}"
+                       on-entity-delete="{{onDelete}}"
+                       on-entity-cancel="{{onCancel}}">
 
                        </user-edit>
 
@@ -121,6 +123,15 @@
                 });
 
 
+            },
+            onDelete: function (e) {
+                var that = this;
+                var entityToSave = entity.detail;
+                var entityId = entityToSave._id;
+                this.$.user_service.entityDelete(entityId, function(err,resp) {
+                    // Select List
+                    that.openList();
+                });
             }
 
 
