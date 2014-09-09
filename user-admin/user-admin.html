@@ -25,7 +25,8 @@
         <core-animated-pages selected="{{pageSelected}}" transitions="hero-transition cross-fade"
                              flex auto>
 
-            <user-list id="list" name="entityList"
+            <user-list id="list" name="entityList" data="{{entityList}}"
+                       on-entity-search="{{entitySearchListener}}"
                        on-entity-add="{{entityAddListener}}"
                        on-entity-edit="{{entityEditListener}}"></user-list>
 
@@ -48,9 +49,25 @@
 
             entityId: undefined,
             entity: undefined,
+            entityList : [],
             pageSelected: 'entityList',
             ready: function () {
-
+                this.openList();
+            },
+            openList : function () {
+                this.pageSelected = 'entityList';
+                this.entitySearchListener();
+            },
+            openEdit : function() {
+                this.pageSelected = 'entityEdit';
+            },
+            entitySearchListener : function() {
+                var that = this;
+                this.$.user_service.searchAll(function (resp) {
+                    console.log("Response Search : " + resp);
+                    console.dir(resp);
+                    that.entityList=resp.hits.hits;
+                });
             },
             entityEditListener: function (e) {
                 var entityId = e.detail._id;
@@ -69,7 +86,7 @@
             },
             onCancel: function (entity) {
                 console.log("On Cancel");
-                this.$.user_service.refresh();
+                this.entitySearchListener();
                 // Select List
                 this.pageSelected = 'entityList';
                 this.entityId = undefined;
@@ -89,16 +106,16 @@
                         console.dir(resp);
 
                         that.$.toast_save_ko.show();
+                        that.openList();
                     } else if (resp) {
                         that.entityId = undefined;
                         that.entity = undefined;
-                        that.pageSelected = 'entityList';
                         // Display Toast
                         that.$.toast_save_ok.show();
                         console.dir(resp);
 
                         // Select List
-                        that.$.user_service.refresh();
+                        that.openList();
                     }
 
                 });

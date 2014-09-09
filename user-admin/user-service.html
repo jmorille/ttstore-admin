@@ -17,9 +17,6 @@
             pageNum : 1,
             client : null,
 
-            get refresh() {
-                return this.searchAll;
-            },
 
             created : function() {
                 this.response = [];
@@ -29,12 +26,12 @@
 
                 this.client = new elasticsearch.Client({
                     host: 'localhost:9200',
-                    log: 'debug'
+                    log: 'info'
                 });
-               this.searchAll();
+
             },
 
-            searchAll : function() {
+            searchAll : function(resp) {
                 //
                 var that = this;
                 that.client.search({
@@ -45,11 +42,7 @@
                              "match_all":{}
                         }
                     }
-                }).then(function (resp) {
-                    var hits = resp.hits.hits;
-                    console.dir(hits);
-                    that.response = hits;
-                }, function (err) {
+                }).then( resp , function (err) {
                     console.trace(err.message);
                 });
             },

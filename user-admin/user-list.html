@@ -7,7 +7,7 @@
 <link rel="import" href="user-service-mock.html">
 
 
-<polymer-element name="user-list" attributes="">
+<polymer-element name="user-list" attributes="data">
 
     <template>
         <style>
@@ -36,7 +36,7 @@
         </style>
 
 
-        <user-service id="user_service" response="{{data}}"></user-service>
+
 
         <div>
             <div>
@@ -64,12 +64,12 @@
 
         Polymer('user-list', {
 
-            data: undefined,
             ready: function () {
 
             },
             refreshList: function () {
-                this.$.user_service.searchAll();
+                this.fire('entity-search');
+
             },
             entityEdit: function (event) {
                 var toEdit = event.detail.data;
@@ -82,7 +82,7 @@
 
             },
             entityDelete: function (entityId) {
-                console.log("To Delete : " + entityId);
+                this.fire('entity-delete', { _id: toEdit._id });
             }
 
 
