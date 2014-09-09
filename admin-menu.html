@@ -1,9 +1,17 @@
+<link rel="import" href="components/polymer/polymer.html">
 
 <link rel="import" href="components/core-menu/core-menu.html">
 <link rel="import" href="components/paper-item/paper-item.html">
 
 <polymer-element name="admin-menu" attributes="selected" >
     <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+        </style>
+
         <core-menu  vertical layout>
             <paper-button disabled="{{selected=='users'}}" label="Users" on-click="{{showUsers}}"></paper-button>
             <paper-button disabled="{{selected=='categories'}}" label="Categories" on-click="{{showCategories}}"></paper-button>

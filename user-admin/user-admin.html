@@ -1,3 +1,8 @@
+<link rel="import" href="../components/polymer/polymer.html">
+
+<link rel="import" href="../components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../components/paper-button/paper-button.html" >
+<link rel="import" href="../components/paper-toast/paper-toast.html" >
 
 <link rel="import" href="../user-admin/user-service.html">
 <link rel="import" href="../user-admin/user-list.html">
@@ -6,46 +11,99 @@
 
 <polymer-element name="user-admin" attributes="">
 
-
     <template>
-         <user-service id="user_service" response="{{entity}}"></user-service>
+        <style>
+            :host {
+                display: block;
+            }
+            .toast-error {
+                background-color: red;
+            }
+        </style>
+        <user-service id="user_service" response="{{entity}}"></user-service>
 
-        <user-list id="list" hidden?="{{entityId}}"
-                   on-entity-edit="{{entityEditListener}}" ></user-list>
+        <core-animated-pages selected="{{pageSelected}}" transitions="hero-transition cross-fade"
+                             flex auto>
+
+            <user-list id="list" name="entityList"
+                       on-entity-add="{{entityAddListener}}"
+                       on-entity-edit="{{entityEditListener}}"></user-list>
 
 
-        <user-edit  entity="{{entity}}"
-                    on-entity-save="{{onSave}}" on-entity-cancel="{{onCancel}}"
-                    hidden?="{{!entityId}}"
-        ></user-edit>
+            <user-edit entity="{{entity}}" name="entityEdit"
+                       on-entity-save="{{onSave}}" on-entity-cancel="{{onCancel}}">
+
+                       </user-edit>
+
+        </core-animated-pages>
+
+        <paper-toast id="toast_save_ok" class="capsule" text="Entity Save."></paper-toast>
+        <paper-toast id="toast_save_ko" class="capsule toast-error" text="Error ins saving Entity"></paper-toast>
+
 
     </template>
     <script>
 
         Polymer('user-admin', {
 
-            entityId : undefined,
-            entity : undefined,
+            entityId: undefined,
+            entity: undefined,
+            pageSelected: 'entityList',
             ready: function () {
 
             },
-            entityEditListener : function(e) {
-                var entityId =  e.detail._id;
+            entityEditListener: function (e) {
+                var entityId = e.detail._id;
+                console.log("On Entity Edit : ", entityId);
+                // Select Edit
+                this.pageSelected = 'entityEdit';
                 this.entityId = entityId;
-                console.log("On Entity Edit : ",entityId);
-                this.$.user_service.entityGetById(entityId)
+                this.$.user_service.entityGetById(entityId);
+
             },
-            onCancel : function (entity) {
+            entityAddListener : function(e) {
+                this.pageSelected = 'entityEdit';
+                this.entity = {
+                   _source : {}
+                };
+            },
+            onCancel: function (entity) {
                 console.log("On Cancel");
                 this.$.user_service.refresh();
+                // Select List
+                this.pageSelected = 'entityList';
                 this.entityId = undefined;
                 this.entity = undefined;
             },
-            onSave : function (entity) {
+            onSave: function (entity) {
                 console.log("On Save");
-                this.$.user_service.refresh();
-                this.entityId = undefined;
-                this.entity = undefined;
+                // Entity
+                var that = this;
+                var entityToSave = entity.detail;
+                console.log("to Save : " + entityToSave);
+                console.dir(entityToSave);
+                this.$.user_service.entityUpdate(entityToSave, function(err, resp) {
+                    // Display
+                    if (err) {
+                        console.dir(err);
+                        console.dir(resp);
+
+                        that.$.toast_save_ko.show();
+                    } else if (resp) {
+                        that.entityId = undefined;
+                        that.entity = undefined;
+                        that.pageSelected = 'entityList';
+                        // Display Toast
+                        that.$.toast_save_ok.show();
+                        console.dir(resp);
+
+                        // Select List
+                        that.$.user_service.refresh();
+                    }
+
+                });
+
+
             }
 
 

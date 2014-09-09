@@ -1,3 +1,4 @@
+<link rel="import" href="../components/polymer/polymer.html">
 
 
 
@@ -28,7 +29,7 @@
 
                 this.client = new elasticsearch.Client({
                     host: 'localhost:9200',
-                    log: 'info'
+                    log: 'debug'
                 });
                this.searchAll();
             },
@@ -75,6 +76,16 @@
                     type: that.type,
                     body: entity
                 }, that.entityError);
+            },
+            entityUpdate : function(entity, err) {
+                var that = this;
+                that.client.index({
+                    index: that.index,
+                    type: that.type,
+                    id: entity._id,
+                    version: entity._version,
+                    body: entity._source
+                }, err);
             },
               entityDelete : function(id) {
                 var that = this;

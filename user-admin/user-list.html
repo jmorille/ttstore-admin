@@ -1,49 +1,62 @@
+<link rel="import" href="../components/polymer/polymer.html">
+
 <link rel="import" href="../components/core-list/core-list.html">
 <link rel="import" href="../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../components/paper-shadow/paper-shadow.html">
 <link rel="import" href="user-service.html">
 <link rel="import" href="user-service-mock.html">
 
 
 <polymer-element name="user-list" attributes="">
-    <style>
-        core-list {
-            height: 100%;
-        }
-
-
-        .item {
-            box-sizing: border-box;
-            height: 80px;
-            border-bottom: 1px solid #ddd;
-            padding: 4px;
-            cursor: default;
-            background-color: white;
-            overflow: hidden;
-        }
-
-        .selected {
-            background: silver;
-        }
-
-
-    </style>
 
     <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            core-list {
+                width: 80%;
+            }
+
+            .item {
+                box-sizing: border-box;
+                border-bottom: 1px solid #ddd;
+                padding: 4px;
+                cursor: default;
+                background-color: white;
+                overflow: hidden;
+            }
+
+            .selected {
+                background: silver;
+            }
+
+
+        </style>
+
+
         <user-service id="user_service" response="{{data}}"></user-service>
 
+        <div>
+            <div>
+                <paper-icon-button icon="add" on-tap="{{entityAdd}}"></paper-icon-button>
 
-        <paper-icon-button icon="add" on-tap="{{entityAdd}}"></paper-icon-button>
+                <paper-icon-button icon="refresh" on-tap="{{refreshList}}"></paper-icon-button>
+                <paper-shadow z="2"></paper-shadow>
+            </div>
 
-        <paper-icon-button icon="refresh" on-tap="{{refreshList}}"></paper-icon-button>
-
-        <core-list id="list" data="{{data}}"  on-core-activate="{{entityEdit}}">
-            <template>
-                <div class="item {{ {selected: selected} | tokenList }">
-                    <span class="from">{{_source.firstname}}</span>
-                    <span class="timestamp">{{_source.lastname}}</span>
-                </div>
-            </template>
-        </core-list>
+            <core-list id="list" data="{{data}}" on-core-activate="{{entityEdit}}">
+                <template>
+                    <div class="item {{ {selected: selected} | tokenList }}">
+                        <span class="from">{{_source.firstname}}</span>
+                        <span class="timestamp">{{_source.lastname}}</span>
+                    </div>
+                </template>
+                <paper-shadow z="2"></paper-shadow>
+            </core-list>
+            <paper-shadow z="2"></paper-shadow>
+        </div>
 
 
     </template>
@@ -55,20 +68,20 @@
             ready: function () {
 
             },
-            refreshList : function () {
+            refreshList: function () {
                 this.$.user_service.searchAll();
             },
-            entityEdit : function(event) {
+            entityEdit: function (event) {
                 var toEdit = event.detail.data;
                 console.dir(toEdit);
                 console.log("To Edit : " + toEdit._id);
-                this.fire('entity-edit', { _id :  toEdit._id });
+                this.fire('entity-edit', { _id: toEdit._id });
             },
-            entityAdd : function() {
-                this.fire('entity-add' );
+            entityAdd: function () {
+                this.fire('entity-add');
 
             },
-            entityDelete : function(entityId) {
+            entityDelete: function (entityId) {
                 console.log("To Delete : " + entityId);
             }
 
