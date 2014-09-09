@@ -3,45 +3,95 @@
 
 <polymer-element name="user-service" attributes="host index response">
 
-    <template>
 
-    </template>
     <script src="../components/elasticsearch/elasticsearch.js"></script>
-
+    <script src="../components/elastic.js/dist/elastic.js"></script>
     <script>
 
         Polymer('user-service', {
             host: 'localhost:9200',
-            index: 'user',
-
+            index: 'users',
+            type : 'user',
+            perPage : 10,
+            pageNum : 1,
             client : null,
 
+            get refresh() {
+                return this.searchAll;
+            },
+
+            created : function() {
+                this.response = [];
+            },
 
             ready: function () {
-                this.response = this.generateData();
 
-//                this.client = new elasticsearch.Client({
-//                    host: 'localhost:9200',
-//                    log: 'trace'
-//                });
-
-
+                this.client = new elasticsearch.Client({
+                    host: 'localhost:9200',
+                    log: 'info'
+                });
+               this.searchAll();
             },
-            generateData: function () {
-                var data = [];
-                for (var i = 0; i < 10; i++) {
-                    var name = 'User Name ' + i;
-                    var email = 'user' + i + '@email.fr';
 
-                    data.push({
-                        index: i,
-                        name: name,
-                        email: email,
-                        time: '8:29pm'
-                    });
-
+            searchAll : function() {
+                //
+                var that = this;
+                that.client.search({
+                    index: that.index,
+                    type: that.type,
+                    body: {
+                        query: {
+                             "match_all":{}
+                        }
+                    }
+                }).then(function (resp) {
+                    var hits = resp.hits.hits;
+                    console.dir(hits);
+                    that.response = hits;
+                }, function (err) {
+                    console.trace(err.message);
+                });
+            },
+            entityGetById : function(entityId) {
+                var that = this;
+                that.client.get({
+                    index: that.index,
+                    type: that.type,
+                    id: entityId
+                },  function (err, resp) {
+                    if (err) {
+                        console.error(err.message);
+                    }
+                    if (resp) {
+                        console.dir(resp);
+                        that.response = resp;
+                    }
+                });
+            },
+              entityCreate : function(entity) {
+                var that = this;
+                that.client.create({
+                    index: that.index,
+                    type: that.type,
+                    body: entity
+                }, that.entityError);
+            },
+              entityDelete : function(id) {
+                var that = this;
+                that.client.delete({
+                    index: that.index,
+                    type: that.type,
+                    id: '1'
+                }, that.entityError);
+            },
+            entityError : function (err, resp) {
+                if (err) {
+                    console.error(err.message);
                 }
-                return data;
+                if (resp) {
+                    console.dir(resp);
+                    this.response = resp;
+                }
             }
 
 

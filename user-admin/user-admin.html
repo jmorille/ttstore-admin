@@ -8,26 +8,46 @@
 
 
     <template>
-        <user-service response="{{data}}"></user-service>
+         <user-service id="user_service" response="{{entity}}"></user-service>
 
-        <user-list id="list" on-select-item="{{entitySelected}}"></user-list>
+        <user-list id="list" hidden?="{{entityId}}"
+                   on-entity-edit="{{entityEditListener}}" ></user-list>
 
-        <user-edit></user-edit>
 
+        <user-edit  entity="{{entity}}"
+                    on-entity-save="{{onSave}}" on-entity-cancel="{{onCancel}}"
+                    hidden?="{{!entityId}}"
+        ></user-edit>
 
     </template>
     <script>
 
         Polymer('user-admin', {
 
-
+            entityId : undefined,
+            entity : undefined,
             ready: function () {
 
             },
-            entitySelected : function(e) {
-                var itemSelected = e.detail.item;
-                console.log(itemSelected);
+            entityEditListener : function(e) {
+                var entityId =  e.detail._id;
+                this.entityId = entityId;
+                console.log("On Entity Edit : ",entityId);
+                this.$.user_service.entityGetById(entityId)
+            },
+            onCancel : function (entity) {
+                console.log("On Cancel");
+                this.$.user_service.refresh();
+                this.entityId = undefined;
+                this.entity = undefined;
+            },
+            onSave : function (entity) {
+                console.log("On Save");
+                this.$.user_service.refresh();
+                this.entityId = undefined;
+                this.entity = undefined;
             }
+
 
         });
 
