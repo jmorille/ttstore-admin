@@ -1,29 +1,31 @@
 <link rel="import" href="../components/polymer/polymer.html">
 
 
-
 <polymer-element name="user-service" attributes="host index response">
 
 
     <script src="../components/elasticsearch/elasticsearch.js"></script>
     <script src="../components/elastic.js/dist/elastic.js"></script>
+
     <script>
 
         Polymer('user-service', {
-            host: '10.220.172.130:9200',
+            host: '192.168.1.100:9200',
             index: 'users',
-            type : 'user',
-            perPage : 10,
-            pageNum : 1,
-            client : null,
+            type: 'user',
+            perPage: 10,
+            pageNum: 1,
+            client: null,
 
 
-            created : function() {
+            created: function () {
                 this.response = [];
+                if (!this.host) {
+                    this.host = window.location.hostname + ":9200";
+                }
             },
 
             ready: function () {
-
                 this.client = new elasticsearch.Client({
                     host: this.host,
                     log: 'info'
@@ -31,7 +33,7 @@
 
             },
 
-            searchAll : function(resp) {
+            searchAll: function (resp) {
                 //
                 var that = this;
                 that.client.search({
@@ -39,20 +41,20 @@
                     type: that.type,
                     body: {
                         query: {
-                             "match_all":{}
+                            "match_all": {}
                         }
                     }
-                }).then( resp , function (err) {
+                }).then(resp, function (err) {
                     console.trace(err.message);
                 });
             },
-            entityGetById : function(entityId) {
+            entityGetById: function (entityId) {
                 var that = this;
                 that.client.get({
                     index: that.index,
                     type: that.type,
                     id: entityId
-                },  function (err, resp) {
+                }, function (err, resp) {
                     if (err) {
                         console.error(err.message);
                     }
@@ -61,11 +63,11 @@
                         that.response = resp;
                     }
                 });
-            }, 
-            entityUpdate : function(entity, err) {
+            },
+            entityUpdate: function (entity, err) {
                 var that = this;
                 that.client.index({
-                    refresh : true,
+                    refresh: true,
                     index: that.index,
                     type: that.type,
                     id: entity._id,
@@ -73,16 +75,16 @@
                     body: entity._source
                 }, err);
             },
-              entityDelete : function(id, callback) {
-                  var entityId = id;
+            entityDelete: function (id, callback) {
+                var entityId = id;
                 this.client.delete({
-                    refresh : true,
+                    refresh: true,
                     index: this.index,
                     type: this.type,
                     id: entityId
                 }, callback);
             },
-            entityError : function (err, resp) {
+            entityError: function (err, resp) {
                 if (err) {
                     console.error(err.message);
                 }
