@@ -22,7 +22,7 @@
         </style>
         <user-service id="user_service" response="{{entity}}"></user-service>
 
-        <core-animated-pages selected="{{pageSelected}}" transitions="hero-transition cross-fade"
+        <core-animated-pages selected="{{pageSelected}}"
                              flex auto>
 
             <user-list id="list" name="entityList" data="{{entityList}}"
@@ -41,14 +41,13 @@
         </core-animated-pages>
 
         <paper-toast id="toast_save_ok" class="capsule" text="Entity Save."></paper-toast>
-        <paper-toast id="toast_save_ko" class="capsule toast-error" text="Error ins saving Entity"></paper-toast>
+        <paper-toast id="toast_save_ko" class="capsule toast-error" text="Error in saving Entity"></paper-toast>
 
 
     </template>
     <script>
 
         Polymer('user-admin', {
-
             entityId: undefined,
             entity: undefined,
             entityList : [],
@@ -126,12 +125,18 @@
             },
             onDelete: function (e) {
                 var that = this;
-                var entityToSave = entity.detail;
+                var entityToSave = e.detail;
                 var entityId = entityToSave._id;
+                console.dir(entityToSave);
+                console.log('Delete : '+ entityId);
                 this.$.user_service.entityDelete(entityId, function(err,resp) {
+                    if (err) {
+
+                    }
                     // Select List
                     that.openList();
                 });
+
             }
 
 

@@ -4,7 +4,9 @@
 <link rel="import" href="../components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../components/paper-shadow/paper-shadow.html">
 
-<polymer-element name="user-edit" attributes="id entity">
+<link rel="import" href="../components/paper-toast/paper-toast.html" >
+
+<polymer-element name="user-edit" attributes="entity">
 
 
     <template>
@@ -14,6 +16,9 @@
                 background-color: white;
             }
 
+            .toast-error {
+                background-color: red;
+            }
             .card {
                 display: block;
                 background-color: white;
@@ -21,34 +26,90 @@
 
         </style>
         <div>
-            <paper-icon-button icon="check" on-tap="{{onSave}}" ></paper-icon-button>
-            <paper-icon-button icon="close" on-tap="{{onCLose}}"></paper-icon-button>
+            <paper-icon-button icon="delete" on-tap="{{onDelete}}" ></paper-icon-button>
+            <paper-icon-button icon="check" on-tap="{{onSave}}"></paper-icon-button>
+            <paper-icon-button icon="close" on-tap="{{onClose}}"></paper-icon-button>
         </div>
 
         <div class="card">
+            <form id="entity_form" onsubmit="return false;">
+
             <paper-input floatingLabel label="First name" inputValue="{{entity._source.firstname}}"></paper-input>
             <paper-input floatingLabel label="Last name" inputValue="{{entity._source.lastname}}"></paper-input>
             <paper-input floatingLabel label="Email" type="email" inputValue="{{entity._source.email}}"
+                         on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
+                         id="email_comp"
+                         error="Input is not an email!"></paper-input>
+            <paper-input floatingLabel label="Email" type="email" inputValue="{{entity._source.email2}}"
+                         on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
+                         id="email_comp2"
                          error="Input is not an email!"></paper-input>
             <paper-shadow z="2"></paper-shadow>
+            </form>
         </div>
 
+        <paper-toast id="toast_validate_ko" class="capsule toast-error" text="Error in validate Entity"></paper-toast>
     </template>
     <script>
 
         Polymer('user-edit', {
+            created: function () {
+                this.errors = {};
+            },
             ready: function () {
 
             },
             onSave : function() {
-                this.fire('entity-save', this.entity);
+                if (this.isValid()) {
+                     this.fire('entity-save', this.entity);
+                } else {
+                    this.$.toast_validate_ko.show();
+                }
                 
             },
-            onCLose : function () {
+            onDelete : function () {
+                console.log("Entity Delete");
+                var entityTodel =this.entity;
+                this.fire('entity-delete', entityTodel);
+                console.log("Entity Delete ------------------");
+            },
+            onClose : function () {
                 this.fire('entity-cancel', this.entity);
             },
-            myFunc : function () {
-                
+            inputInvalid : function (e, detail, sender) {
+                console.log("Invalid");
+                console.dir(sender);
+                var errorId = sender.id;
+                this.errors[errorId] = true;
+                console.error("---------------------------");
+                console.dir(this.errors);
+                console.error("---------------------------");
+            },
+            inputValid : function (e, detail, sender) {
+                console.log("Valid");
+                console.dir(sender);
+                var errorId = sender.id;
+                delete this.errors[errorId];
+                console.error("---------------------------");
+                console.dir(this.errors);
+                console.error("---------------------------");
+            },
+            isValid : function () {
+                console.dir(this);
+                Array.prototype.forEach.call(Object.keys(this.$), function (child) {
+                    var name = child.getAttribute('name');
+                    console.log("--  : " +name + child.checkValidity());
+                });
+                console.log("Is valid : " +  Object.keys(this.errors).length );
+                console.log("Is valid checkValidity : " + this.$.email_comp2.checkValidity());
+                console.dir(this.errors);
+                //return true;
+                //return Object.keys(this.errors).length === 0 ;
+                return this.$.email_comp2.checkValidity();
+            },
+            entityChanged: function (oldValue, newValue, args) {
+               // alert("Entity Changed !!!");
+                this.$.email_comp2.inputValueChanged();
             }
 
         });

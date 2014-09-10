@@ -10,7 +10,7 @@
     <script>
 
         Polymer('user-service', {
-            host: 'localhost:9200',
+            host: '10.220.172.130:9200',
             index: 'users',
             type : 'user',
             perPage : 10,
@@ -25,7 +25,7 @@
             ready: function () {
 
                 this.client = new elasticsearch.Client({
-                    host: 'localhost:9200',
+                    host: this.host,
                     log: 'info'
                 });
 
@@ -74,12 +74,12 @@
                 }, err);
             },
               entityDelete : function(id, callback) {
-                var that = this;
-                that.client.delete({
+                  var entityId = id;
+                this.client.delete({
                     refresh : true,
-                    index: that.index,
-                    type: that.type,
-                    id: '1'
+                    index: this.index,
+                    type: this.type,
+                    id: entityId
                 }, callback);
             },
             entityError : function (err, resp) {
