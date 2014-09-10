@@ -12,11 +12,11 @@
 <link rel="import" href="components/paper-button/paper-button.html">
 
 <link rel="import" href="components/paper-shadow/paper-shadow.html">
+<link rel="import" href="components/core-icon/core-icon.html">
 
 <link rel="import" href="admin-menu.html">
- 
 <link rel="import" href="user-admin/user-admin.html">
-
+<link rel="import" href="ttstore-icons.html">
 
 <polymer-element name="admin-app" vertical layout>
     <template>
@@ -46,7 +46,12 @@
                 background-color: #334C80;
             }
 
-            core-drawer-panel[narrow] button {
+
+            #main_menu_button {
+                display: none;
+            }
+
+            core-drawer-panel[narrow] #main_menu_button {
                 display: inline-block
             }
 
@@ -66,6 +71,7 @@
 
                 <core-toolbar>
                     <core-icon-button id="main_menu_button" icon="menu"  on-tap="{{openNavMenu}}"></core-icon-button>
+                    <core-icon icon="ttstore:gunmane"></core-icon>
                     <div>Hello World!</div>
                 </core-toolbar>
 
@@ -77,6 +83,8 @@
                     <section   name="categories"  class="card">Categories
                         <paper-shadow z="2"></paper-shadow>
                     </section>
+                    <section name="groups">Groups</section>
+                    <section name="shops">Shop</section>
 
                 </core-animated-pages>
             </core-header-panel>

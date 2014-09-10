@@ -5,11 +5,13 @@
   "main": "ttstore-admin.html",
   "dependencies": {
     "polymer": "Polymer/polymer#0.4.0",
-      "platform": "Polymer/platform#0.4.0",
+    "platform": "Polymer/platform#0.4.0",
     "paper-elements": "Polymer/paper-elements#0.4.0",
     "core-elements": "Polymer/core-elements#0.4.0",
     "elasticsearch": "~2.4.1",
     "elastic.js": "~1.2.0",
-    "bootstrap": "~3.2.0"
+    "bootstrap": "~3.2.0",
+    "i18next-element": "git@github.com:Polymer/i18next-element.git",
+    "i18next": "~1.7.4"
   }
 }

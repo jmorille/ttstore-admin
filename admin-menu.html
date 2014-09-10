@@ -2,42 +2,53 @@
 
 <link rel="import" href="components/core-menu/core-menu.html">
 <link rel="import" href="components/paper-item/paper-item.html">
+<link rel="import" href="components/core-item/core-item.html">
 
-<polymer-element name="admin-menu" attributes="selected" >
+<link rel="import" href="components/core-icons/social-icons.html">
+<link rel="import" href="ttstore-icons.html">
+
+<polymer-element name="admin-menu" attributes="selected">
     <template>
         <style>
             :host {
                 display: block;
             }
 
+            core-item.core-selected {
+                color: red;
+            }
+
         </style>
 
-        <core-menu  vertical layout>
-            <paper-button disabled="{{selected=='users'}}" label="Users" on-click="{{showUsers}}"></paper-button>
-            <paper-button disabled="{{selected=='categories'}}" label="Categories" on-click="{{showCategories}}"></paper-button>
+
+        <core-menu selected="0" selectedItem="{{selectedItem}}" vertical layout>
+            <core-item id="users" icon="social:person" label="Users"></core-item>
+            <core-item id="groups" icon="social:group" label="Groups"></core-item>
+            <core-item id="categories" icon="social:communities" label="Categories"></core-item>
+            <core-item id="shops" icon="shop" label="Shop"></core-item>
+            <core-item id="life" icon="ttstore:life" label="Life"></core-item>
         </core-menu>
+
 
     </template>
     <script>
 
         Polymer('admin-menu', {
 
-
+            selectedItem: undefined,
             ready: function () {
             },
-
-            showUsers: function() {
-                this.selected = 'users';
+            menu: function (menu) {
+                this.selected = menu;
             },
-
-            showCategories: function() {
-                this.selected = 'categories';
+            selectedItemChanged: function () {
+                var menuId = this.selectedItem.id;
+                this.menu(menuId);
             }
 
         });
 
     </script>
-
 
 
 </polymer-element>
