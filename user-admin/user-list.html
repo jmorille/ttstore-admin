@@ -1,8 +1,8 @@
 <link rel="import" href="../components/polymer/polymer.html">
 
-<link rel="import" href="../components/core-list/core-list.html">
 <link rel="import" href="../components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../components/paper-shadow/paper-shadow.html">
+
 <link rel="import" href="user-service.html">
 <link rel="import" href="user-service-mock.html">
 
@@ -10,32 +10,21 @@
 <polymer-element name="user-list" attributes="data">
 
     <template>
+        <link rel="stylesheet" href="../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
         <style>
             :host {
                 display: block;
             }
 
-            core-list {
-                width: 80%;
-            }
 
-            .item {
-                box-sizing: border-box;
-                border-bottom: 1px solid #ddd;
-                padding: 4px;
-                cursor: default;
-                background-color: white;
-                overflow: hidden;
+            /* Firefox has some awkward fieldset styling involving width that interferes with the responsive table. */
+            @-moz-document url-prefix() {
+                fieldset {
+                    display: table-cell;
+                }
             }
-
-            .selected {
-                background: silver;
-            }
-
 
         </style>
-
-
 
 
         <div>
@@ -46,15 +35,31 @@
                 <paper-shadow z="2"></paper-shadow>
             </div>
 
-            <core-list id="list" data="{{data}}" on-core-activate="{{entityEdit}}">
-                <template>
-                    <div class="item {{ {selected: selected} | tokenList }}">
-                        <span class="from">{{_source.firstname}}</span>
-                        <span class="timestamp">{{_source.lastname}}</span>
-                    </div>
-                </template>
-                <paper-shadow z="2"></paper-shadow>
-            </core-list>
+
+
+            <div class="table-responsive" style="background-color: white">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <template repeat="{{col in columns}}">
+                        <th>{{col}}</th>
+                    </template>
+                    </thead>
+                    <tbody>
+                    <template repeat="{{item in data.hits}}">
+                        <tr >
+                            <template bind="{{item._source as it}}">
+                                <template repeat="{{col in columns}}">
+                                    <td on-click="{{entityEdit}}" entity-id="{{item._id}}">{{it[col]}}</td>
+                                </template>
+                                <td><paper-icon-button icon="delete" on-tap="{{test}}" ></paper-icon-button></td>
+                           </template>
+                        </tr>
+
+                    </template>
+                    </tbody>
+                </table>
+            </div>
+
             <paper-shadow z="2"></paper-shadow>
         </div>
 
@@ -65,26 +70,28 @@
         Polymer('user-list', {
 
             ready: function () {
-
+                this.columns = ['firstname', 'lastname', 'email' ];
             },
             refreshList: function () {
                 this.asyncFire('entity-search');
-
             },
-            entityEdit: function (event) {
-                console.log("--- Click to Edit " );
-                var toEdit = event.detail.data;
-                console.dir(toEdit);
-                console.log("To Edit : " + toEdit._id);
-                this.asyncFire('entity-edit', { _id: toEdit._id });
+            entityEdit: function (event, data, sender) {
+                console.log("--- Click to Edit ");
+                console.dir(data);
+                console.dir(sender);
+                var toEdit = sender.attributes['entity-id'].value;
+                this.asyncFire('entity-edit', { _id: toEdit });
             },
             entityAdd: function () {
-                console.log("--- Click to Add " );
+                console.log("--- Click to Add ");
                 this.asyncFire('entity-add');
 
             },
             entityDelete: function (entityId) {
                 this.asyncFire('entity-delete', { _id: toEdit._id });
+            },
+            test : function (e) {
+                console.log("#######################################");
             }
 
 

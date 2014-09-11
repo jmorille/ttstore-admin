@@ -67,7 +67,7 @@
                 this.$.user_service.searchAll(function (resp) {
                     console.log("Response Search : " + resp);
                     console.dir(resp);
-                    that.entityList=resp.hits.hits;
+                    that.entityList=resp.hits;
                 });
             },
             entityEditListener: function (e) {

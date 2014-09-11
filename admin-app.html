@@ -7,6 +7,7 @@
 <link rel="import" href="components/core-icon-button/core-icon-button.html">
 
 
+
 <link rel="import" href="components/core-animated-pages/core-animated-pages.html">
 <link rel="import" href="components/core-media-query/core-media-query.html">
 <link rel="import" href="components/paper-button/paper-button.html">
@@ -16,7 +17,12 @@
 
 <link rel="import" href="admin-menu.html">
 <link rel="import" href="user-admin/user-admin.html">
-<link rel="import" href="ttstore-icons.html">
+<link rel="import" href="ttstore126-icons.html">
+
+
+<link rel="import" href="components/core-item/core-item.html">
+
+
 
 <polymer-element name="admin-app" vertical layout>
     <template>
@@ -55,6 +61,10 @@
                 display: inline-block
             }
 
+             .big {
+                 height: 60px;
+                 width: 60px;
+             }
 
 
         </style>
@@ -71,7 +81,7 @@
 
                 <core-toolbar>
                     <core-icon-button id="main_menu_button" icon="menu"  on-tap="{{openNavMenu}}"></core-icon-button>
-                    <core-icon icon="ttstore:gunmane"></core-icon>
+                    <core-icon class="big" icon="ttstore126:gun"></core-icon>
                     <div>Hello World!</div>
                 </core-toolbar>
 
