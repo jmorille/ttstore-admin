@@ -10,9 +10,14 @@
     <script>
 
         Polymer('user-service', {
-             host: '192.168.1.100:9200',
+            host: {
+                host: '192.168.1.100',
+                port : 9200,
+                path : '/'
+            },
             index: 'users',
             type: 'user',
+
             perPage: 10,
             pageNum: 1,
             client: null,
@@ -20,8 +25,8 @@
 
             created: function () {
                 this.response = [];
-                if (!this.host) {
-                    this.host = window.location.hostname + ":9200";
+                if (!this.host.host) {
+                    this.host.host = window.location.hostname;
                 }
             },
 

@@ -1,0 +1,18 @@
+{
+  "name": "hello-world",
+  "description": "hello world test app",
+  "version": "0.0.1",
+  "private": true,
+  "main": "proxy.js",
+  "scripts": {
+    "start": "node proxy.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.8.1",
+    "errorhandler": "^1.2.0",
+    "express": "4.x",
+    "method-override": "^2.2.0",
+    "path": "^0.4.9",
+    "require": "^0.5.0"
+  }
+}
