@@ -6,6 +6,9 @@
 <link rel="import" href="user-service.html">
 <link rel="import" href="user-service-mock.html">
 
+<link rel="import" href="../components/page-er/page-er.html">
+
+
 
 <polymer-element name="user-list" attributes="data">
 
@@ -74,11 +77,36 @@
         </div>
 
 
+        <page-er perpage="10" currentpage="3" rangeSize="9" ></page-er>
+
+
+        <!-- Using Custom Elements https://github.com/addyosmani/page-er/blob/master/demos/custom.html -->
+        <page-er perpage="5" currentpage="0" customTemplate>
+            <div class="pagination dark" id="pagination">
+                <ul>
+                    <li><button class="page dark gradient" on-click="{{firstPage}}">First</button></li>
+                    <li class='{{currentpage === 0 ? "disabled" : ""}}'>
+                        <button class="page dark gradient" on-click="{{prevPage}}">{{previous}}</button>
+                    </li>
+                    <template repeat="{{n in currentRange}}">
+                        <li data-item="{{n}}" on-click="{{setPage}}">
+                            <button class="page dark {{n == currentpage ? 'active' : 'gradient '}}">{{n+1}}</button>
+                        </li>
+                    </template>
+                    <li class='{{currentpage === pageCount? "disabled" : ""}}'>
+                        <button class="page dark gradient" on-click="{{nextPage}}">{{next}}</button>
+                    </li>
+                    <li><button class="page dark gradient" on-click="{{lastPage}}">Last</button></li>
+                </ul>
+            </div>
+        </page-er>
+
+
     </template>
     <script>
 
         Polymer('user-list', {
-
+            currentRange : 10 ,
             ready: function () {
                 this.columns = ['firstname', 'lastname', 'email' ];
             },

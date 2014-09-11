@@ -16,6 +16,13 @@ app.use(bodyParser.urlencoded({
 //app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname  ));
 
+
+app.get('/sss', function(req, res){
+    res.redirect('/user/0');
+});
+
+
+
 app.use(errorHandler({
     dumpExceptions: true,
     showStack: true
