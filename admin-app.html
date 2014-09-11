@@ -27,6 +27,7 @@
 <polymer-element name="admin-app" vertical layout>
     <template>
 
+        <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
 
         <style>
             :host {
@@ -36,25 +37,25 @@
                 height: 100%;
             }
 
-            body {
-                font-family: sans-serif;
-                color: #FFF;
-                margin: 0;
-            }
+
 
             [drawer] {
-                background-color: #5265a2;
+                background-color: #3f51b5;
                 border-right: 1px solid #ccc;
             }
 
             [main] {
-                height: 100%;
-                background-color: #334C80;
+                background-color: #c5cae9;
             }
 
 
             #main_menu_button {
                 display: none;
+            }
+
+            core-toolbar {
+                background-color: #303f9f;
+                color: #ffffff;
             }
 
             core-drawer-panel[narrow] #main_menu_button {
