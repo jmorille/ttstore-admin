@@ -33,10 +33,10 @@
         </div>
 
         <div class="card">
-            <form id="entity_form" onsubmit="return false;">
+            <template bind="{{entity._source}}">
 
-                <paper-input floatingLabel label="First name" inputValue="{{entity._source.firstname}}"></paper-input>
-                <paper-input floatingLabel label="Last name" inputValue="{{entity._source.lastname}}"></paper-input>
+                <paper-input floatingLabel label="First name" inputValue="{{firstname}}" ></paper-input>
+                <paper-input floatingLabel label="Last name" inputValue="{{ lastname}}"></paper-input>
                 <paper-input floatingLabel label="Email" type="email" inputValue="{{entity._source.email}}"
                              on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
                              id="email_comp"
@@ -46,7 +46,7 @@
                              id="email_comp2"
                              error="Input is not an email!"></paper-input>
                 <paper-shadow z="2"></paper-shadow>
-            </form>
+            </template>
         </div>
 
         <paper-toast id="toast_validate_ko" class="capsule toast-error" text="Error in validate Entity"></paper-toast>
@@ -60,6 +60,19 @@
             ready: function () {
 
             },
+            observe: {
+                'entity._source.firstname' : 'valListener'
+            },
+            valListener: function(oldValue, newValue, args) {
+                //var newVal = this.getAttribute(attrName);
+                console.log("XXX ----------------------");
+                console.log('old : ', oldValue);
+                console.log('new : ', newValue);
+                console.dir(args[2]);
+                console.log('Path ', args[2][1]);
+                console.log("XXX ----------------------");
+            },
+
             onSave: function () {
                 if (this.isValid()) {
                     this.fire('entity-save', this.entity);
@@ -103,10 +116,6 @@
                     }
                 }
                 return validFields;
-            },
-            entityChanged: function (oldValue, newValue, args) {
-                // alert("Entity Changed !!!");
-                this.$.email_comp2.inputValueChanged();
             }
 
         });

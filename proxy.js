@@ -7,6 +7,7 @@ var express = require("express"),
 
 // https://github.com/senchalabs/connect#middleware
 var compression = require('compression');
+var serveStatic = require('serve-static');
 
 // https://github.com/strongloop/express/tree/master/examples
 
@@ -16,11 +17,15 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.use(compression);
+app.use(compression({
+    threshold: 512
+}))
 
 
-//app.use(express.static(__dirname + '/public'));
-app.use(express.static(__dirname   ));
+app.use(serveStatic(__dirname + '/back', {  'index': ['index.html', 'index.htm']}))
+
+//app.use(express.static(__dirname + '/back'));
+//app.use(express.static(__dirname   ));
 
 
 app.get('/sss', function(req, res){

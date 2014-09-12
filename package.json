@@ -14,7 +14,8 @@
     "express": "4.x",
     "method-override": "^2.2.0",
     "path": "^0.4.9",
-    "require": "^0.5.0"
+    "require": "^0.5.0",
+    "serve-static": "^1.6.1"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

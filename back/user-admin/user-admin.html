@@ -55,6 +55,7 @@
             ready: function () {
                 this.openList();
             },
+
             openList : function () {
                 this.pageSelected = 'entityList';
                 this.entitySearchListener();
@@ -105,7 +106,10 @@
                     if (err) {
                         console.dir(err);
                         console.dir(resp);
-
+                        console.log('status : ', resp.status);
+                        if (resp.status === 409){
+                            console.error('TODO Manage conflict');
+                        }
                         that.$.toast_save_ko.show();
                         that.openList();
                     } else if (resp) {
@@ -120,8 +124,6 @@
                     }
 
                 });
-
-
             },
             onDelete: function (e) {
                 var that = this;

@@ -20,21 +20,26 @@ ENV HTTP_PROXY $http_proxy
 ENV HTTPS_PROXY $http_proxy
 ENV NO_PROXY $no_proxy
 
-# Expose
-# #######################
 
-EXPOSE 9200 9300
-
-VOLUME ["/opt/elasticsearch/logs", "/opt/elasticsearch/data"]
-
-# Start Command
-# #######################
-CMD [ "/opt/elasticsearch/bin/elasticsearch" ]
 
 
 # Install build
 # #######################
 ADD build build
-RUN [ "/build/install.sh" ]
+
+RUN [ "/build/install.sh" , "setup" ]
+#RUN [ "/build/install.sh" , "jdk7" ]
+#RUN [ "/build/install.sh" , "es" ]
 
 
+
+# Expose
+# #######################
+
+EXPOSE 9200 9300
+# VOLUME ["/opt/elasticsearch/logs", "/opt/elasticsearch/data"]
+
+
+# Start Command
+# #######################
+CMD [ "/opt/elasticsearch/bin/elasticsearch" ]

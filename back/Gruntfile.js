@@ -36,6 +36,8 @@ module.exports = function(grunt) {
             default: {
                 options: {
                     inline: true,
+                    csp: true,
+                    strip: true,
                     excludes: {
                         imports: ['polymer.html']
                     }
@@ -56,7 +58,7 @@ module.exports = function(grunt) {
         },
         // Unit tests.
         nodeunit: {
-            tests: ['test/*_test.js'],
+            tests: ['test/*_test.js']
         }
 
     });
@@ -70,6 +72,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-mkdir');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 
     // These plugins provide necessary tasks.
      grunt.loadNpmTasks('grunt-vulcanize');
