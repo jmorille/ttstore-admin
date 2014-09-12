@@ -1,0 +1,15 @@
+{
+  "name": "ttstore-back-app",
+  "version": "0.0.1",
+  "description": "ttstore Back app",
+  "private": true,
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-nodeunit": "^0.4.1",
+    "grunt-mkdir": "^0.1.2",
+    "grunt-vulcanize": "^0.4.1"
+  }
+}

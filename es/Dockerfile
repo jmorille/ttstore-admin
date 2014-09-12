@@ -12,25 +12,29 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Config proxy env
 # #######################
-#ENV http_proxy http://172.30.3.11:3128
-#ENV https_proxy $http_proxy
-#ENV no_proxy *.groupe.generali.fr
+ENV http_proxy http://172.30.3.11:3128
+ENV https_proxy $http_proxy
+ENV no_proxy *.groupe.generali.fr
 
-#ENV HTTP_PROXY $http_proxy
-#ENV HTTPS_PROXY $http_proxy
-#ENV NO_PROXY $no_proxy
+ENV HTTP_PROXY $http_proxy
+ENV HTTPS_PROXY $http_proxy
+ENV NO_PROXY $no_proxy
 
 # Expose
 # #######################
 
 EXPOSE 9200 9300
 
-VOLUME ["/opt/elasticsearch/log", "/opt/elasticsearch/data"]
+VOLUME ["/opt/elasticsearch/logs", "/opt/elasticsearch/data"]
 
-RUN [ "/opt/elasticsearch/bin/elasticsearch" ]
+# Start Command
+# #######################
+CMD [ "/opt/elasticsearch/bin/elasticsearch" ]
 
 
 # Install build
 # #######################
 ADD build build
 RUN [ "/build/install.sh" ]
+
+
