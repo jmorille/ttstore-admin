@@ -1,6 +1,8 @@
 <link rel="import" href="../components/polymer/polymer.html">
 
 <link rel="import" href="../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../components/paper-input/paper-input.html">
+<link rel="import" href="../components/core-input/core-input.html">
 <link rel="import" href="../components/paper-shadow/paper-shadow.html">
 
 <link rel="import" href="user-service.html">
@@ -10,9 +12,9 @@
 
 
 <link rel="import" href="../components/voice-elements/dist/voice-recognition.html">
-<link rel="import" href="../components/voice-elements/dist/voice-player.html">
 
-<polymer-element name="user-list" attributes="data">
+
+<polymer-element name="user-list" attributes="data searchbody"  on-keypress="{{keypressHandler}}" >
 
     <template>
         <link rel="stylesheet" href="../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
@@ -21,7 +23,6 @@
                 display: block;
             }
 
-
             /* Firefox has some awkward fieldset styling involving width that interferes with the responsive table. */
             @-moz-document url-prefix() {
                 fieldset {
@@ -29,23 +30,26 @@
                 }
             }
 
+            section {
+                background-color: white;
+            }
         </style>
-
-        <voice-recognition></voice-recognition>
-        <voice-player accent="fr-FR" text="bonjour Ophélie, Bienvenue sur TTStore" autoplay="true"></voice-player>
 
         <div>
 
 
-            <div>
-
+            <section horizontal layout>
+                <paper-input inputValue="{{searchText}}"
+                             on-input="{{onSearchSuggest}}"
+                             placeHolder="Search Text"></paper-input>
+                <paper-icon-button icon="search" on-tap="{{refreshList}}"></paper-icon-button>
+            </section>
+            <section>
                 <paper-icon-button icon="add" on-tap="{{entityAdd}}"></paper-icon-button>
-
-                <paper-icon-button icon="refresh" on-tap="{{refreshList}}"></paper-icon-button>
                 <paper-shadow z="2"></paper-shadow>
-            </div>
+            </section>
 
-
+            <div>{{data.hits.total}} records for {{searchText}} in {{data.took}} ms</div>
 
             <div class="table-responsive" style="background-color: white">
                 <table class="table table-striped table-bordered table-hover">
@@ -55,14 +59,17 @@
                     </template>
                     </thead>
                     <tbody>
-                    <template repeat="{{item in data.hits}}">
-                        <tr >
+                    <template repeat="{{item in data.hits.hits}}">
+                        <tr>
                             <template bind="{{item._source as it}}">
                                 <template repeat="{{col in columns}}">
                                     <td on-click="{{entityEdit}}" entity-id="{{item._id}}">{{it[col]}}</td>
                                 </template>
-                                <td><paper-icon-button icon="delete" on-tap="{{test}}" ></paper-icon-button></td>
-                           </template>
+                                <td>
+                                    <paper-icon-button icon="delete" entity-id="{{item._id}}"
+                                                       on-tap="{{entityDelete}}"></paper-icon-button>
+                                </td>
+                            </template>
                         </tr>
 
                     </template>
@@ -84,14 +91,16 @@
         </div>
 
 
-        <page-er perpage="10" currentpage="3" rangeSize="9" ></page-er>
+        <page-er perpage="10" currentpage="3" rangeSize="9"></page-er>
 
 
         <!-- Using Custom Elements https://github.com/addyosmani/page-er/blob/master/demos/custom.html -->
         <page-er perpage="5" currentpage="0" customTemplate>
             <div class="pagination dark" id="pagination">
                 <ul>
-                    <li><button class="page dark gradient" on-click="{{firstPage}}">First</button></li>
+                    <li>
+                        <button class="page dark gradient" on-click="{{firstPage}}">First</button>
+                    </li>
                     <li class='{{currentpage === 0 ? "disabled" : ""}}'>
                         <button class="page dark gradient" on-click="{{prevPage}}">{{previous}}</button>
                     </li>
@@ -103,40 +112,68 @@
                     <li class='{{currentpage === pageCount? "disabled" : ""}}'>
                         <button class="page dark gradient" on-click="{{nextPage}}">{{next}}</button>
                     </li>
-                    <li><button class="page dark gradient" on-click="{{lastPage}}">Last</button></li>
+                    <li>
+                        <button class="page dark gradient" on-click="{{lastPage}}">Last</button>
+                    </li>
                 </ul>
             </div>
         </page-er>
 
 
+
     </template>
+    <script src="../components/elastic.js/dist/elastic.js"></script>
+
     <script>
 
         Polymer('user-list', {
-            currentRange : 10 ,
+            currentRange: 10,
+            searchText: undefined,
             ready: function () {
+                this.searchTest = '';
                 this.columns = ['firstname', 'lastname', 'email' ];
+
+            },
+            keypressHandler: function (event, detail, sender) {
+                if (event.which == 13 || event.keyCode == 13) {
+                    this.refreshList();
+                }
+            },
+            onSearchSuggest : function (e, detail, target) {
+                console.log("=================== onSearchSuggest : ", target.inputValue );
+                console.dir(e);
+                console.dir(detail);
+                console.dir(target);
+                console.log("=================== onSearchSuggest");
             },
             refreshList: function () {
-                this.asyncFire('entity-search');
+                this.searchbody = ejs.Request().query(ejs.MatchQuery('firstname', this.searchText));
+                // "searchbody": ejs.Request().query(ejs.MatchQuery('firstname', this.searchText ))
+                this.asyncFire('entity-search', {
+                    "notifmsg" : this.searchText ,
+                    "searchbody": ejs.Request().query(ejs.MatchQuery('firstname', this.searchText))
+                });
+            },
+            getLineEntityId: function (e, data, sender) {
+                var toEdit = sender.attributes['entity-id'].value;
+                return toEdit;
             },
             entityEdit: function (event, data, sender) {
-                console.log("--- Click to Edit ");
-                console.dir(data);
-                console.dir(sender);
-                var toEdit = sender.attributes['entity-id'].value;
+                var toEdit = this.getLineEntityId(event, data, sender);
                 this.asyncFire('entity-edit', { _id: toEdit });
             },
             entityAdd: function () {
-                console.log("--- Click to Add ");
                 this.asyncFire('entity-add');
+            },
+            entityDelete: function (event, data, sender) {
 
+                var toEdit = this.getLineEntityId(event, data, sender);
+                this.asyncFire('entity-delete', { _id: toEdit});
             },
-            entityDelete: function (entityId) {
-                this.asyncFire('entity-delete', { _id: toEdit._id });
-            },
-            test : function (e) {
-                console.log("#######################################");
+            test: function (e, data, sender) {
+                console.dir(e);
+                console.dir(data);
+                console.dir(sender);
             }
 
 

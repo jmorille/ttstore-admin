@@ -1,7 +1,7 @@
 <link rel="import" href="../components/polymer/polymer.html">
 
 
-<polymer-element name="user-service" attributes="host index response">
+<polymer-element name="user-service" attributes="host index response searchbody">
 
 
     <script src="../components/elasticsearch/elasticsearch.js"></script>
@@ -11,14 +11,14 @@
 
         Polymer('user-service', {
             host: {
-                host: '192.168.1.100',
+            //    host: '192.168.1.100',
                 port : 9200,
                 path : '/'
             },
             index: 'users',
             type: 'user',
 
-            perPage: 10,
+            perPage: 20,
             pageNum: 1,
             client: null,
 
@@ -38,7 +38,24 @@
 
             },
 
-            searchAll: function (resp) {
+            searchAll: function (bodyRequest, resp ) {
+                //
+                var searchQuery = ejs.Request().query(ejs.MatchAllQuery());
+                if (bodyRequest) {
+                    searchQuery = bodyRequest;
+                }
+
+                console.log( "Search Query : ",searchQuery.toJSON()  );
+                var that = this;
+                that.client.search({
+                    index: that.index,
+                    type: that.type,
+                    body: searchQuery
+                }).then(resp, function (err) {
+                    console.trace(err.message);
+                });
+            },
+            searchAllDatas: function (resp) {
                 //
                 var that = this;
                 that.client.search({

@@ -1,3 +1,4 @@
+<!-- -->
 <link rel="import" href="../components/polymer/polymer.html">
 
 <link rel="import" href="../components/core-animated-pages/core-animated-pages.html">
@@ -7,6 +8,10 @@
 <link rel="import" href="../user-admin/user-service.html">
 <link rel="import" href="../user-admin/user-list.html">
 <link rel="import" href="../user-admin/user-edit.html">
+
+<link rel="import" href="../components/voice-elements/dist/voice-player.html">
+
+<link rel="import" href="../components/core-input/core-input.html">
 
 
 <polymer-element name="user-admin" attributes="">
@@ -20,7 +25,7 @@
                 background-color: red;
             }
         </style>
-        <user-service id="user_service" response="{{entity}}"></user-service>
+        <user-service id="user_service" response="{{entity}}"  ></user-service>
 
         <core-animated-pages selected="{{pageSelected}}"
                              flex auto>
@@ -28,6 +33,7 @@
             <user-list id="list" name="entityList" data="{{entityList}}"
                        on-entity-search="{{entitySearchListener}}"
                        on-entity-add="{{entityAddListener}}"
+                       on-entity-delete="{{onDelete}}"
                        on-entity-edit="{{entityEditListener}}"></user-list>
 
 
@@ -43,6 +49,10 @@
         <paper-toast id="toast_save_ok" class="capsule" text="Entity Save."></paper-toast>
         <paper-toast id="toast_save_ko" class="capsule toast-error" text="Error in saving Entity"></paper-toast>
 
+        <paper-toast id="toast_delete_undo" class="capsule" text="Delete Entity"></paper-toast>
+
+
+        <voice-player id="search_notif_vocal" text="{{speachText}}" accent="fr-FR" autoplay="true"></voice-player>
 
     </template>
     <script>
@@ -52,6 +62,7 @@
             entity: undefined,
             entityList : [],
             pageSelected: 'entityList',
+            speachText : "",
             ready: function () {
                 this.openList();
             },
@@ -63,17 +74,35 @@
             openEdit : function() {
                 this.pageSelected = 'entityEdit';
             },
-            entitySearchListener : function() {
+            entitySearchListener : function(event, detail, sender) {
                 var that = this;
-                this.$.user_service.searchAll(function (resp) {
-                    console.log("Response Search : " + resp);
+               var query = detail ? detail.searchbody : undefined;
+                console.dir(query);
+                this.$.user_service.searchAll(query,  function (resp) {
+                    console.log("Response Search : " + resp.hits.total );
                     console.dir(resp);
-                    that.entityList=resp.hits;
+                   // console.dir(resp);
+                    that.entityList=resp;
+                    // Notif
+                    var forWhat = "";
+                    if (detail && detail.notifmsg) {
+                        forWhat = " pour " + detail.notifmsg;
+                    }
+                    var toplay = "Il y a  "+ resp.hits.total +" enregistrements trouvés " + forWhat;
+                    that.speachText = toplay;
+
+                   that.$.search_notif_vocal.cancel();
+                    //that.$.search_notif_vocal.speak();
+
                 });
+            },
+            speachTextChanged : function (e) {
+//                this.$.search_notif_vocal.cancel();
+               // this.$.search_notif_vocal.speak();
             },
             entityEditListener: function (e) {
                 var entityId = e.detail._id;
-                console.log("On Entity Edit : ", entityId);
+
                 // Select Edit
                 this.pageSelected = 'entityEdit';
                 this.entityId = entityId;
@@ -87,7 +116,7 @@
                 };
             },
             onCancel: function (entity) {
-                console.log("On Cancel");
+
                 this.entitySearchListener();
                 // Select List
                 this.pageSelected = 'entityList';
@@ -95,18 +124,14 @@
                 this.entity = undefined;
             },
             onSave: function (entity) {
-                console.log("On Save");
+
                 // Entity
                 var that = this;
                 var entityToSave = entity.detail;
-                console.log("to Save : " + entityToSave);
-                console.dir(entityToSave);
                 this.$.user_service.entityUpdate(entityToSave, function(err, resp) {
                     // Display
                     if (err) {
-                        console.dir(err);
-                        console.dir(resp);
-                        console.log('status : ', resp.status);
+
                         if (resp.status === 409){
                             console.error('TODO Manage conflict');
                         }
@@ -129,8 +154,8 @@
                 var that = this;
                 var entityToSave = e.detail;
                 var entityId = entityToSave._id;
-                console.dir(entityToSave);
-                console.log('Delete : '+ entityId);
+
+                that.$.toast_delete_undo.show();
                 this.$.user_service.entityDelete(entityId, function(err,resp) {
                     if (err) {
 

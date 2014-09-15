@@ -53,6 +53,7 @@ function installEsPlugins {
   echo "### Install ElasticSearch Plugins"
   echo "### ########################################################"
   /opt/elasticsearch/bin/plugin -install mobz/elasticsearch-head
+   /opt/elasticsearch/bin/plugin -install lmenezes/elasticsearch-kopf
 
 }
 
