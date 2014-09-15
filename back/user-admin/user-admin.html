@@ -52,7 +52,7 @@
         <paper-toast id="toast_delete_undo" class="capsule" text="Delete Entity"></paper-toast>
 
 
-        <voice-player id="search_notif_vocal" text="{{speachText}}" accent="fr-FR" autoplay="true"></voice-player>
+        <!--<voice-player id="search_notif_vocal" text="{{speachText}}" accent="fr-FR" autoplay="true"></voice-player>-->
 
     </template>
     <script>
@@ -89,9 +89,9 @@
                         forWhat = " pour " + detail.notifmsg;
                     }
                     var toplay = "Il y a  "+ resp.hits.total +" enregistrements trouvés " + forWhat;
-                    that.speachText = toplay;
+                   // that.speachText = toplay;
 
-                   that.$.search_notif_vocal.cancel();
+                   //that.$.search_notif_vocal.cancel();
                     //that.$.search_notif_vocal.speak();
 
                 });
