@@ -75,7 +75,8 @@
                 that.client.get({
                     index: that.index,
                     type: that.type,
-                    id: entityId
+                    id: entityId,
+                    preference : "_primary"
                 }, function (err, resp) {
                     if (err) {
                         console.error(err.message);

@@ -21,6 +21,7 @@ curl -XPUT http://localhost:9200/users -d '
 {
  "mappings" : {
   "_default_" : {
+  "_timestamp" : { "enabled": true, "store" : true },
    "properties" : {
     "firstname" : {"type": "string", "index" : "not_analyzed" },
     "lastname" : {"type": "string", "index" : "not_analyzed" },
