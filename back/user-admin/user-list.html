@@ -6,12 +6,9 @@
 <link rel="import" href="../components/paper-shadow/paper-shadow.html">
 
 <link rel="import" href="user-service.html">
-<link rel="import" href="user-service-mock.html">
 
-<link rel="import" href="../components/page-er/page-er.html">
+<link rel="import" href="../tt-pagination/tt-pagination.html">
 
-
-<link rel="import" href="../components/voice-elements/dist/voice-recognition.html">
 
 
 <polymer-element name="user-list" attributes="data searchbody"  on-keypress="{{keypressHandler}}" >
@@ -37,6 +34,12 @@
 
         <div>
 
+            <tt-pagination from="10" perpage="20" total="84369"></tt-pagination>
+            <!--<tt-pagination from="0" perpage="20" total="19"></tt-pagination>-->
+            <!--<tt-pagination from="0" perpage="20" total="20"></tt-pagination>-->
+            <!--<tt-pagination from="0" perpage="20" total="21"></tt-pagination>-->
+            <!--<tt-pagination from="0" perpage="20" total="29"></tt-pagination>-->
+            <!--<tt-pagination from="0" perpage="10" total="151"></tt-pagination>-->
 
             <section horizontal layout>
                 <paper-input inputValue="{{searchText}}"
@@ -76,48 +79,13 @@
                     </tbody>
                 </table>
 
-                <ul class="pagination">
-                    <li class="disabled"><a href="#">&laquo;</a></li>
-                    <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
+
             </div>
 
             <paper-shadow z="2"></paper-shadow>
         </div>
 
 
-        <page-er perpage="10" currentpage="3" rangeSize="9"></page-er>
-
-
-        <!-- Using Custom Elements https://github.com/addyosmani/page-er/blob/master/demos/custom.html -->
-        <page-er perpage="5" currentpage="0" customTemplate>
-            <div class="pagination dark" id="pagination">
-                <ul>
-                    <li>
-                        <button class="page dark gradient" on-click="{{firstPage}}">First</button>
-                    </li>
-                    <li class='{{currentpage === 0 ? "disabled" : ""}}'>
-                        <button class="page dark gradient" on-click="{{prevPage}}">{{previous}}</button>
-                    </li>
-                    <template repeat="{{n in currentRange}}">
-                        <li data-item="{{n}}" on-click="{{setPage}}">
-                            <button class="page dark {{n == currentpage ? 'active' : 'gradient '}}">{{n+1}}</button>
-                        </li>
-                    </template>
-                    <li class='{{currentpage === pageCount? "disabled" : ""}}'>
-                        <button class="page dark gradient" on-click="{{nextPage}}">{{next}}</button>
-                    </li>
-                    <li>
-                        <button class="page dark gradient" on-click="{{lastPage}}">Last</button>
-                    </li>
-                </ul>
-            </div>
-        </page-er>
 
 
 
@@ -169,11 +137,6 @@
 
                 var toEdit = this.getLineEntityId(event, data, sender);
                 this.asyncFire('entity-delete', { _id: toEdit});
-            },
-            test: function (e, data, sender) {
-                console.dir(e);
-                console.dir(data);
-                console.dir(sender);
             }
 
 

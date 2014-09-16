@@ -1,0 +1,109 @@
+<!-- -->
+<link rel="import" href="../components/polymer/polymer.html">
+
+
+
+<polymer-element name="tt-pagination" attributes="from perpage total">
+
+    <template>
+        <link rel="stylesheet" href="../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
+        <style>
+            :host {
+                display: block;
+            }
+
+        </style>
+        <div>from : {{from}}</div>
+        <div>size : {{perpage}}</div>
+        <div>total : {{total}}</div>
+        <!--<div>currentpage : {{currentpage}}</div>-->
+        <div>pagecount : {{pagecount}}</div>
+        <ul class="pagination">
+            <li on-tap="{{decrementPage}}" class="{{currentpage === 1 ? 'disabled' : '' }}"><a>&laquo;</a></li>
+            <template repeat="{{n in currentRange}}">
+                <li  on-tap="{{selectPage}}" pageid="{{n}}" class="{{currentpage === n ? 'active' : ''}}"><a>{{n}}</a></li>
+            </template>
+            <li><a on-tap="{{incrementPage}}">&raquo;</a></li>
+        </ul>
+
+    </template>
+    <script>
+
+        Polymer('tt-pagination', {
+            currentpage :2,
+            rangeSize: 10,
+         
+            ready: function () {
+                this.perpage = this.perpage || 10;
+                this.from = this.from || 0;
+                this.currentpage = this.currentpage || 1;
+                this.currentRange= [];
+                // compute
+                this.pagecount = this.getPageCount();
+                this.currentRange = this.computePageRange();
+            },
+            incrementPage : function () {
+                this.currentpage = Math.min(this.pagecount,this.currentpage+1);
+            },
+            decrementPage : function () {
+                this.currentpage = Math.max(1,this.currentpage-1);
+            },
+            selectPage : function (e, data, sender) {
+                var pagenum =  sender.getAttribute('pageid');
+                console.log("-------------- selectPage", pagenum);
+                this.currentpage = parseInt(pagenum, 10);
+                console.log("-------------- currentpage", this.currentpage);
+            },
+
+            perpageChanged : function (e, data, sender) {
+                this.pagecount = this.getPageCount();
+            },
+            totalChanged : function (e, data, sender) {
+                console.log("-------------- totalChanged");
+                this.pagecount = this.getPageCount();
+            },
+
+            pagecountChanged: function () {
+                console.log("-------------- pagecountChanged");
+                this.currentRange = this.computePageRange();
+            },
+            rangeSizeChanged: function () {
+                console.log("-------------- rangeSizeChanged");
+                this.currentRange = this.computePageRange();
+            },
+            currentpageChanged: function () {
+                this.currentRange = this.computePageRange();
+            },
+
+            computePageRange: function () {
+                var paginations = [];
+                // Range
+                var rangeMiddle=Math.ceil(this.rangeSize/2)-1;
+                var rangeMin = Math.max(1,  this.currentpage -rangeMiddle);
+                var rangeMax = Math.min(this.pagecount, rangeMin + this.rangeSize-1);
+                // Compute range in case of reach end
+                if (rangeMax-rangeMin<this.rangeSize) {
+                    rangeMin = Math.max(1, rangeMax-this.rangeSize+1);
+                    console.error("Reach end : " , rangeMax-rangeMin, "add" ,rangeMax-this.rangeSize );
+                }
+
+
+                for ( var i = rangeMin; i <= rangeMax; i++ ) {
+                    console.log("It", i);
+                    paginations.push(i);
+                }
+
+                return paginations;
+            },
+
+            getPageCount: function () {
+                return Math.ceil( this.total / this.perpage );
+            }
+
+
+        });
+
+    </script>
+
+
+</polymer-element>
