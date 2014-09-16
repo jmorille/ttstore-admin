@@ -14,23 +14,57 @@ Issue : https://github.com/Polymer/polymer/issues/706
 ## Run Local Server
 python -m SimpleHTTPServer
 
-
+"transform" : {
+     "script": "ctx._source['suggest_name'] = ctx._source['firstname']"
+   },
 
 ## Init Elasticsearch
-curl -XPUT http://localhost:9200/users -d '
+ curl -XDELETE "http://localhost:9200/users?pretty"
+  
+  
+curl -XPUT http://localhost:9200/users?pretty -d '
 {
- "mappings" : {
-  "_default_" : {
-  "_timestamp" : { "enabled": true, "store" : true },
-   "properties" : {
-    "firstname" : {"type": "string", "index" : "not_analyzed" },
-    "lastname" : {"type": "string", "index" : "not_analyzed" },
-    "email" : {"type": "string", "index" : "not_analyzed" } 
-   }
+"settings": {
+    "index": {
+     "number_of_shards" : 3,
+     "number_of_replicas" : 0,
+      "mapping.allow_type_wrapper": true
+    }
+  },
+ "mappings" : { 
+    "user" : {
+        "_timestamp" : { "enabled": true, "store" : true },
+        "_source" : { "enabled" : true },
+        "properties": {
+           "firstname": { "type": "string", "index" : "analyzed", "store" : false },
+           "lastname": { "type": "string", "index" : "analyzed", "store" : false },
+           "email" : {"type": "string", "index" : "not_analyzed" },
+           "suggest": { "type": "completion", "index_analyzer" : "simple", "search_analyzer" : "simple" }
+        },
+        "transform" : {
+            "script" : "ctx._source.suggest = ctx._source.firstname.toLowerCase().capitalize() + \", \" +ctx._source.lastname;", 
+            "lang": "groovy"
+        }
+
+    }
   }
- }
 }
 ';
 
 
-curl -XPUT localhost:9200/_bulk --data-binary @data-users.json
+## Inject Data Users 
+curl -XPUT localhost:9200/_bulk?pretty --data-binary @data-users.json
+
+curl -XPUT localhost:9200/_bulk --data-binary @data-user-vol1.json
+
+curl -XPUT 'http://localhost:9200/users/user/10?pretty' -d '{
+    "firstname" : "gandalf",
+    "lastname" : "Le Gris",
+    "email" : "gandalf@yahoo.com"
+}
+';
+
+curl -XGET "http://localhost:9200/users/user/10?pretty&_source_transform&fields=firstname,suggest,email,lastname"
+
+
+ 

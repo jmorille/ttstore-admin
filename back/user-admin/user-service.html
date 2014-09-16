@@ -37,7 +37,18 @@
                 });
 
             },
-
+            copyProperties: function (src, dest,override) {
+                var copy = dest || {};
+                override= override ||  false;
+                for (var attr in src) {
+                    if (src.hasOwnProperty(attr)) {
+                        if (override || !dest.hasOwnProperty(attr)) {
+                            dest[attr] =  copy[attr];
+                        }
+                    }
+                }
+                return dest;
+            },
             searchAll: function (bodyRequest, resp ) {
                 //
                 var searchQuery = ejs.Request().query(ejs.MatchAllQuery());
@@ -50,7 +61,8 @@
                 that.client.search({
                     index: that.index,
                     type: that.type,
-                    body: searchQuery
+                    body: searchQuery,
+                    "_source" :  ["firstname", "lastname" ]
                 }).then(resp, function (err) {
                     console.trace(err.message);
                 });
