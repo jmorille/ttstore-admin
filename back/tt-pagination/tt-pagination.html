@@ -3,7 +3,7 @@
 
 
 
-<polymer-element name="tt-pagination" attributes="from perpage total">
+<polymer-element name="tt-pagination" attributes="from perpage total rangesize">
 
     <template>
         <link rel="stylesheet" href="../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
@@ -21,26 +21,25 @@
         <ul class="pagination">
             <li on-tap="{{decrementPage}}" class="{{currentpage === 1 ? 'disabled' : '' }}"><a>&laquo;</a></li>
             <template repeat="{{n in currentRange}}">
-                <li  on-tap="{{selectPage}}" pageid="{{n}}" class="{{currentpage === n ? 'active' : ''}}"><a>{{n}}</a></li>
+                <li  on-tap="{{selectPage}}" pageid="{{n}}" class="{{currentpage === n ? 'active' : ''}}">
+                    <a>{{n}}<template if="{{currentpage === n }}"><span class="sr-only">(current)</span></template></a>
+                </li>
             </template>
-            <li><a on-tap="{{incrementPage}}">&raquo;</a></li>
+            <li><a on-tap="{{incrementPage}}" class="{{currentpage === pagecount ? 'disabled' : '' }}">&raquo;</a></li>
         </ul>
 
     </template>
     <script>
 
         Polymer('tt-pagination', {
-            currentpage :2,
-            rangeSize: 10,
+
          
             ready: function () {
                 this.perpage = this.perpage || 10;
                 this.from = this.from || 0;
-                this.currentpage = this.currentpage || 1;
+                this.currentpage = Math.floor(this.from / this.perpage)+1;
+                this. rangesize = this.rangesize || 10;
                 this.currentRange= [];
-                // compute
-                this.pagecount = this.getPageCount();
-                this.currentRange = this.computePageRange();
             },
             incrementPage : function () {
                 this.currentpage = Math.min(this.pagecount,this.currentpage+1);
@@ -50,46 +49,46 @@
             },
             selectPage : function (e, data, sender) {
                 var pagenum =  sender.getAttribute('pageid');
-                console.log("-------------- selectPage", pagenum);
                 this.currentpage = parseInt(pagenum, 10);
-                console.log("-------------- currentpage", this.currentpage);
             },
 
             perpageChanged : function (e, data, sender) {
                 this.pagecount = this.getPageCount();
             },
             totalChanged : function (e, data, sender) {
-                console.log("-------------- totalChanged");
                 this.pagecount = this.getPageCount();
             },
 
             pagecountChanged: function () {
-                console.log("-------------- pagecountChanged");
                 this.currentRange = this.computePageRange();
             },
-            rangeSizeChanged: function () {
-                console.log("-------------- rangeSizeChanged");
+            rangesizeChanged: function () {
                 this.currentRange = this.computePageRange();
             },
             currentpageChanged: function () {
                 this.currentRange = this.computePageRange();
+                console.log("-------------- from", (this.currentpage -1) * this.perpage);
+                this.from = (this.currentpage -1) * this.perpage;
+                // Fire Event
+                this.fire("from-change", { "from": this.from});
             },
 
             computePageRange: function () {
                 var paginations = [];
-                // Range
-                var rangeMiddle=Math.ceil(this.rangeSize/2)-1;
-                var rangeMin = Math.max(1,  this.currentpage -rangeMiddle);
-                var rangeMax = Math.min(this.pagecount, rangeMin + this.rangeSize-1);
-                // Compute range in case of reach end
-                if (rangeMax-rangeMin<this.rangeSize) {
-                    rangeMin = Math.max(1, rangeMax-this.rangeSize+1);
-                    console.error("Reach end : " , rangeMax-rangeMin, "add" ,rangeMax-this.rangeSize );
+                // Check currentpage in range
+                if (this.currentpage>this.pagecount) {
+                    this.currentpage = this.pagecount;
+                    return paginations;
                 }
-
-
+                // Range
+                var rangeMiddle=Math.ceil(this.rangesize/2)-1;
+                var rangeMin = Math.max(1,  this.currentpage -rangeMiddle);
+                var rangeMax = Math.min(this.pagecount, rangeMin + this.rangesize-1);
+                // Compute range in case of reach end
+                if (rangeMax-rangeMin<this.rangesize) {
+                    rangeMin = Math.max(1, rangeMax-this.rangesize+1);
+                }
                 for ( var i = rangeMin; i <= rangeMax; i++ ) {
-                    console.log("It", i);
                     paginations.push(i);
                 }
 

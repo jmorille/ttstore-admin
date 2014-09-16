@@ -75,9 +75,9 @@
             },
             entitySearchListener : function(event, detail, sender) {
                 var that = this;
-               var query = detail ? detail.searchbody : undefined;
-                console.dir(query);
-                this.$.user_service.searchAll(query,  function (resp) {
+               var searchOpts = detail ? detail.options : undefined;
+           //     console.log("search option from fire event:", searchOpts);
+                this.$.user_service.searchAll(searchOpts,  function (resp) {
                     console.log("Response Search : " + resp.hits.total );
                     console.dir(resp);
                    // console.dir(resp);

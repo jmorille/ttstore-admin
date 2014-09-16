@@ -11,15 +11,12 @@
 
         Polymer('user-service', {
             host: {
-            //    host: '192.168.1.100',
+                host: '192.168.1.100',
                 port : 9200,
                 path : '/'
             },
             index: 'users',
             type: 'user',
-
-            perPage: 20,
-            pageNum: 1,
             client: null,
 
 
@@ -42,28 +39,30 @@
                 override= override ||  false;
                 for (var attr in src) {
                     if (src.hasOwnProperty(attr)) {
-                        if (override || !dest.hasOwnProperty(attr)) {
-                            dest[attr] =  copy[attr];
+                         if (override || !dest.hasOwnProperty(attr)) {
+                            dest[attr] =  src[attr];
                         }
                     }
                 }
                 return dest;
             },
-            searchAll: function (bodyRequest, resp ) {
-                //
-                var searchQuery = ejs.Request().query(ejs.MatchAllQuery());
-                if (bodyRequest) {
-                    searchQuery = bodyRequest;
-                }
-
-                console.log( "Search Query : ",searchQuery.toJSON()  );
+            searchAll: function (options, resp ) {
                 var that = this;
-                that.client.search({
-                    index: that.index,
-                    type: that.type,
-                    body: searchQuery,
+                // Default Options
+                var searchOpt = this.copyProperties(options, {
+                    "index": that.index,
+                    "type": that.type,
                     "_source" :  ["firstname", "lastname" ]
-                }).then(resp, function (err) {
+                });
+                // Search Query
+                if (!searchOpt.hasOwnProperty("q") && !searchOpt.hasOwnProperty("body")) {
+                    searchOpt.body =  ejs.Request().query(ejs.MatchAllQuery());
+                }
+              //  console.log("Param options", options);
+               // console.log("Search Opt", searchOpt);
+                //console.log("Search Query",  searchOpt.body.toJSON());
+
+                that.client.search(searchOpt).then(resp, function (err) {
                     console.trace(err.message);
                 });
             },
