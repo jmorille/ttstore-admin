@@ -3,7 +3,7 @@
 
 
 
-<polymer-element name="tt-pagination" attributes="from perpage total rangesize">
+<polymer-element name="tt-pagination" attributes="from size total rangesize">
 
     <template>
         <link rel="stylesheet" href="../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
@@ -14,7 +14,7 @@
 
         </style>
         <div>from : {{from}}</div>
-        <div>size : {{perpage}}</div>
+        <div>size : {{size}}</div>
         <div>total : {{total}}</div>
         <!--<div>currentpage : {{currentpage}}</div>-->
         <div>pagecount : {{pagecount}}</div>
@@ -35,9 +35,9 @@
 
          
             ready: function () {
-                this.perpage = this.perpage || 10;
+                this.size = this.size || 10;
                 this.from = this.from || 0;
-                this.currentpage = Math.floor(this.from / this.perpage)+1;
+                this.currentpage = Math.floor(this.from / this.size)+1;
                 this. rangesize = this.rangesize || 10;
                 this.currentRange= [];
             },
@@ -52,8 +52,10 @@
                 this.currentpage = parseInt(pagenum, 10);
             },
 
-            perpageChanged : function (e, data, sender) {
+            sizeChanged : function (e, data, sender) {
                 this.pagecount = this.getPageCount();
+                // Fire Search Event
+                this.fireSearch();
             },
             totalChanged : function (e, data, sender) {
                 this.pagecount = this.getPageCount();
@@ -67,12 +69,18 @@
             },
             currentpageChanged: function () {
                 this.currentRange = this.computePageRange();
-                console.log("-------------- from", (this.currentpage -1) * this.perpage);
-                this.from = (this.currentpage -1) * this.perpage;
-                // Fire Event
-                this.fire("from-change", { "from": this.from});
+                console.log("-------------- from", (this.currentpage -1) * this.size);
+                this.from = (this.currentpage -1) * this.size;
+                // Fire Search Event
+                this.fireSearch();
             },
+            fireSearch : function () {
+                this.fire("search", {
+                    "from": this.from,
+                    "size" : this.size
+                });
 
+            },
             computePageRange: function () {
                 var paginations = [];
                 // Check currentpage in range
@@ -96,7 +104,7 @@
             },
 
             getPageCount: function () {
-                return Math.ceil( this.total / this.perpage );
+                return Math.ceil( this.total / this.size );
             }
 
 
