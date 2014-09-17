@@ -47,22 +47,26 @@ A Polymer element for paginating model data, rendering a set of pagination contr
             observe: {
                 size : 'validateSize'
             },
+
+            ready: function () {
+                this.size = this.size || 10;
+                this.from = this.from || 0;
+                this.currentpage = this._computeCurrentPage(this.from , this.size);
+                this.range = this.range || 10;
+                this.currentRange = [];
+            },
+
             validateSize : function (oldValue, newValue) {
                 if (oldValue!=newValue ) {
-                    console.log("validate Size : ", { 'oldValue' : oldValue , 'newValue' : newValue });
+                    console.log("validate Size : ", { 'oldValue' : oldValue , 'newValue' : newValue, "current" : this.size });
+                    // The from size need to be re calculate
+                    this.currentpage = this._computeCurrentPage(this.from, newValue) ;
+                    // compute
                     this.lastpage = this._computeLastPage();
                     // Fire Search Event
                     this._firePagingChangeEvent();
                 }
             },
-            ready: function () {
-                this.size = this.size || 10;
-                this.from = this.from || 0;
-                this.currentpage = Math.floor(this.from / this.size) + 1;
-                this.range = this.range || 10;
-                this.currentRange = [];
-            },
-
             selectPage: function (e, data, sender) {
                 var pageid = sender.getAttribute('pageid');
                 console.log("select Page : ", pageid);
@@ -74,18 +78,24 @@ A Polymer element for paginating model data, rendering a set of pagination contr
                     case "previous" :
                         pageid = '-1';
                         break;
+                    case "nextRange" :
+                        pageid = '+' + this.range;
+                        break;
+                    case "previousRange" :
+                        pageid = '-' + this.range;
+                        break;
                     case "first" :
-                        pageid = this.firstpage.toString();
+                        pageid = this.firstpage;
                         break;
                     case "last" :
-                        pageid = this.lastpage.toString();
+                        pageid = this.lastpage;
                         break;
                 }
                 // Do operation
-                if (pageid.startsWith('+')) {
+                if ( (typeof pageid === 'string') && pageid.startsWith('+') ) {
                     var inc = parseInt(pageid.substring(1), 10);
                     this.currentpage = Math.min(this.lastpage, this.currentpage + inc);
-                } else if (pageid.startsWith('-')) {
+                } else if ( (typeof pageid === 'string') && pageid.startsWith('-') ) {
                     var inc = parseInt(pageid.substring(1), 10);
                     this.currentpage = Math.max(this.firstpage, this.currentpage - inc);
                 } else {
@@ -93,7 +103,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
                 }
             },
 
-           
+
             totalChanged: function (e, data, sender) {
                 this.lastpage = this._computeLastPage();
             },
@@ -144,6 +154,12 @@ A Polymer element for paginating model data, rendering a set of pagination contr
 
             _computeLastPage: function () {
                 return Math.ceil(this.total / this.size);
+            },
+            _computeCurrentPage : function (from, size) {
+                from = from || this.from;
+                size = size || this.size;
+                var nextCurrent =   Math.floor(from / size) + 1;
+                return isNaN(nextCurrent) ? 0 : nextCurrent;
             }
 
 
