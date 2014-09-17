@@ -48,8 +48,16 @@
                 this.currentpage = Math.max(1,this.currentpage-1);
             },
             selectPage : function (e, data, sender) {
-                var pagenum =  sender.getAttribute('pageid');
-                this.currentpage = parseInt(pagenum, 10);
+                var pageid =  sender.getAttribute('pageid');
+                if (pageid.startsWith('+')) {
+                    var inc =  parseInt( pageid.substring(1), 10);
+                    this.currentpage = Math.min(this.pagecount,this.currentpage+inc);
+                } else if (pageid.startsWith('-')) {
+                    var inc =  parseInt( pageid.substring(1), 10);
+                    this.currentpage = Math.max(1,this.currentpage-inc);
+                } else {
+                    this.currentpage = parseInt(pageid, 10);
+                }
             },
 
             sizeChanged : function (e, data, sender) {
