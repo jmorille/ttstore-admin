@@ -99,7 +99,7 @@
 
         Polymer('user-list', {
             searchFrom: 0,
-            searchSize: 50,
+            searchSize: 10,
             searchText: undefined,
             rangesize : 10,
             ready: function () {
@@ -131,7 +131,7 @@
                 var searchOpt = {
                     "from": this.searchFrom,
                     "size": this.searchSize,
-                    "sort": [  "lastname:asc", "firstname:asc" ]
+                    "sort": [  "lastname.raw:asc", "firstname.raw:asc" ]
                 };
                 if (this.searchText) {
                     searchOpt.body = ejs.Request().query(ejs.MatchQuery('firstname', this.searchText));

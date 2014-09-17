@@ -30,7 +30,7 @@
             ready: function () {
                 this.client = new elasticsearch.Client({
                     host: this.host,
-                    log: 'info'
+                    log: 'trace'
                 });
 
             },
@@ -52,7 +52,7 @@
                 var searchOpt = this.copyProperties(options, {
                     "index": that.index,
                     "type": that.type,
-                    "_source" :  ["firstname", "lastname" ]
+                    "_source" :  ["firstname", "lastname" ],
                 });
                 // Search Query
                 if (!searchOpt.hasOwnProperty("q") && !searchOpt.hasOwnProperty("body")) {
@@ -66,21 +66,7 @@
                     console.trace(err.message);
                 });
             },
-            searchAllDatas: function (resp) {
-                //
-                var that = this;
-                that.client.search({
-                    index: that.index,
-                    type: that.type,
-                    body: {
-                        query: {
-                            "match_all": {}
-                        }
-                    }
-                }).then(resp, function (err) {
-                    console.trace(err.message);
-                });
-            },
+
             entityGetById: function (entityId) {
                 var that = this;
                 that.client.get({

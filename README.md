@@ -21,6 +21,8 @@ python -m SimpleHTTPServer
 ## Init Elasticsearch
  curl -XDELETE "http://localhost:9200/users?pretty"
   
+
+curl -XPUT http://localhost:9200/users?pretty  --data-binary @es-settings.json
   
 curl -XPUT http://localhost:9200/users?pretty -d '
 {
@@ -36,7 +38,12 @@ curl -XPUT http://localhost:9200/users?pretty -d '
         "_timestamp" : { "enabled": true, "store" : true },
         "_source" : { "enabled" : true },
         "properties": {
-           "firstname": { "type": "string", "index" : "analyzed", "store" : false },
+           "firstname": {
+               type": "multi_field",
+               "fields": {
+                firstname : { "type": "string", "index" : "analyzed", "store" : false },
+                untouched :  { "type": "string", "index" : "not_analyzed"}
+            },
            "lastname": { "type": "string", "index" : "analyzed", "store" : false },
            "email" : {"type": "string", "index" : "not_analyzed" },
            "suggest": { "type": "completion", "index_analyzer" : "simple", "search_analyzer" : "simple" }
