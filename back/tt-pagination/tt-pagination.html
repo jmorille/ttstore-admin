@@ -1,4 +1,7 @@
-<!-- -->
+ <!--
+A Polymer element for paginating model data, rendering a set of pagination controls for navigating through that serer data.
+
+-->
 <link rel="import" href="../components/polymer/polymer.html">
 
 
@@ -53,8 +56,12 @@
                     var inc =  parseInt( pageid.substring(1), 10);
                     this.currentpage = Math.min(this.pagecount,this.currentpage+inc);
                 } else if (pageid.startsWith('-')) {
-                    var inc =  parseInt( pageid.substring(1), 10);
-                    this.currentpage = Math.max(1,this.currentpage-inc);
+                    var inc = parseInt(pageid.substring(1), 10);
+                    this.currentpage = Math.max(1, this.currentpage - inc);
+                } else if (pageid === 'first') {
+                    this.currentpage = 1;
+                } else if (pageid === 'last') {
+                    this.currentpage = this.pagecount;
                 } else {
                     this.currentpage = parseInt(pageid, 10);
                 }
@@ -83,7 +90,7 @@
                 this.fireSearch();
             },
             fireSearch : function () {
-                this.fire("search", {
+                this.fire("change", {
                     "from": this.from,
                     "size" : this.size
                 });

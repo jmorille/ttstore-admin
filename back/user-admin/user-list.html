@@ -39,7 +39,7 @@
             <paper-slider value="{{rangesize}}" max="100" editable></paper-slider>
             <paper-slider value="{{searchSize}}" max="100" editable></paper-slider>
             <tt-pagination from="{{searchFrom}}" size="{{searchSize}}" total="{{data.hits.total}}"
-                           rangesize="{{rangesize}}" on-search="{{searchPagingHandler}}"></tt-pagination>
+                           rangesize="{{rangesize}}" on-change="{{searchPagingHandler}}"></tt-pagination>
             <!--<tt-pagination from="0" perpage="20" total="19"></tt-pagination>-->
             <!--<tt-pagination from="0" perpage="20" total="20"></tt-pagination>-->
             <!--<tt-pagination from="0" perpage="20" total="21"></tt-pagination>-->
