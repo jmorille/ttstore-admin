@@ -11,9 +11,9 @@
 
         Polymer('user-service', {
             host: {
-              //  host: '192.168.1.100',
-                port : 9200,
-                path : '/'
+             //    host: '192.168.1.100',
+             //   port : 9200,
+                path : '/es'
             },
             index: 'users',
             type: 'user',
@@ -24,6 +24,9 @@
                 this.response = [];
                 if (!this.host.host) {
                     this.host.host = window.location.hostname;
+                }
+                if (!this.host.port) {
+                    this.host.port = window.location.port;
                 }
             },
 
