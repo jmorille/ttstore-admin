@@ -39,7 +39,7 @@
             <paper-slider value="{{rangesize}}" max="100" editable></paper-slider>
             <paper-slider value="{{searchSize}}" max="100" editable></paper-slider>
             <tt-pagination from="{{searchFrom}}" size="{{searchSize}}" total="{{data.hits.total}}"
-                           rangesize="{{rangesize}}" on-change="{{searchPagingHandler}}"></tt-pagination>
+                           range="{{rangesize}}" on-change="{{changePagingHandler}}"></tt-pagination>
             <!--<tt-pagination from="0" perpage="20" total="19"></tt-pagination>-->
             <!--<tt-pagination from="0" perpage="20" total="20"></tt-pagination>-->
             <!--<tt-pagination from="0" perpage="20" total="21"></tt-pagination>-->
@@ -113,8 +113,13 @@
                     this.refreshList();
                 }
             },
-            searchPagingHandler : function (e, detail, sender) {
+            changePagingHandler : function (e, detail, sender) {
               console.log("Search Needed", detail);
+                var searchOpt = this.searchOption();
+                this.asyncFire('entity-search', {
+                    "notifmsg": this.searchText,
+                    "options": searchOpt
+                });
             },
             onSearchSuggest: function (e, detail, target) {
                 console.log("=================== onSearchSuggest : ", target.inputValue);
@@ -134,12 +139,6 @@
                 }
 
                 return searchOpt;
-            },
-            searchFromChanged: function () {
-                this.asyncFire('entity-search', {
-                    "notifmsg": this.searchText,
-                    "options": this.searchOption()
-                });
             },
             refreshList: function () {
                 var that = this;
@@ -163,7 +162,6 @@
                 this.asyncFire('entity-add');
             },
             entityDelete: function (event, data, sender) {
-
                 var toEdit = this.getLineEntityId(event, data, sender);
                 this.asyncFire('entity-delete', { _id: toEdit});
             }
