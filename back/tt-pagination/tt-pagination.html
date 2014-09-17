@@ -2,8 +2,11 @@
 A Polymer element for paginating model data, rendering a set of pagination controls for navigating through that serer data.
 
 -->
+
+
 <link rel="import" href="../components/polymer/polymer.html">
 
+<!--<link rel="import" href="../components/paper-slider/paper-slider.html">-->
 
 <polymer-element name="tt-pagination" attributes="from size total range">
 
@@ -15,11 +18,29 @@ A Polymer element for paginating model data, rendering a set of pagination contr
             }
 
         </style>
-        <div>from : {{from}}</div>
-        <div>size : {{size}}</div>
-        <div>total : {{total}}</div>
-        <div>currentpage : {{currentpage}} ==> {{ currentpage >= lastpage}}</div>
-        <div>lastpage : {{lastpage}}</div>
+        <!-- Dev Template -->
+        <!--<template if="{{false}}">-->
+            <!--<style>-->
+                <!--paper-slider {-->
+                    <!--width: 100%;-->
+                <!--} -->
+            <!--</style>-->
+            <!--<div center horizontal layout>-->
+                <!--<div>Range</div>-->
+                <!--<paper-slider value="{{range}}" max="100" editable></paper-slider>-->
+            <!--</div>-->
+            <!--<div center horizontal layout>-->
+                <!--<div>Size</div>-->
+                <!--<paper-slider value="{{size}}" max="100" editable></paper-slider>-->
+            <!--</div>-->
+
+            <!--<div>from : {{from}}</div>-->
+            <!--<div>size : {{size}}</div>-->
+            <!--<div>total : {{total}}</div>-->
+            <!--<div>currentpage : {{currentpage}} ==> {{ currentpage >= lastpage}}</div>-->
+            <!--<div>lastpage : {{lastpage}}</div>-->
+        <!--</template>-->
+
         <ul class="pagination">
             <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
                 on-tap="{{selectPage}}" pageid="first"><a>First</a>
@@ -65,7 +86,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
 
             validateSize: function (oldValue, newValue) {
                 if (oldValue != newValue) {
-                    console.log("validate Size : ", { 'oldValue': oldValue, 'newValue': newValue, "current": this.size });
+                //    console.log("validate Size : ", { 'oldValue': oldValue, 'newValue': newValue, "current": this.size });
                     // The from size need to be re calculate
                     this.currentpage = this._computeCurrentPage(this.from, newValue);
                     // compute
@@ -76,7 +97,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
             },
             selectPage: function (e, data, sender) {
                 var pageid = sender.getAttribute('pageid');
-                console.log("select Page : ", pageid);
+              //  console.log("select Page : ", pageid);
                 // verb control
                 switch (pageid) {
                     case "next" :
@@ -125,7 +146,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
 
             currentpageChanged: function () {
                 this.currentRange = this._computePageRange();
-                console.log("-------------- from", (this.currentpage - 1) * this.size);
+             //   console.log("-------------- from", (this.currentpage - 1) * this.size);
                 this.from = (this.currentpage - 1) * this.size;
                 // Fire Search Event
                 this._firePagingChangeEvent();

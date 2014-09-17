@@ -3,7 +3,7 @@
 <link rel="import" href="../components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../components/paper-input/paper-input.html">
 <link rel="import" href="../components/core-input/core-input.html">
-<link rel="import" href="../components/paper-slider/paper-slider.html">
+
 <link rel="import" href="../components/paper-shadow/paper-shadow.html">
 
 
@@ -36,8 +36,7 @@
 
 
         <div>
-            <paper-slider value="{{rangesize}}" max="100" editable></paper-slider>
-            <paper-slider value="{{searchSize}}" max="100" editable></paper-slider>
+
             <tt-pagination from="{{searchFrom}}" size="{{searchSize}}" total="{{data.hits.total}}"
                            range="{{rangesize}}" on-change="{{changePagingHandler}}"></tt-pagination>
             <!--<tt-pagination from="0" perpage="20" total="19"></tt-pagination>-->
