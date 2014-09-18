@@ -57,15 +57,15 @@ app.route('/es/*')
 
         // Construct Redirect
         var redirectPath = request.url.slice(3);
-        console.log('****** redirect path', redirectPath);
+        //console.log('****** redirect path', redirectPath);
 
-        var options = url.parse("http://192.168.1.100:9200" + redirectPath);
-        // var options = url.parse( "http://localhost:9200"+redirectPath);
+        //var options = url.parse("http://192.168.1.100:9200" + redirectPath);
+        var options = url.parse( "http://localhost:9200"+redirectPath);
         // console.dir(options);
         options.headers = request.headers;
         options.method = request.method;
         options.agent = false;
-        console.dir(request);
+        //console.dir(request);
         // Init connector
         var connector = http.request(options, function (res) {
             response.writeHead(res.statusCode, res.headers);

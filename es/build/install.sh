@@ -52,8 +52,10 @@ function configProxy {
 function installEsPlugins {
   echo "### Install ElasticSearch Plugins"
   echo "### ########################################################"
+  echo "### Install ElasticSearch Plugins : head"
   /opt/elasticsearch/bin/plugin -install mobz/elasticsearch-head
-   /opt/elasticsearch/bin/plugin -install lmenezes/elasticsearch-kopf
+  echo "### Install ElasticSearch Plugins : kopf"
+  /opt/elasticsearch/bin/plugin -install lmenezes/elasticsearch-kopf
 
 }
 
@@ -61,12 +63,11 @@ function configEs {
   echo "### Config Elasticsearch"
   echo "### ########################################################"
   #sed -i'' 's/#path.data: \/path\/to\/data/path.data: \/data\/es-ttstore/' $ES_HOME/config/elasticsearch.yml
-  printEs
+  #printEs
 }
 
 function printEs {
  grep -v '^#' /opt/elasticsearch/config/elasticsearch.yml | grep ":"
- exit 0
 }
 
 

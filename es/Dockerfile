@@ -37,7 +37,7 @@ RUN [ "/build/install.sh" , "setup" ]
 # #######################
 
 EXPOSE 9200 9300
-# VOLUME ["/opt/elasticsearch/logs", "/opt/elasticsearch/data"]
+VOLUME ["/opt/elasticsearch/logs", "/opt/elasticsearch/data"]
 
 
 # Start Command

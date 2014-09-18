@@ -19,11 +19,15 @@ python -m SimpleHTTPServer
    },
 
 ## Init Elasticsearch
- curl -XDELETE "http://localhost:9200/users?pretty"
-  
+curl -XDELETE "http://localhost:9200/users?pretty"
 
 curl -XPUT http://localhost:9200/users?pretty  --data-binary @es-settings.json
-   
+
+## Init Elasticsearch / By Proxy
+curl -XDELETE "http://localhost:8000/es/users?pretty"
+curl -XPUT http://localhost:8000/es/users?pretty  --data-binary @es-settings.json
+
+
 
 ## Inject Data Users 
 curl -XPUT localhost:9200/_bulk?pretty --data-binary @data-users.json
