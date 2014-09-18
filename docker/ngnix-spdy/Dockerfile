@@ -23,7 +23,7 @@ ENV NO_PROXY $no_proxy
 
 # Install  NGINX
 # #######################
-ENV NGINX_VERSION 1.7.3
+ENV NGINX_VERSION 1.7.5
 
 
 # Install dependencies
@@ -51,7 +51,8 @@ RUN rm -Rf /tmp/nginx-${NGINX_VERSION}
 
 # Configure nginx
 # #######################
-COPY nginx.conf /etc/nginx/conf/nginx.conf
+COPY build/nginx.conf /etc/nginx/conf/nginx.conf
+COPY /build/sites-enabled /etc/nginx/sites-enabled
 
 # Install build
 # #######################
@@ -64,7 +65,7 @@ COPY nginx.conf /etc/nginx/conf/nginx.conf
 # #######################
 
 EXPOSE 80 443
-VOLUME ["/etc/nginx/sites-enabled" ]
+#VOLUME ["/etc/nginx/sites-enabled" ]
 
 
 # Start Command

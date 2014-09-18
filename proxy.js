@@ -16,10 +16,10 @@ var http = require('http');
 // https://github.com/strongloop/express/tree/master/examples
 
 app.use(methodOverride());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
+app.use(bodyParser.json({
+    limit: '50mb'
 }));
+
 
 app.use(compression({
     threshold: 512
@@ -47,32 +47,46 @@ app.route('/components/*')
 //});
 
 
-app.use(serveStatic(__dirname + '/back', {  'index': ['index.html', 'index.htm']}))
-
 app.route('/es/*')
     .all(function (request, response, next) {
         // https://gist.github.com/cmawhorter/a527a2350d5982559bb6
         console.log('******', new Date(Date.now()).toUTCString(), "-", request.method, "-", request.url);
+        console.log("request content-type",request.headers['content-type']);
         // request.pause(); // Pause the request
-
         // Construct Redirect
         var redirectPath = request.url.slice(3);
         //console.log('****** redirect path', redirectPath);
 
-        //var options = url.parse("http://192.168.1.100:9200" + redirectPath);
-        var options = url.parse( "http://localhost:9200"+redirectPath);
-        // console.dir(options);
+        var options = url.parse("http://192.168.1.100:9200" + redirectPath);
+        //var options = url.parse("http://localhost:9200" + redirectPath);
+
         options.headers = request.headers;
         options.method = request.method;
         options.agent = false;
-        //console.dir(request);
+
+
         // Init connector
         var connector = http.request(options, function (res) {
             response.writeHead(res.statusCode, res.headers);
-            res.pipe(response, {end: true });//tell 'response' end=true
+            res.pipe(response, {end: true }).on('error', function(e){
+                    console.error("Error in pipe redirect", e);
+            });//tell 'response' end=true
             console.log('    *', new Date(Date.now()).toUTCString(), "-", "statusCode", res.statusCode);
         });
+        connector.on('error', function (e) {
+            console.error("Error in request redirect", e);
+        });
         request.pipe(connector, {end: true});
+
+
+
+//        request.on('data', function (chunk) {
+//            console.log("Received body data:");
+//            console.log(chunk);
+ //           connector.write(chunk);
+ //       });
+
+
         // request.resume();// Resume the request
     });
 
@@ -80,11 +94,17 @@ app.route('/es/*')
 //app.use(express.static(__dirname + '/back'));
 //app.use(express.static(__dirname   ));
 
+// logon : https://github.com/strongloop/express/blob/master/examples/auth/app.js
 
 app.use(errorHandler({
     dumpExceptions: true,
     showStack: true
 }));
+
+
+app.use(serveStatic(__dirname + '/back', {  'index': ['index.html', 'index.htm']}))
+
+
 
 app.listen(port);
 console.log("Simple static server listening at http://localhost:" + port);
