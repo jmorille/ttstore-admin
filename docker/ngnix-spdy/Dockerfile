@@ -1,4 +1,4 @@
-#jmorille/ngnix
+#jmorille/ngnix-spdy
 
 FROM ubuntu:14.04
 
