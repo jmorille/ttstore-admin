@@ -23,41 +23,7 @@ python -m SimpleHTTPServer
   
 
 curl -XPUT http://localhost:9200/users?pretty  --data-binary @es-settings.json
-  
-curl -XPUT http://localhost:9200/users?pretty -d '
-{
-"settings": {
-    "index": {
-     "number_of_shards" : 3,
-     "number_of_replicas" : 0,
-      "mapping.allow_type_wrapper": true
-    }
-  },
- "mappings" : { 
-    "user" : {
-        "_timestamp" : { "enabled": true, "store" : true },
-        "_source" : { "enabled" : true },
-        "properties": {
-           "firstname": {
-               type": "multi_field",
-               "fields": {
-                firstname : { "type": "string", "index" : "analyzed", "store" : false },
-                untouched :  { "type": "string", "index" : "not_analyzed"}
-            },
-           "lastname": { "type": "string", "index" : "analyzed", "store" : false },
-           "email" : {"type": "string", "index" : "not_analyzed" },
-           "suggest": { "type": "completion", "index_analyzer" : "simple", "search_analyzer" : "simple" }
-        },
-        "transform" : {
-            "script" : "ctx._source.suggest = ctx._source.firstname.toLowerCase().capitalize() + \", \" +ctx._source.lastname;", 
-            "lang": "groovy"
-        }
-
-    }
-  }
-}
-';
-
+   
 
 ## Inject Data Users 
 curl -XPUT localhost:9200/_bulk?pretty --data-binary @data-users.json

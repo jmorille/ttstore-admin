@@ -6,206 +6,207 @@ A Polymer element for paginating model data, rendering a set of pagination contr
 
 <link rel="import" href="../components/polymer/polymer.html">
 
-<link rel="import" href="../components/paper-slider/paper-slider.html">
+<!--<link rel="import" href="../components/paper-slider/paper-slider.html">-->
 
 
 <polymer-element name="tt-pagination" attributes="from size total range">
 
-<template>
-    <link rel="stylesheet" href="../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
-    <style>
-        :host {
-            display: block;
-        }
-
-    </style>
-    <!-- Dev Template -->
-    <template if="{{true}}">
+    <template>
+        <link rel="stylesheet" href="../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
         <style>
-            paper-slider {
-                width: 100%;
+            :host {
+                display: block;
             }
         </style>
-        <div center horizontal layout>
-            <div>Range</div>
-            <paper-slider value="{{range}}" min="-1" max="50" editable></paper-slider>
-        </div>
-        <div center horizontal layout>
-            <div>Size</div>
-            <paper-slider value="{{size}}" max="100" editable></paper-slider>
-        </div>
 
-        <div>from : {{from}}</div>
-        <div>size : {{size}}</div>
-        <div>total : {{total}}</div>
-        <div>currentpage : {{currentpage}}</div>
-        <div>lastpage : {{lastpage}}</div>
-    </template>
-    <div id="pagination" > coucou</div>
-    <ul class="pagination">
-        <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
-            on-tap="{{selectPage}}" pageid="first"><a>First</a>
-        </li>
-        <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
-            on-tap="{{selectPage}}" pageid="previous">
-            <a>&laquo;</a></li>
-        <template repeat="{{n in currentRange}}">
-            <li class="{{currentpage === n ? 'active' : ''}}"
-                on-tap="{{selectPage}}" pageid="{{n}}">
-                <a>{{n}}
-                    <template if="{{currentpage === n }}"><span class="sr-only">(*)</span></template>
-                </a>
+        <!-- Dev Template -->
+        <!--<template if="{{true}}">-->
+            <!--<style>-->
+                <!--paper-slider {-->
+                    <!--width: 100%;-->
+                <!--}-->
+            <!--</style>-->
+            <!--<div center horizontal layout>-->
+                <!--<div>Range</div>-->
+                <!--<paper-slider value="{{range}}" min="-1" max="50" editable></paper-slider>-->
+            <!--</div>-->
+            <!--<div center horizontal layout>-->
+                <!--<div>Size</div>-->
+                <!--<paper-slider value="{{size}}" max="100" editable></paper-slider>-->
+            <!--</div>-->
+
+            <!--<div>from : {{from}}</div>-->
+            <!--<div>size : {{size}}</div>-->
+            <!--<div>total : {{total}}</div>-->
+            <!--<div>currentpage : {{currentpage}}</div>-->
+            <!--<div>lastpage : {{lastpage}}</div>-->
+        <!--</template>-->
+
+        <ul class="pagination">
+            <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
+                on-tap="{{selectPage}}" pageid="first">
+                <a>First</a>
             </li>
-        </template>
-        <li class="{{ currentpage >= lastpage ? 'disabled' : '' }}"
-            on-tap="{{selectPage}}" pageid="next">
-            <a>&raquo;</a>
-        </li>
-        <li class="{{ currentpage >= lastpage ? 'disabled' : '' }}"
-            on-tap="{{selectPage}}" pageid="last">
-            <a>Last</a>
-        </li>
-    </ul>
+            <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
+                on-tap="{{selectPage}}" pageid="previous">
+                <a>&laquo;</a>
+            </li>
+            <template repeat="{{n in currentRange}}">
+                <li class="{{currentpage === n ? 'active' : ''}}"
+                    on-tap="{{selectPage}}" pageid="{{n}}">
+                    <a>{{n}}
+                        <template if="{{currentpage === n }}"><span class="sr-only">(*)</span></template>
+                    </a>
+                </li>
+            </template>
+            <li class="{{ currentpage >= lastpage ? 'disabled' : '' }}"
+                on-tap="{{selectPage}}" pageid="next">
+                <a>&raquo;</a>
+            </li>
+            <li class="{{ currentpage >= lastpage ? 'disabled' : '' }}"
+                on-tap="{{selectPage}}" pageid="last">
+                <a>Last</a>
+            </li>
+        </ul>
 
 
-</template>
-<script>
+    </template>
+    <script>
 
-    Polymer('tt-pagination', {
+        Polymer('tt-pagination', {
 
-        firstpage: 1,
-        observe: {
-            size: 'validateSize'
-        },
+            firstpage: 1,
+            observe: {
+                size: 'validateSize'
+            },
 
-        ready: function () {
-            this.size = this.size || 10;
-            this.from = this.from || 0;
-            this.currentpage = this._computeCurrentPage(this.from, this.size);
-            this.range = this.range || 10;
-            this.currentRange = [];
-        },
+            ready: function () {
+                this.size = this.size || 10;
+                this.from = this.from || 0;
+                this.currentpage = this._computeCurrentPage(this.from, this.size);
+                this.range = this.range || 10;
+                this.currentRange = [];
+            },
 
-        validateSize: function (oldValue, newValue) {
-            if (oldValue != newValue) {
-                //    console.log("validate Size : ", { 'oldValue': oldValue, 'newValue': newValue, "current": this.size });
-                // The from size need to be re calculate
-                this.currentpage = this._computeCurrentPage(this.from, newValue);
-                // compute
+            validateSize: function (oldValue, newValue) {
+                if (oldValue != newValue) {
+                    //    console.log("validate Size : ", { 'oldValue': oldValue, 'newValue': newValue, "current": this.size });
+                    // The from size need to be re calculate
+                    this.currentpage = this._computeCurrentPage(this.from, newValue);
+                    // compute
+                    this.lastpage = this._computeLastPage();
+                    // Fire Search Event
+                    this._firePagingChangeEvent();
+                }
+            },
+            selectPage: function (e, data, sender) {
+                var pageid = sender.getAttribute('pageid');
+                  console.log("select Page : ", pageid);
+                // verb control
+                switch (pageid) {
+                    case "next" :
+                        pageid = '+1';
+                        break;
+                    case "previous" :
+                        pageid = '-1';
+                        break;
+                    case "nextRange" :
+                        pageid = '+' + this.range;
+                        break;
+                    case "previousRange" :
+                        pageid = '-' + this.range;
+                        break;
+                    case "first" :
+                        pageid = this.firstpage;
+                        break;
+                    case "last" :
+                        pageid = this.lastpage;
+                        break;
+                }
+                // Do operation
+                if ((typeof pageid === 'string') && (pageid.indexOf('+') === 0)) {
+                    var inc = parseInt(pageid.slice(1), 10);
+                    this.currentpage = Math.min(this.lastpage, this.currentpage + inc);
+                } else if ((typeof pageid === 'string') && (pageid.indexOf('-') === 0)) {
+                    var inc = parseInt(pageid.slice(1), 10);
+                    this.currentpage = Math.max(this.firstpage, this.currentpage - inc);
+                } else {
+                    this.currentpage = Math.min(Math.max(parseInt(pageid, 10), this.firstpage), this.lastpage);
+                }
+            },
+
+
+            totalChanged: function (e, data, sender) {
                 this.lastpage = this._computeLastPage();
+            },
+
+            lastpageChanged: function () {
+                this.currentRange = this._computePageRange();
+            },
+            rangeChanged: function () {
+                this.currentRange = this._computePageRange();
+            },
+            currentpageChanged: function () {
+                this.currentRange = this._computePageRange();
+                this.from =  (this.currentpage - 1) * this.size;
                 // Fire Search Event
                 this._firePagingChangeEvent();
-            }
-        },
-        selectPage: function (e, data, sender) {
-            var pageid = sender.getAttribute('pageid');
-            //  console.log("select Page : ", pageid);
-            // verb control
-            switch (pageid) {
-                case "next" :
-                    pageid = '+1';
-                    break;
-                case "previous" :
-                    pageid = '-1';
-                    break;
-                case "nextRange" :
-                    pageid = '+' + this.range;
-                    break;
-                case "previousRange" :
-                    pageid = '-' + this.range;
-                    break;
-                case "first" :
-                    pageid = this.firstpage;
-                    break;
-                case "last" :
-                    pageid = this.lastpage;
-                    break;
-            }
-            // Do operation
-            if ((typeof pageid === 'string') && pageid.startsWith('+')) {
-                var inc = parseInt(pageid.substring(1), 10);
-                this.currentpage = Math.min(this.lastpage, this.currentpage + inc);
-            } else if ((typeof pageid === 'string') && pageid.startsWith('-')) {
-                var inc = parseInt(pageid.substring(1), 10);
-                this.currentpage = Math.max(this.firstpage, this.currentpage - inc);
-            } else {
-                this.currentpage = Math.min(Math.max(parseInt(pageid, 10), this.firstpage), this.lastpage);
-            }
-        },
+            },
 
+            _firePagingChangeEvent: function () {
+                this.fire("change", {
+                    "from": this.from,
+                    "size": this.size
+                });
 
-        totalChanged: function (e, data, sender) {
-            this.lastpage = this._computeLastPage();
-        },
+            },
+            _computePageRange: function () {
+                var paginations = [];
+                // Check currentpage in range
+                if (this.currentpage > this.lastpage) {
+                    this.currentpage = Math.max(this.firstpage,  this.lastpage);
+                    return paginations;
+                }
+                // Rangeoo
+                if (this.range === -1) {
+                    // Display all pages
+                    var rangeMin = this.firstpage;
+                    var rangeMax = this.lastpage;
+                } else {
+                    // Display a range of pages
+                    var rangeMiddle = Math.ceil(this.range / 2) - 1;
+                    var rangeMin = Math.max(1, this.currentpage - rangeMiddle);
+                    var rangeMax = Math.min(this.lastpage, rangeMin + this.range - 1);
+                }
+                // Compute range in case of reach end
+                if (rangeMax - rangeMin < this.range) {
+                    rangeMin = Math.max(1, rangeMax - this.range + 1);
+                }
+                for (var i = rangeMin; i <= rangeMax; i++) {
+                    paginations.push(i);
+                }
 
-        lastpageChanged: function () {
-            this.currentRange = this._computePageRange();
-        },
-        rangeChanged: function () {
-            this.currentRange = this._computePageRange();
-        },
-
-        currentpageChanged: function () {
-            this.currentRange = this._computePageRange();
-            //   console.log("-------------- from", (this.currentpage - 1) * this.size);
-            this.from = (this.currentpage - 1) * this.size;
-            // Fire Search Event
-            this._firePagingChangeEvent();
-        },
-
-        _firePagingChangeEvent: function () {
-            this.fire("change", {
-                "from": this.from,
-                "size": this.size
-            });
-
-        },
-        _computePageRange: function () {
-            var paginations = [];
-            // Check currentpage in range
-            if (this.currentpage > this.lastpage) {
-                this.currentpage = this.lastpage;
                 return paginations;
-            }
-            // Rangeoo
-            if (this.range === -1) {
-                // Display all pages
-                var rangeMin = this.firstpage;
-                var rangeMax = this.lastpage;
-            } else {
-                // Display a range of pages
-                var rangeMiddle = Math.ceil(this.range / 2) - 1;
-                var rangeMin = Math.max(1, this.currentpage - rangeMiddle);
-                var rangeMax = Math.min(this.lastpage, rangeMin + this.range - 1);
-            }
-            // Compute range in case of reach end
-            if (rangeMax - rangeMin < this.range) {
-                rangeMin = Math.max(1, rangeMax - this.range + 1);
-            }
-            for (var i = rangeMin; i <= rangeMax; i++) {
-                paginations.push(i);
+            },
+
+            _computeLastPage: function () {
+                // return Math.ceil(this.total / this.size);
+                return this.size > 0 ? Math.ceil(this.total / this.size) : 0;
+            },
+            _computeCurrentPage: function (from, size) {
+                from = from || this.from;
+                size = size || this.size;
+                var nextCurrent = size > 0 ? Math.max(1, Math.floor(from / size) + 1) : 1;
+              //  console.log("compute current page :", nextCurrent);
+                return nextCurrent;
             }
 
-            return paginations;
-        },
-
-        _computeLastPage: function () {
-            // return Math.ceil(this.total / this.size);
-            return this.size > 0 ? Math.ceil(this.total / this.size) : 0;
-        },
-        _computeCurrentPage: function (from, size) {
-            from = from || this.from;
-            size = size || this.size;
-            var nextCurrent = size > 0 ? Math.max(1, Math.floor(from / size) + 1) : 1;
-            return nextCurrent;
-        }
 
 
 
+        });
 
-    });
-
-</script>
+    </script>
 
 
 </polymer-element>
