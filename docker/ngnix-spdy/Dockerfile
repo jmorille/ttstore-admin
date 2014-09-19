@@ -38,9 +38,23 @@ RUN apt-get install -yqq build-essential zlib1g-dev libpcre3 libpcre3-dev openss
 # In build --add-module=/tmp/ngx_pagespeed-1.8.31.3-beta
 
 # Download and build nginx
+# Modules :  http://wiki.nginx.org/Modules
 RUN cd /tmp && wget -q -O - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf -
 RUN cd /tmp/nginx-${NGINX_VERSION} \
-	&& ./configure --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx --with-http_ssl_module --with-http_spdy_module \
+	&& ./configure --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx \
+	  --http-client-body-temp-path=/var/lib/nginx/body_temp \
+      --http-proxy-temp-path=/var/lib/nginx/proxy_temp \
+      --http-fastcgi-temp-path=/var/lib/nginx/fastcgi_temp  \
+      --http-scgi-temp-path=/var/lib/nginx/scgi_temp  \
+      --http-uwsgi-temp-path=/var/lib/nginx/uwsgi_temp \
+      --user=www-data \
+      --group=www-data \
+      --with-http_ssl_module \
+      --with-http_stub_status_module \
+      --with-http_realip_module \
+      --with-http_spdy_module \
+      --with-http_gzip_static_module \
+      --with-pcre   \
 	&& make install
 
 # Cleanup
@@ -65,10 +79,10 @@ COPY /build/sites-enabled /etc/nginx/sites-enabled
 # #######################
 
 EXPOSE 80 443
-#VOLUME ["/etc/nginx/sites-enabled" ]
+VOLUME ["/data/wwww", "/etc/nginx/logs", "/var/lib/nginx/" ]
 
 
 # Start Command
 # #######################
-WORKDIR /etc/nginx/
+# WORKDIR /etc/nginx/
 CMD ["/usr/sbin/nginx"]
