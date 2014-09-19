@@ -39,6 +39,7 @@ RUN apt-get install -yqq build-essential zlib1g-dev libpcre3 libpcre3-dev openss
 
 # Download and build nginx
 # Modules :  http://wiki.nginx.org/Modules
+RUN mkdir -p /data && mkdir -p /var/lib
 RUN cd /tmp && wget -q -O - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf -
 RUN cd /tmp/nginx-${NGINX_VERSION} \
 	&& ./configure --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx \
@@ -79,7 +80,7 @@ COPY /build/sites-enabled /etc/nginx/sites-enabled
 # #######################
 
 EXPOSE 80 443
-VOLUME ["/data/wwww", "/etc/nginx/logs", "/var/lib/nginx/" ]
+VOLUME ["/data/wwww", "/etc/nginx/logs", "/var/lib/nginx" ]
 
 
 # Start Command
