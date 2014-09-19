@@ -1,13 +1,16 @@
 es:
   image: jmorille/elasticsearch
-  ports:
-    - "9200:9200"
-    - "9300:9300"
+  expose:
+   - "9200"
   volumes:
-    - /data2/ttstore/logs:/opt/elasticsearch-1.3.2/logs
-    - /data2/ttstore/data:/opt/elasticsearch-1.3.2/data
+   - /data2/ttstore/logs:/opt/elasticsearch-1.3.2/logs
+   - /data2/ttstore/data:/opt/elasticsearch-1.3.2/data
 web:
   image: jmorille/ngnix-spdy
- ports:
-    - "80:80"
-    - "443:443"
+  ports:
+   - "443:443"
+  volumes:
+   - /home/a000cqp/project/ttstore-admin/back:/data/wwww
+   - /data2/ttsore-ngnix/logs:/etc/nginx/logs
+  links:
+   - "es:es"

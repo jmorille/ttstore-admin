@@ -1,6 +1,6 @@
 upstream lb-es {
       ip_hash;
-      server gf219896.groupe.generali.fr:9200 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-1
+      server es:9200 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-1
    #   server 192.168.1.101:9200 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-2
 }
 
