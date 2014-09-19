@@ -13,11 +13,15 @@ var serveStatic = require('serve-static');
 var url = require('url');
 var http = require('http');
 
+
+var oneDay = 86400000;
+var favicon = require('serve-favicon');
+
 // https://github.com/strongloop/express/tree/master/examples
 
 app.use(methodOverride());
 app.use(bodyParser.json({
-    limit: '50mb'
+    limit: '1mb'
 }));
 
 
@@ -26,7 +30,7 @@ app.use(compression({
 }));
 
 
-var oneDay = 86400000;
+
 
 app.route('/components/*')
     .get(function (req, res, next) {
@@ -37,21 +41,15 @@ app.route('/components/*')
         next();
     });
 
-//app.use(function (req, res, next) {
-//     console.log(new Date(Date.now()).toUTCString(), req.method, req.url);
-//    if(req.url.indexOf("/components/") === 0) {
-//       res.setHeader("Cache-Control", "public, max-age="+oneDay); // 1 days
-//       res.setHeader("Expires", new Date(Date.now() + oneDay*1000).toUTCString());
-//    }
-//    next();
-//});
 
 
 app.route('/es/*')
     .all(function (request, response, next) {
+        var start = new Date();
+
         // https://gist.github.com/cmawhorter/a527a2350d5982559bb6
         console.log('******', new Date(Date.now()).toUTCString(), "-", request.method, "-", request.url);
-        console.log("request content-type",request.headers['content-type']);
+        console.log("request content-type", request.headers['content-type']);
         // request.pause(); // Pause the request
         // Construct Redirect
         var redirectPath = request.url.slice(3);
@@ -62,29 +60,30 @@ app.route('/es/*')
 
         options.headers = request.headers;
         options.method = request.method;
-        options.agent = false;
+        // options.agent = new http.Agent();
+        // options.agent.maxSockets = 1000000;
 
 
-        // Init connector
-        var connector = http.request(options, function (res) {
+        // Init connector : http://stackoverflow.com/questions/6209042/node-js-http-request-slows-down-under-load-testing-am-i-doing-something-wrong
+        var esConnector = http.request(options, function (res) {
             response.writeHead(res.statusCode, res.headers);
-            res.pipe(response, {end: true }).on('error', function(e){
+            res.pipe(response, {end: true })
+                .on('error', function (e) {
                     console.error("Error in pipe redirect", e);
-            });//tell 'response' end=true
+                });//tell 'response' end=true
             console.log('    *', new Date(Date.now()).toUTCString(), "-", "statusCode", res.statusCode);
         });
-        connector.on('error', function (e) {
+        esConnector.on('error', function (e) {
             console.error("Error in request redirect", e);
         });
-        request.pipe(connector, {end: true});
-
+        request.pipe(esConnector, {end: true});
 
 
 //        request.on('data', function (chunk) {
 //            console.log("Received body data:");
 //            console.log(chunk);
- //           connector.write(chunk);
- //       });
+        //           connector.write(chunk);
+        //       });
 
 
         // request.resume();// Resume the request
@@ -102,8 +101,9 @@ app.use(errorHandler({
 }));
 
 
-app.use(serveStatic(__dirname + '/back', {  'index': ['index.html', 'index.htm']}))
+app.use(favicon(__dirname + '/back/favicon.ico'));
 
+app.use(serveStatic(__dirname + '/back', {  'index': ['index.html', 'index.htm']}))
 
 
 app.listen(port);

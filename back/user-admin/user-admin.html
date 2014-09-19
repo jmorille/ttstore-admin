@@ -2,8 +2,8 @@
 <link rel="import" href="../components/polymer/polymer.html">
 
 <link rel="import" href="../components/core-animated-pages/core-animated-pages.html">
-<link rel="import" href="../components/paper-button/paper-button.html" >
-<link rel="import" href="../components/paper-toast/paper-toast.html" >
+<link rel="import" href="../components/paper-button/paper-button.html">
+<link rel="import" href="../components/paper-toast/paper-toast.html">
 
 <link rel="import" href="../user-admin/user-service.html">
 <link rel="import" href="../user-admin/user-list.html">
@@ -20,11 +20,12 @@
             :host {
                 display: block;
             }
+
             .toast-error {
                 background-color: red;
             }
         </style>
-        <user-service id="user_service" response="{{entity}}"  ></user-service>
+        <user-service id="user_service" response="{{entity}}"></user-service>
 
         <core-animated-pages selected="{{pageSelected}}"
                              flex auto>
@@ -40,8 +41,7 @@
                        on-entity-save="{{onSave}}"
                        on-entity-delete="{{onDelete}}"
                        on-entity-cancel="{{onCancel}}">
-
-                       </user-edit>
+            </user-edit>
 
         </core-animated-pages>
 
@@ -59,45 +59,45 @@
         Polymer('user-admin', {
             entityId: undefined,
             entity: undefined,
-            entityList : [],
+            entityList: [],
             pageSelected: 'entityList',
-            speachText : "",
+            speachText: "",
             ready: function () {
                 this.openList();
             },
 
-            openList : function () {
+            openList: function () {
                 this.pageSelected = 'entityList';
                 this.entitySearchListener();
             },
-            openEdit : function() {
+            openEdit: function () {
                 this.pageSelected = 'entityEdit';
             },
-            entitySearchListener : function(event, detail, sender) {
+            entitySearchListener: function (event, detail, sender) {
                 var that = this;
-               var searchOpts = detail ? detail.options : undefined;
-           //     console.log("search option from fire event:", searchOpts);
-                this.$.user_service.searchAll(searchOpts,  function (resp) {
-                    console.log("Response Search : " + resp.hits.total );
+                var searchOpts = detail ? detail.options : undefined;
+                //     console.log("search option from fire event:", searchOpts);
+                this.$.user_service.searchAll(searchOpts, function (resp) {
+                    console.log("Response Search : " + resp.hits.total);
                     console.dir(resp);
-                   // console.dir(resp);
-                    that.entityList=resp;
+                    // console.dir(resp);
+                    that.entityList = resp;
                     // Notif
                     var forWhat = "";
                     if (detail && detail.notifmsg) {
                         forWhat = " pour " + detail.notifmsg;
                     }
-                    var toplay = "Il y a  "+ resp.hits.total +" enregistrements trouvés " + forWhat;
-                   // that.speachText = toplay;
+                    var toplay = "Il y a  " + resp.hits.total + " enregistrements trouvés " + forWhat;
+                    // that.speachText = toplay;
 
-                   //that.$.search_notif_vocal.cancel();
+                    //that.$.search_notif_vocal.cancel();
                     //that.$.search_notif_vocal.speak();
 
                 });
             },
-            speachTextChanged : function (e) {
+            speachTextChanged: function (e) {
 //                this.$.search_notif_vocal.cancel();
-               // this.$.search_notif_vocal.speak();
+                // this.$.search_notif_vocal.speak();
             },
             entityEditListener: function (e) {
                 var entityId = e.detail._id;
@@ -108,10 +108,10 @@
                 this.$.user_service.entityGetById(entityId);
 
             },
-            entityAddListener : function(e) {
+            entityAddListener: function (e) {
                 this.pageSelected = 'entityEdit';
                 this.entity = {
-                   _source : {}
+                    _source: {}
                 };
             },
             onCancel: function (entity) {
@@ -127,11 +127,11 @@
                 // Entity
                 var that = this;
                 var entityToSave = entity.detail;
-                this.$.user_service.entityUpdate(entityToSave, function(err, resp) {
+                this.$.user_service.entityUpdate(entityToSave, function (err, resp) {
                     // Display
                     if (err) {
 
-                        if (resp.status === 409){
+                        if (resp.status === 409) {
                             console.error('TODO Manage conflict');
                         }
                         that.$.toast_save_ko.show();
@@ -155,7 +155,7 @@
                 var entityId = entityToSave._id;
 
                 that.$.toast_delete_undo.show();
-                this.$.user_service.entityDelete(entityId, function(err,resp) {
+                this.$.user_service.entityDelete(entityId, function (err, resp) {
                     if (err) {
 
                     }

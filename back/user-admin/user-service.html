@@ -11,12 +11,12 @@
 
         Polymer('user-service', {
             host: {
-                protocol: 'https',
-             //     host: '192.168.1.100',
-             //   port : 9200,
-              //  port : 443,
-              //   path : '/'
-                 path : '/es'
+                //  protocol: 'https',
+                //  host: '192.168.1.100',
+                //  port : 9200,
+                //  port : 443,
+                //  path : '/'
+                path: '/es'
             },
             index: 'users',
             type: 'user',
@@ -29,21 +29,32 @@
                     this.host.host = window.location.hostname;
                 }
                 if (!this.host.port) {
+                    if (window.location.port) {
+                        this.host.port = window.location.port;
+                    } else {
+                        switch (window.location.protocol) {
+                            case 'https:' :
+                                this.host.port = 443;
+                                break;
+                            case 'http:' :
+                                this.host.port = 80;
+                                break;
+                        }
+                    }
+                }
+                if (!this.host.protocol) {
                     switch (window.location.protocol) {
                         case 'https:' :
-                            this.host.port = 443;
+                            this.host.protocol = 'https';
                             break;
                         case 'http:' :
-                            this.host.port = 80;
+                            this.host.protocol = 'http';
                             break;
-                        default :
-                            this.host.port = window.location.port;
                     }
-               }
-
-                console.log("protocol : ",  window.location.protocol);
-                console.log("host.host : ", this.host.host);
-                console.log("host.port : ", this.host.port);
+                }
+                console.log("host.protocol : ",  this.host.protocol );
+                console.log("host.host     : ", this.host.host);
+                console.log("host.port     : ", this.host.port);
             },
 
             ready: function () {
@@ -53,32 +64,32 @@
                 });
 
             },
-            copyProperties: function (src, dest,override) {
+            copyProperties: function (src, dest, override) {
                 var copy = dest || {};
-                override= override ||  false;
+                override = override || false;
                 for (var attr in src) {
                     if (src.hasOwnProperty(attr)) {
-                         if (override || !dest.hasOwnProperty(attr)) {
-                            dest[attr] =  src[attr];
+                        if (override || !dest.hasOwnProperty(attr)) {
+                            dest[attr] = src[attr];
                         }
                     }
                 }
                 return dest;
             },
-            searchAll: function (options, resp ) {
+            searchAll: function (options, resp) {
                 var that = this;
                 // Default Options
                 var searchOpt = this.copyProperties(options, {
                     "index": that.index,
                     "type": that.type,
-                    "_source" :  ["firstname", "lastname" ],
+                    "_source": ["firstname", "lastname" ],
                 });
                 // Search Query
                 if (!searchOpt.hasOwnProperty("q") && !searchOpt.hasOwnProperty("body")) {
-                    searchOpt.body =  ejs.Request().query(ejs.MatchAllQuery());
+                    searchOpt.body = ejs.Request().query(ejs.MatchAllQuery());
                 }
-              //  console.log("Param options", options);
-               // console.log("Search Opt", searchOpt);
+                //  console.log("Param options", options);
+                // console.log("Search Opt", searchOpt);
                 //console.log("Search Query",  searchOpt.body.toJSON());
 
                 that.client.search(searchOpt).then(resp, function (err) {
@@ -92,7 +103,7 @@
                     index: that.index,
                     type: that.type,
                     id: entityId,
-                    preference : "_primary"
+                    preference: "_primary"
                 }, function (err, resp) {
                     if (err) {
                         console.error(err.message);
