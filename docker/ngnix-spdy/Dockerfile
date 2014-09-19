@@ -69,6 +69,11 @@ RUN rm -Rf /tmp/nginx-${NGINX_VERSION}
 COPY build/nginx.conf /etc/nginx/conf/nginx.conf
 COPY /build/sites-enabled /etc/nginx/sites-enabled
 
+
+# TLS Certificat
+# #######################
+ADD build/ssl /etc/nginx/ssl
+
 # Install build
 # #######################
 # ADD build build
@@ -80,7 +85,7 @@ COPY /build/sites-enabled /etc/nginx/sites-enabled
 # #######################
 
 EXPOSE 80 443
-VOLUME ["/data/wwww", "/etc/nginx/logs", "/var/lib/nginx" ]
+VOLUME ["/data/wwww", "/etc/nginx/logs", "/var/lib/nginx", "/etc/nginx/ssl" ]
 
 
 # Start Command

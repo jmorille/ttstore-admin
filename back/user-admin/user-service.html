@@ -11,10 +11,12 @@
 
         Polymer('user-service', {
             host: {
+                protocol: 'https',
              //     host: '192.168.1.100',
-                port : 9200,
-                 path : '/'
-             //     path : '/es'
+             //   port : 9200,
+              //  port : 443,
+              //   path : '/'
+                 path : '/es'
             },
             index: 'users',
             type: 'user',
@@ -27,8 +29,21 @@
                     this.host.host = window.location.hostname;
                 }
                 if (!this.host.port) {
-                    this.host.port = window.location.port;
-                }
+                    switch (window.location.protocol) {
+                        case 'https:' :
+                            this.host.port = 443;
+                            break;
+                        case 'http:' :
+                            this.host.port = 80;
+                            break;
+                        default :
+                            this.host.port = window.location.port;
+                    }
+               }
+
+                console.log("protocol : ",  window.location.protocol);
+                console.log("host.host : ", this.host.host);
+                console.log("host.port : ", this.host.port);
             },
 
             ready: function () {

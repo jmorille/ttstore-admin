@@ -1,3 +1,5 @@
+== Generate Self Signed Certificate
+./build/install.sh tlscertif password
 
 == Build Images
 docker build --rm -t jmorille/ngnix-spdy .
