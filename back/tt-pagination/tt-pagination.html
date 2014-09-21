@@ -79,18 +79,22 @@ A Polymer element for paginating model data, rendering a set of pagination contr
             observe: {
                 size: 'validateSize'
             },
-
-            ready: function () {
+              currentpage : 2,
+            created : function () {
+                this.currentRange = [];
+                // init
                 this.size = this.size || 10;
                 this.from = this.from || 0;
                 this.currentpage = this._computeCurrentPage(this.from, this.size);
                 this.range = this.range || 10;
-                this.currentRange = [];
+
+            },
+            ready: function () {
             },
 
             validateSize: function (oldValue, newValue) {
                 if (oldValue != newValue) {
-                    //    console.log("validate Size : ", { 'oldValue': oldValue, 'newValue': newValue, "current": this.size });
+                    console.log("Change Size : ", { 'oldValue': oldValue, 'newValue': newValue, "current": this.size });
                     // The from size need to be re calculate
                     this.currentpage = this._computeCurrentPage(this.from, newValue);
                     // compute
@@ -147,6 +151,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
                 this.currentRange = this._computePageRange();
             },
             currentpageChanged: function () {
+                console.log("Change current page", this.currentpage);
                 this.currentRange = this._computePageRange();
                 this.from =  (this.currentpage - 1) * this.size;
                 // Fire Search Event

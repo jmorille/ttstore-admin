@@ -39,12 +39,6 @@
 
             <tt-pagination from="{{searchFrom}}" size="{{searchSize}}" total="{{data.hits.total}}"
                            range="{{rangesize}}" on-change="{{changePagingHandler}}"></tt-pagination>
-            <!--<tt-pagination from="0" perpage="20" total="19"></tt-pagination>-->
-            <!--<tt-pagination from="0" perpage="20" total="20"></tt-pagination>-->
-            <!--<tt-pagination from="0" perpage="20" total="21"></tt-pagination>-->
-            <!--<tt-pagination from="0" perpage="20" total="29"></tt-pagination>-->
-            <!--<tt-pagination from="0" perpage="10" total="151"></tt-pagination>-->
-
 
             <section horizontal layout>
                 <paper-input inputValue="{{searchText}}"
@@ -118,10 +112,12 @@
             searchSize: 10,
             searchText: undefined,
             rangesize: 10,
-            ready: function () {
-             //   this.searchTest = '';
+            created : function () {
+                //   this.searchTest = '';
                 this.entityColumns = ['firstname', 'lastname', 'email' ];
-
+            },
+            ready: function () {
+                this.refreshList();
             },
             keypressHandler: function (event, detail, sender) {
                 if (event.which == 13 || event.keyCode == 13) {
