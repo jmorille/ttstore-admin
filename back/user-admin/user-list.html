@@ -37,9 +37,6 @@
 
         <div>
 
-            <tt-pagination from="{{searchFrom}}" size="{{searchSize}}" total="{{data.hits.total}}"
-                           range="{{rangesize}}" on-change="{{changePagingHandler}}"></tt-pagination>
-
             <section horizontal layout>
                 <paper-input inputValue="{{searchText}}"
                              on-input="{{onSearchSuggest}}"
@@ -54,27 +51,6 @@
 
             <div>{{data.hits.total}} records found in {{data.took}} ms</div>
 
-            <!--<div class="table-responsive" style="background-color: white">-->
-                <!--<table class="table table-striped table-bordered table-hover">-->
-                    <!--<thead>-->
-                    <!--<th>firstname</th>-->
-                    <!--<th>lastname</th>-->
-                    <!--<th>email</th>-->
-                    <!--<th>Action</th>-->
-                    <!--</thead>-->
-                    <!--<tbody>-->
-                    <!--<tr template repeat="{{item in data.hits.hits}}">-->
-                        <!--<td on-click="{{entityEdit}}"  entity-id="{{item._id}}" >  {{item._source['firstname']}}</td>-->
-                        <!--<td on-click="{{entityEdit}}"  entity-id="{{item._id}}" >  {{item._source['lastname']}}</td>-->
-                        <!--<td on-click="{{entityEdit}}"  entity-id="{{item._id}}" >  {{item._source['email']}}</td>-->
-                        <!--<td>-->
-                            <!--<paper-icon-button icon="delete" entity-id="{{item._id}}"-->
-                                               <!--on-tap="{{entityDelete}}"></paper-icon-button>-->
-                        <!--</td>-->
-                    <!--</tr>-->
-                    <!--</tbody>-->
-                <!--</table>-->
-            <!--</div>-->
 
 
             <div class="table-responsive"  style="background-color: white" >
@@ -97,6 +73,9 @@
                     </tbody>
                 </table>
             </div>
+
+            <tt-pagination from="{{searchFrom}}" size="{{searchSize}}" total="{{data.hits.total}}"
+                           range="{{rangesize}}" on-change="{{changePagingHandler}}"></tt-pagination>
 
             <paper-shadow z="2"></paper-shadow>
         </div>

@@ -6,9 +6,15 @@ upstream lb-es {
 
 server {
     listen 80;
+    return 301 https://$host$request_uri;
+}
+
+
+server {
+    # listen 80;
     listen 443 default_server ssl spdy;
 
-    # ssl on;
+    ssl on;
     ssl_certificate /etc/nginx/ssl/server.crt;
     ssl_certificate_key /etc/nginx/ssl/server.key;
 
@@ -46,5 +52,14 @@ server {
          stub_status;
      }
 
+     location /head {
+        proxy_pass http://lb-es/_plugin/head; # Load balance the URL location "/" to the upstream lb-subprint
+        proxy_http_version 1.1;
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+     }
 
 }

@@ -1,5 +1,7 @@
 es:
   image: jmorille/elasticsearch
+  ports:
+   - "9200:9200"
   expose:
    - "9200"
   volumes:
@@ -9,6 +11,7 @@ web:
   image: jmorille/ngnix-spdy
   ports:
    - "443:443"
+   - "80:80"
   volumes:
    - /home/a000cqp/project/ttstore-admin/back:/data/wwww
    - /data2/ttsore-ngnix/logs:/etc/nginx/logs

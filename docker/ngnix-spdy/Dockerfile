@@ -55,6 +55,7 @@ RUN cd /tmp/nginx-${NGINX_VERSION} \
       --with-http_realip_module \
       --with-http_spdy_module \
       --with-http_gzip_static_module \
+      --with-ipv6 \
       --with-pcre   \
 	&& make install
 
@@ -63,16 +64,16 @@ RUN cd /tmp/nginx-${NGINX_VERSION} \
 RUN rm -Rf /tmp/nginx-${NGINX_VERSION}
 
 
+# TLS Certificat
+# #######################
+ADD build/ssl /etc/nginx/ssl
+
 
 # Configure nginx
 # #######################
 COPY build/nginx.conf /etc/nginx/conf/nginx.conf
 COPY /build/sites-enabled /etc/nginx/sites-enabled
 
-
-# TLS Certificat
-# #######################
-ADD build/ssl /etc/nginx/ssl
 
 # Install build
 # #######################
