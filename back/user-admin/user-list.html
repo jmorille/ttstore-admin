@@ -4,6 +4,8 @@
 <link rel="import" href="../components/paper-input/paper-input.html">
 <link rel="import" href="../components/core-input/core-input.html">
 
+<link rel="import" href="../components/core-icon/core-icon.html">
+
 <link rel="import" href="../components/paper-shadow/paper-shadow.html">
 
 
@@ -52,11 +54,17 @@
             <div>{{data.hits.total}} records found in {{data.took}} ms</div>
 
 
-
-            <div class="table-responsive"  style="background-color: white" >
+            <div class="table-responsive" style="background-color: white">
                 <table class="table table-striped table-bordered table-hover">
                     <thead>
-                    <th template repeat="{{col in entityColumns}}">{{col}}</th>
+                    <th template repeat="{{col in entityColumns}}">
+                        <div horizontal layout>{{col}}
+                            <div vertical layout>
+                                <core-icon icon="arrow-drop-up"></core-icon>
+                                <core-icon icon="arrow-drop-down"></core-icon>
+                            </div>
+                        </div>
+                    </th>
                     <th>Action</th>
                     </thead>
                     <tbody>
@@ -91,7 +99,7 @@
             searchSize: 10,
             searchText: undefined,
             rangesize: 10,
-            created : function () {
+            created: function () {
                 //   this.searchTest = '';
                 this.entityColumns = ['firstname', 'lastname', 'email' ];
             },
