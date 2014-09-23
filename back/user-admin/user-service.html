@@ -70,12 +70,12 @@
                 override = override || false;
                 for (var attr in src) {
                     if (src.hasOwnProperty(attr)) {
-                        if (override || !dest.hasOwnProperty(attr)) {
-                            dest[attr] = src[attr];
+                        if (override || !copy.hasOwnProperty(attr)) {
+                            copy[attr] = src[attr];
                         }
                     }
                 }
-                return dest;
+                return copy;
             },
             searchAll: function (options, resp) {
                 var that = this;

@@ -42,7 +42,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
             <!--<div>lastpage : {{lastpage}}</div>-->
         <!--</template>-->
 
-        <ul class="pagination">
+        <ul class="pagination pagination-lg">
             <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
                 on-tap="{{selectPage}}" pageid="first">
                 <a>First</a>
@@ -102,6 +102,9 @@ A Polymer element for paginating model data, rendering a set of pagination contr
                     // Fire Search Event
                     this._firePagingChangeEvent();
                 }
+            },
+            fromChanged : function () {
+                this.currentpage = this._computeCurrentPage(this.from, this.size);
             },
             selectPage: function (e, data, sender) {
                 var pageid = sender.getAttribute('pageid');

@@ -2,7 +2,7 @@
 <link rel="import" href="../components/polymer/polymer.html">
 
 
-<polymer-element name="tt-sortcolumn">
+<polymer-element name="tt-sortcolumn" attributes="column">
 
     <template>
         <style>
@@ -22,27 +22,19 @@
             .arrow-down {
                 border-top: 6px solid black;
             }
-            .up i:before{
-                content: '[a-z]';
-            }
 
-            .down i:before{
-                content: '[z-a]';
 
-            }
 
-            #sortIndicator {
-
-            }
 
         </style>
         <div horizontal layout>
-            <div on-tap="{{handleClickColumn}}">
+            <div on-tap="{{sort}}"
+                 aria-sort="{{ (asc === undefined) ? 'none' : ( asc ? 'ascending' : 'descending' ) }}"
+                 aria-label="Title: {{asc ? 'activate to sort column descending' : 'activate to sort column ascending' }}"
+                    >
                 <content></content>
             </div>
             <span class="{{ (asc === undefined) ? '' : ( asc ? 'arrow-up' : 'arrow-down' ) }}"></span>
-
-            <!--<span class="{{ (asc === undefined) ? '' : ( asc ? 'up' : 'down' ) }}"><i></i></span>-->
         </div>
     </template>
 
@@ -54,7 +46,7 @@
             created: function () {
             },
 
-            handleClickColumn: function () {
+            sort: function () {
                 this.asc = !this.asc;
             },
             unsort: function () {
@@ -62,8 +54,11 @@
             },
             ascChanged: function () {
                 var sortOrder = (this.asc === undefined) ? null : ( this.asc ? 'asc' : 'desc' );
-                console.log("column order", sortOrder);
-                this.fire('change', {  sortOrder: sortOrder });
+               // console.log("column order", this.column, ":", sortOrder);
+                this.fire('change', {
+                    'order': sortOrder,
+                    'column': this.column
+                });
             }
 
 

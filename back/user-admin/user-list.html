@@ -5,7 +5,6 @@
 <link rel="import" href="../components/core-input/core-input.html">
 
 
-
 <link rel="import" href="../components/paper-shadow/paper-shadow.html">
 
 
@@ -43,7 +42,7 @@
                 <paper-input inputValue="{{searchText}}"
                              on-input="{{onSearchSuggest}}"
                              placeHolder="Search Text"></paper-input>
-                <paper-icon-button icon="search" on-tap="{{refreshList}}"></paper-icon-button>
+                <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
             </section>
 
             <section>
@@ -58,7 +57,9 @@
                 <table class="table table-striped table-bordered table-hover">
                     <thead>
                     <th template repeat="{{col in entityColumns}}">
-                        <tt-sortcolumn>{{col | capitalize}}</tt-sortcolumn>
+                        <tt-sortcolumn on-change="{{sortChangeHander}}" column="{{col + '.raw'}}">
+                            {{col | capitalize}}
+                        </tt-sortcolumn>
                     </th>
                     <th>Action</th>
                     </thead>
@@ -77,7 +78,7 @@
                 </table>
             </div>
 
-            <tt-pagination from="{{searchFrom}}" size="{{searchSize}}" total="{{data.hits.total}}"
+            <tt-pagination from="{{searchOpt.from}}" size="{{searchOpt.size}}" total="{{data.hits.total}}"
                            range="{{rangesize}}" on-change="{{changePagingHandler}}"></tt-pagination>
 
             <paper-shadow z="2"></paper-shadow>
@@ -90,22 +91,40 @@
     <script>
 
         Polymer('user-list', {
-            searchFrom: 0,
-            searchSize: 10,
             searchText: undefined,
             rangesize: 10,
             created: function () {
                 //   this.searchTest = '';
                 this.entityColumns = ['firstname', 'lastname', 'email' ];
-            },
-            capitalize: function(value) {
-                if (!value instanceof String || value.length === 0)
-                    return value;
-                return value.charAt(0).toUpperCase() + value.slice(1);
+                this.searchOpt = {
+                    "from": 0,
+                    "size": 10,
+                    "sort": [  "lastname.raw:asc", "firstname.raw:asc" ]
+                };
+
             },
             ready: function () {
                 this.refreshList();
             },
+
+            copyProperties: function (src, dest, override) {
+                dest = dest || {};
+                override = override || false;
+                for (var attr in src) {
+                    if (src.hasOwnProperty(attr)) {
+                        if (override || !dest.hasOwnProperty(attr)) {
+                            dest[attr] = src[attr];
+                        }
+                    }
+                }
+                return dest;
+            },
+            capitalize: function (value) {
+                if (!value instanceof String || value.length === 0)
+                    return value;
+                return value.charAt(0).toUpperCase() + value.slice(1);
+            },
+
             keypressHandler: function (event, detail, sender) {
                 if (event.which == 13 || event.keyCode == 13) {
                     this.refreshList();
@@ -119,6 +138,12 @@
                     "options": searchOpt
                 });
             },
+            sortChangeHander: function (e, detail, target) {
+                var sort = [ detail.column + ":" + detail.order  ];
+                this.refreshList({
+                       "sort" : sort
+                });
+            },
             onSearchSuggest: function (e, detail, target) {
                 console.log("=================== onSearchSuggest : ", target.inputValue);
 //                console.dir(e);
@@ -126,26 +151,31 @@
 //                console.dir(target);
 //                console.log("=================== onSearchSuggest");
             },
-            searchOption: function () {
-                var searchOpt = {
-                    "from": this.searchFrom,
-                    "size": this.searchSize,
-                    "sort": [  "lastname.raw:asc", "firstname.raw:asc" ]
-                };
+            searchOption: function (optToSave) {
+                // Save Options
+                if (optToSave) {
+                    console.log("Before override", this.searchOpt);
+                     this.copyProperties(optToSave, this.searchOpt, true);
+                    console.log("After override", this.searchOpt);
+                }
+                // Clone Search Options to send
+                var searchOpt = this.copyProperties(this.searchOpt);
+                // Add Search Criteria
                 if (this.searchText) {
                     searchOpt.body = ejs.Request().query(ejs.MatchQuery('firstname', this.searchText));
                 }
-
                 return searchOpt;
             },
-            refreshList: function () {
+            searchReset : function () {
+                this.refreshList({
+                    from : 0
+                });
+            },
+            refreshList: function (optToSave) {
                 var that = this;
-                // reset counter
-                this.searchFrom = 0;
-                // "searchbody": ejs.Request().query(ejs.MatchQuery('firstname', this.searchText ))
                 this.asyncFire('entity-search', {
-                    "notifmsg": this.searchText,
-                    "options": that.searchOption()
+                    "notifmsg": that.searchText,
+                    "options": that.searchOption(optToSave)
                 });
             },
             getLineEntityId: function (e, data, sender) {

@@ -41,6 +41,12 @@ app.route('/components/*')
         next();
     });
 
+var elasticsearch = require('elasticsearch');
+var client = new elasticsearch.Client({
+    host: '192.168.1.100:9200',
+    log: 'trace'
+});
+
 
 
 app.route('/es/*')
@@ -55,8 +61,8 @@ app.route('/es/*')
         var redirectPath = request.url.slice(3);
         //console.log('****** redirect path', redirectPath);
 
-        //var options = url.parse("http://192.168.1.100:9200" + redirectPath);
-        var options = url.parse("http://localhost:9200" + redirectPath);
+        var options = url.parse("http://192.168.1.100:9200" + redirectPath);
+        //var options = url.parse("http://localhost:9200" + redirectPath);
 
         options.headers = request.headers;
         options.method = request.method;
