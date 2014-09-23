@@ -13,7 +13,6 @@
     "bootstrap": "~3.2.0",
     "i18next-element": "git@github.com:Polymer/i18next-element.git",
     "i18next": "~1.7.4",
-    "page-er": "addyosmani/page-er#~0.0.6",
     "voice-elements": "~0.1.3"
   }
 }

@@ -1,4 +1,4 @@
-#jmorille/nodejs
+#jmorille/ttserver
 
 FROM ubuntu:14.04
 

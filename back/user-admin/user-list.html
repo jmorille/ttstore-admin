@@ -4,7 +4,7 @@
 <link rel="import" href="../components/paper-input/paper-input.html">
 <link rel="import" href="../components/core-input/core-input.html">
 
-<link rel="import" href="../components/core-icon/core-icon.html">
+
 
 <link rel="import" href="../components/paper-shadow/paper-shadow.html">
 
@@ -12,7 +12,7 @@
 <link rel="import" href="user-service.html">
 
 <link rel="import" href="../tt-pagination/tt-pagination.html">
-
+<link rel="import" href="../tt-sortcolumn/tt-sortcolumn.html">
 
 <polymer-element name="user-list" attributes="data searchbody" on-keypress="{{keypressHandler}}">
 
@@ -58,12 +58,7 @@
                 <table class="table table-striped table-bordered table-hover">
                     <thead>
                     <th template repeat="{{col in entityColumns}}">
-                        <div horizontal layout>{{col}}
-                            <div vertical layout>
-                                <core-icon icon="arrow-drop-up"></core-icon>
-                                <core-icon icon="arrow-drop-down"></core-icon>
-                            </div>
-                        </div>
+                        <tt-sortcolumn>{{col | capitalize}}</tt-sortcolumn>
                     </th>
                     <th>Action</th>
                     </thead>
@@ -102,6 +97,11 @@
             created: function () {
                 //   this.searchTest = '';
                 this.entityColumns = ['firstname', 'lastname', 'email' ];
+            },
+            capitalize: function(value) {
+                if (!value instanceof String || value.length === 0)
+                    return value;
+                return value.charAt(0).toUpperCase() + value.slice(1);
             },
             ready: function () {
                 this.refreshList();

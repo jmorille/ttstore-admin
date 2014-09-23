@@ -1,0 +1,73 @@
+<!-- -->
+<link rel="import" href="../components/polymer/polymer.html">
+
+
+<polymer-element name="tt-sortcolumn">
+
+    <template>
+        <style>
+
+            .arrow-up, .arrow-down {
+                width: 0;
+                height: 0;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                margin-left: 5px;
+            }
+
+            .arrow-up {
+                border-bottom: 6px solid black;
+            }
+
+            .arrow-down {
+                border-top: 6px solid black;
+            }
+            .up i:before{
+                content: '[a-z]';
+            }
+
+            .down i:before{
+                content: '[z-a]';
+
+            }
+
+            #sortIndicator {
+
+            }
+
+        </style>
+        <div horizontal layout>
+            <div on-tap="{{handleClickColumn}}">
+                <content></content>
+            </div>
+            <span class="{{ (asc === undefined) ? '' : ( asc ? 'arrow-up' : 'arrow-down' ) }}"></span>
+
+            <!--<span class="{{ (asc === undefined) ? '' : ( asc ? 'up' : 'down' ) }}"><i></i></span>-->
+        </div>
+    </template>
+
+    <script>
+
+        Polymer('tt-sortcolumn', {
+
+            asc: undefined,
+            created: function () {
+            },
+
+            handleClickColumn: function () {
+                this.asc = !this.asc;
+            },
+            unsort: function () {
+                this.asc = undefined;
+            },
+            ascChanged: function () {
+                var sortOrder = (this.asc === undefined) ? null : ( this.asc ? 'asc' : 'desc' );
+                console.log("column order", sortOrder);
+                this.fire('change', {  sortOrder: sortOrder });
+            }
+
+
+        });
+    </script>
+
+</polymer-element>

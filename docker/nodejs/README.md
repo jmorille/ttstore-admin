@@ -1,6 +1,6 @@
 # Build Image
-docker build --rm  -t jmorille/nodejs .
+docker build --rm  -t jmorille/ttserver .
 
 # Connect Image
-docker run -i -t jmorille/nodejs /bin/bash
+docker run -i -t jmorille/ttserver /bin/bash
 
