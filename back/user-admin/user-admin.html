@@ -66,9 +66,11 @@
                 this.openList();
             },
 
-            openList: function () {
+            openList: function (refresh) {
                 this.pageSelected = 'entityList';
-            //    this.entitySearchListener();
+                if (refresh) {
+                    this.$.list.refreshList();
+                }
             },
             openEdit: function () {
                 this.pageSelected = 'entityEdit';
@@ -115,8 +117,7 @@
                 };
             },
             onCancel: function (entity) {
-
-                this.entitySearchListener();
+                this.openList();
                 // Select List
                 this.pageSelected = 'entityList';
                 this.entityId = undefined;
@@ -130,12 +131,11 @@
                 this.$.user_service.entityUpdate(entityToSave, function (err, resp) {
                     // Display
                     if (err) {
-
                         if (resp.status === 409) {
                             console.error('TODO Manage conflict');
                         }
                         that.$.toast_save_ko.show();
-                        that.openList();
+                        that.openList(true);
                     } else if (resp) {
                         that.entityId = undefined;
                         that.entity = undefined;
@@ -144,7 +144,7 @@
                         console.dir(resp);
 
                         // Select List
-                        that.openList();
+                        that.openList(true);
                     }
 
                 });
@@ -160,7 +160,7 @@
 
                     }
                     // Select List
-                    that.openList();
+                    that.openList(true);
                 });
 
             }
