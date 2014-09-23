@@ -32,6 +32,9 @@
             section {
                 background-color: white;
             }
+            th {
+                text-transform: capitalize;
+            }
 
         </style>
 
@@ -58,7 +61,7 @@
                     <thead>
                     <th template repeat="{{col in entityColumns}}">
                         <tt-sortcolumn on-change="{{sortChangeHander}}" column="{{col + '.raw'}}">
-                            {{col | capitalize}}
+                            {{col}}
                         </tt-sortcolumn>
                     </th>
                     <th>Action</th>
@@ -105,7 +108,7 @@
             },
             ready: function () {
                 this.refreshList();
-            }, 
+            },
             copyProperties: function (src, dest, override) {
                 dest = dest || {};
                 override = override || false;
@@ -117,13 +120,7 @@
                     }
                 }
                 return dest;
-            },
-            capitalize: function (value) {
-                if (!value instanceof String || value.length === 0)
-                    return value;
-                return value.charAt(0).toUpperCase() + value.slice(1);
-            },
-
+            }, 
             keypressHandler: function (event, detail, sender) {
                 if (event.which == 13 || event.keyCode == 13) {
                     this.refreshList();
