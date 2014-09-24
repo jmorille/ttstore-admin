@@ -37,11 +37,11 @@
 
                 <paper-input floatingLabel label="First name" inputValue="{{firstname}}" ></paper-input>
                 <paper-input floatingLabel label="Last name" inputValue="{{ lastname}}"></paper-input>
-                <paper-input floatingLabel label="Email" type="email" inputValue="{{entity._source.email}}"
+                <paper-input floatingLabel label="Email" type="email" inputValue="{{email}}"
                              on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
                              id="email_comp"
                              error="Input is not an email!"></paper-input>
-                <paper-input floatingLabel label="Email" type="email" inputValue="{{entity._source.email2}}"
+                <paper-input floatingLabel label="Email" type="email" inputValue="{{email2}}"
                              on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
                              id="email_comp2"
                              error="Input is not an email!"></paper-input>
@@ -75,6 +75,7 @@
 
             onSave: function () {
                 if (this.isValid()) {
+                    console.log("entity-save" , this.entity);
                     this.fire('entity-save', this.entity);
                 } else {
                     this.$.toast_validate_ko.show();

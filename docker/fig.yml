@@ -17,3 +17,11 @@ web:
    - /data2/ttsore-ngnix/logs:/etc/nginx/logs
   links:
    - "es:es"
+#ttserver:
+#  image: jmorille/ttserver
+# expose:
+#   - "8000"
+# volumes:
+#   - /home/a000cqp/project/ttstore-admin/server:/opt/ttserver
+#  links:
+#   - "es:es"
