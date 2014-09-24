@@ -8,6 +8,15 @@ upstream lb-es {
    # server $ENV{"APP_ES_1_PORT_9200_TCP_ADDR"}:$ENV{"APP_ES_1_PORT_9200_TCP_PORT"} weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-2
 }
 
+upstream lb-ttserver {
+      ip_hash;
+      server ttserver:8000 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-1
+   #   server 192.168.1.101:9200 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-2
+   # server $ENV{"TTSERVER_1_PORT_8000_TCP_ADDR"}:$ENV{"TTSERVER_1_PORT_8000_TCP_PORT"} weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-2
+   # server $ENV{"TTSERVER_2_PORT_8000_TCP_ADDR"}:$ENV{"TTSERVER_2_PORT_8000_TCP_PORT"} weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-2
+}
+
+
 server {
     listen 80;
     return 301 https://$host$request_uri;
@@ -37,8 +46,8 @@ server {
        add_header Cache-Control "private";
      }
 
-     location /es/ {
-        rewrite  ^/es/(.*)  /$1 break;
+     location /esd/ {
+        rewrite  ^/esd/(.*)  /$1 break;
 
         proxy_pass http://lb-es; # Load balance the URL location "/" to the upstream lb-subprint
         proxy_http_version 1.1;
@@ -51,6 +60,17 @@ server {
         # proxy_read_timeout 600s;
         # proxy_buffering off;
      }
+
+     location /es/ {
+
+        proxy_pass http://lb-ttserver; # Load balance the URL location "/" to the upstream lb-subprint
+        proxy_http_version 1.1;
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+      }
 
      location /status {
          stub_status;

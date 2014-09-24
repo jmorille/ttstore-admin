@@ -41,4 +41,4 @@ VOLUME ["/opt/ttserver"]
 
 # Start Command
 # #######################
-CMD [ "node", "/opt/ttserver/proxy.js" ]
+CMD [ "node", "/opt/ttserver/server.js" ]
