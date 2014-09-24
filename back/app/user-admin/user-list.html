@@ -105,6 +105,7 @@
                 this.searchOpt = {
                     "from": 0,
                     "size": 10,
+                    "_source": ["firstname", "lastname", "email" ],
                     "sort": [  "lastname.raw:asc", "firstname.raw:asc" ]
                 };
 

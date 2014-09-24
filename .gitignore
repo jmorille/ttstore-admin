@@ -8,3 +8,8 @@ dist
 components
 .idea
 *.iml
+
+
+temp
+.sass-cache
+bower_components

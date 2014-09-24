@@ -82,8 +82,7 @@
                 // Default Options
                 var searchOpt = this.copyProperties(options, {
                     "index": that.index,
-                    "type": that.type,
-                    "_source": ["firstname", "lastname" ],
+                    "type": that.type
                 });
                 // Search Query
                 if (!searchOpt.hasOwnProperty("q") && !searchOpt.hasOwnProperty("body")) {
