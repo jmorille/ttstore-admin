@@ -2,11 +2,10 @@
 <link rel="import" href="../components/polymer/polymer.html">
 
 
-<polymer-element name="tt-sortcolumn" attributes="column sort">
+<polymer-element name="tt-sortcolumn" attributes="column activesort">
 
     <template>
         <style>
-
             .arrow-up, .arrow-down {
                 width: 0;
                 height: 0;
@@ -22,20 +21,17 @@
             .arrow-down {
                 border-top: 6px solid black;
             }
-
-
-
-
         </style>
+
         <div horizontal layout>
             <div on-tap="{{sort}}"
                  aria-sort="{{ (asc === undefined) ? 'none' : ( asc ? 'ascending' : 'descending' ) }}"
-                 aria-label="Title: {{asc ? 'activate to sort column descending' : 'activate to sort column ascending' }}"
-                    >
+                 aria-label="Title: {{asc ? 'activate to sort column descending' : 'activate to sort column ascending' }}">
                 <content></content>
             </div>
             <span class="{{ (asc === undefined) ? '' : ( asc ? 'arrow-up' : 'arrow-down' ) }}"></span>
         </div>
+
     </template>
 
     <script>
@@ -44,17 +40,58 @@
 
             asc: undefined,
             created: function () {
+                console.log("init ", this.activesort);
             },
+            activesortChanged: function () {
+                var that = this;
+                var sortIdx = this.activesort.reduce(function (previousValue, currentValue, index) {
+                    var idxSep =  currentValue.indexOf(':');
+                    if (idxSep>0) {
+                        var testColName = currentValue.slice(0, idxSep);
+                        if (that.column === testColName) {
+                            var testAsc = currentValue.slice(idxSep+1);
+                            console.log("Test Sort",  "col ", that.column, "for", that.activesort , " == > " , testAsc);
+                            that.setSortOrderFromString(testAsc);
+                            return index + 1
+                        } else {
+                            return previousValue;
+                        }
+                    }
 
+                }, 0);
+                
+                console.log("Active Sort Change", this.column, "Idx", sortIdx);
+
+            },
             sort: function () {
                 this.asc = !this.asc;
             },
             unsort: function () {
                 this.asc = undefined;
             },
-            ascChanged: function () {
+            getSortOrderAsString: function () {
                 var sortOrder = (this.asc === undefined) ? null : ( this.asc ? 'asc' : 'desc' );
-               // console.log("column order", this.column, ":", sortOrder);
+                return sortOrder;
+            },
+            setSortOrderFromString: function (order) {
+                switch(order) {
+                    case 'desc' :
+                        this.asc = false;
+                        break;
+                    case 'asc' :
+                        this.asc = true;
+                        break
+                    default :
+                        this.asc = undefined;
+                }
+                console.log("--------------−> Asc ", this.asc);
+            },
+            ascChanged: function () {
+                // console.log("column order", this.column, ":", sortOrder);
+                this._fireAscChange();
+            },
+            _fireAscChange: function () {
+                var sortOrder = this.getSortOrderAsString();
                 this.fire('change', {
                     'order': sortOrder,
                     'column': this.column

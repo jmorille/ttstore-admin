@@ -60,7 +60,9 @@
                 <table class="table table-striped table-bordered table-hover">
                     <thead>
                     <th template repeat="{{col in entityColumns}}">
-                        <tt-sortcolumn on-change="{{sortChangeHander}}" column="{{col + '.raw'}}">
+                        <tt-sortcolumn on-change="{{sortChangeHander}}"
+                                       column="{{col + '.raw'}}"
+                                       activesort="{{searchOpt.sort}}">
                             {{col}}
                         </tt-sortcolumn>
                     </th>
@@ -96,6 +98,7 @@
         Polymer('user-list', {
             searchText: undefined,
             rangesize: 10,
+            searchOpt: undefined,
             created: function () {
                 //   this.searchTest = '';
                 this.entityColumns = ['firstname', 'lastname', 'email' ];
