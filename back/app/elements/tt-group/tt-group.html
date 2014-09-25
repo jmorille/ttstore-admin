@@ -1,0 +1,35 @@
+<!-- -->
+<link rel="import" href="../../components/polymer/polymer.html">
+
+<link rel="import" href="tt-group-list.html">
+<link rel="import" href="tt-group-edit.html">
+
+<polymer-element name="tt-group" attributes="">
+
+
+    <template>
+
+        <core-animated-pages selected="{{pageSelected}}" flex auto>
+            <tt-group-list name="list"></tt-group-list>
+            <tt-group-edit name="edit"></tt-group-edit>
+        </core-animated-pages>
+
+    </template>
+
+    <script>
+        Polymer('tt-group', {
+            pageSelected: 'list',
+
+            ready: function () {
+
+            },
+            openList: function (refresh) {
+                this.pageSelected = 'list';
+                if (refresh) {
+                    this.$.list.refreshList();
+                }
+            }
+
+        });
+    </script>
+</polymer-element>

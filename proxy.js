@@ -49,6 +49,8 @@ var client = new elasticsearch.Client({
 
 
 
+
+
 app.route('/es/*')
     .all(function (request, response, next) {
         var start = new Date();
@@ -59,6 +61,7 @@ app.route('/es/*')
         // request.pause(); // Pause the request
         // Construct Redirect
         var redirectPath = request.url.slice(3);
+
         //console.log('****** redirect path', redirectPath);
 
         var options = url.parse("http://192.168.1.100:9200" + redirectPath);
@@ -72,6 +75,7 @@ app.route('/es/*')
 
         // Init connector : http://stackoverflow.com/questions/6209042/node-js-http-request-slows-down-under-load-testing-am-i-doing-something-wrong
         var esConnector = http.request(options, function (res) {
+            console.log("Redirect", options);
             response.writeHead(res.statusCode, res.headers);
             res.pipe(response, {end: true })
                 .on('error', function (e) {
@@ -107,7 +111,7 @@ app.use(errorHandler({
 }));
 
 
-app.use(favicon(__dirname + '/back/favicon.ico'));
+app.use(favicon(__dirname + '/back/app/favicon.ico'));
 
 app.use(serveStatic(__dirname + '/back', {  'index': ['index.html', 'index.htm']}))
 

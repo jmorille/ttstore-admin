@@ -1,0 +1,161 @@
+<!-- -->
+<link rel="import" href="../../components/polymer/polymer.html">
+
+<link rel="import" href="../../components/core-ajax/core-ajax.html">
+
+<polymer-element name="tt-es-crud" attributes="index type entity entities">
+
+    <template>
+        <div>Parent:  {{entities}}</div>
+    </template>
+
+    <script src="../../components/elasticsearch/elasticsearch.js"></script>
+    <script src="../../components/elastic.js/dist/elastic.js"></script>
+
+    <script>
+        Polymer('tt-es-crud', {
+            host: {
+                //  protocol: 'https',
+                //  host: '192.168.1.100',
+                // port : 9200,
+                //  port : 443,
+                // port : 8000,
+                //  path : '/'
+                path: '/es'
+            },
+
+
+            client: undefined,
+            esopts: undefined,
+
+            created: function () {
+                this.response = [];
+                if (!this.host.host) {
+                    this.host.host = window.location.hostname;
+                }
+                if (!this.host.port) {
+                    if (window.location.port) {
+                        this.host.port = window.location.port;
+                    } else {
+                        switch (window.location.protocol) {
+                            case 'https:' :
+                                this.host.port = 443;
+                                break;
+                            case 'http:' :
+                                this.host.port = 80;
+                                break;
+                        }
+                    }
+                }
+                if (!this.host.protocol) {
+                    switch (window.location.protocol) {
+                        case 'https:' :
+                            this.host.protocol = 'https';
+                            break;
+                        case 'http:' :
+                            this.host.protocol = 'http';
+                            break;
+                    }
+                }
+                console.log("host.protocol : ", this.host.protocol);
+                console.log("host.host     : ", this.host.host);
+                console.log("host.port     : ", this.host.port);
+            },
+            ready: function () {
+                this.client = new elasticsearch.Client({
+                    host: this.host,
+                    log: 'info'
+                });
+
+            },
+            copyProperties: function (src, dest, override) {
+                dest = dest || {};
+                for (var attr in src) {
+                    if (src.hasOwnProperty(attr)) {
+                        if (override || !dest.hasOwnProperty(attr)) {
+                            dest[attr] = src[attr];
+                        }
+                    }
+                }
+                return dest;
+            },
+
+
+            entityGet: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    refresh: true,
+                    id: entity._id
+                };
+                this.client.get(opt, this.entityCallback(this, callback));
+            },
+            entityUpdate: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    refresh: true,
+                    id: entity._id,
+                    version: entity._version,
+                    body: entity._source
+                };
+                this.client.index(opt, this.entityCallback(this, callback));
+            },
+            entityDelete: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    refresh: true,
+                    id: entity._id,
+                    version: entity._version
+                };
+                this.client.delete(opt, this.entityCallback(this, callback));
+            },
+
+
+            entitySearch: function (options, callback) {
+                var searchOpt = this.copyProperties(options, {
+                    index: this.index,
+                    type: this.type,
+                });
+                // Search Query
+                if (!options.hasOwnProperty("q") && !options.hasOwnProperty("body")) {
+                    searchOpt.body = ejs.Request().query(ejs.MatchAllQuery());
+                }
+                this.client.search(searchOpt, this.searchCallback(this, callback));
+            },
+
+            entityCallback: function (that, callback) {
+                return function (err, resp) {
+                    if (err) {
+                        console.error(err.message);
+                    } else  if (resp) {
+                        console.dir(resp);
+                        that.entity = resp;
+                        if (callback) {
+                            callback(err, resp);
+                        }
+                    }
+                };
+            },
+            searchCallback: function (that, callback) {
+                return function (err, resp) {
+                    if (err) {
+                        console.error(err.message);
+                    } else  if (resp) {
+                        console.dir(resp);
+                        that.fire('search-response', resp);
+                        that.entities = resp;
+                        if (callback) {
+                            callback(err, resp);
+                        }
+                    }
+                };
+            }
+
+        });
+    </script>
+</polymer-element>

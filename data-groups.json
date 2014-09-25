@@ -1,0 +1,15 @@
+{"index":{"_index":"groups","_type":"group","_id":1}}
+{"firstname":"Bilbon","lastname":"Sacquet","email":"b.sacquet@gmail.com"}
+{"index":{"_index":"groups","_type":"group","_id":2}}
+{"firstname":"Frodon","lastname":"Sacquet","email":"f.sacquet@gmail.com"}
+{"index":{"_index":"groups","_type":"group","_id":3}}
+{"firstname":"Sam","lastname":"Gamegie","email":"s.gamegie@gmail.com"}
+{"index":{"_index":"groups","_type":"group","_id":4}}
+{"firstname":"Peregrin","lastname":"Touque","email":"p.touque@gmail.com"}
+{"index":{"_index":"groups","_type":"group","_id":5}}
+{"firstname":"Peregrin","lastname":"Brandebouc","email":"p.brandebouc@gmail.com"}
+{"index":{"_index":"groups","_type":"group"}}
+{"firstname":"Jerome","lastname":"Morille","email":"j.morille@gmail.com"}
+{"index":{"_index":"groups","_type":"group"}}
+{"firstname":"Lionnel","lastname":"Larcher","email":"l.larcher@gmail.com"}
+

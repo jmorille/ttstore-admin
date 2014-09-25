@@ -7,7 +7,6 @@
 <link rel="import" href="components/core-icon-button/core-icon-button.html">
 
 
-
 <link rel="import" href="components/core-animated-pages/core-animated-pages.html">
 <link rel="import" href="components/core-media-query/core-media-query.html">
 <link rel="import" href="components/paper-button/paper-button.html">
@@ -15,13 +14,15 @@
 <link rel="import" href="components/paper-shadow/paper-shadow.html">
 <link rel="import" href="components/core-icon/core-icon.html">
 
-<link rel="import" href="admin-menu.html">
-<link rel="import" href="user-admin/user-admin.html">
-<link rel="import" href="ttstore126-icons.html">
-
-
 <link rel="import" href="components/core-item/core-item.html">
 
+
+<link rel="import" href="ttstore126-icons.html">
+
+<link rel="import" href="admin-menu.html">
+<link rel="import" href="user-admin/user-admin.html">
+
+<link rel="import" href="elements/tt-group/tt-group.html">
 
 
 <polymer-element name="admin-app" vertical layout>
@@ -33,11 +34,10 @@
             :host {
                 display: block;
             }
+
             html, body {
                 height: 100%;
             }
-
-
 
             [drawer] {
                 background-color: #3f51b5;
@@ -47,7 +47,6 @@
             [main] {
                 background-color: #c5cae9;
             }
-
 
             #main_menu_button {
                 display: none;
@@ -62,10 +61,10 @@
                 display: inline-block
             }
 
-             .big {
-                 height: 60px;
-                 width: 60px;
-             }
+            .big {
+                height: 60px;
+                width: 60px;
+            }
 
 
         </style>
@@ -81,19 +80,19 @@
             <core-header-panel main>
 
                 <core-toolbar>
-                    <core-icon-button id="main_menu_button" icon="menu"  on-tap="{{openNavMenu}}"></core-icon-button>
+                    <core-icon-button id="main_menu_button" icon="menu" on-tap="{{openNavMenu}}"></core-icon-button>
                     <core-icon class="big" icon="ttstore126:gun"></core-icon>
                     <div>Hello World!</div>
                 </core-toolbar>
 
-                <core-animated-pages selected="{{selected}}"  flex auto  >
+                <core-animated-pages selected="{{selected}}" flex auto>
 
 
-                    <user-admin name="users"      class="card"></user-admin>
-                    <section   name="categories"  class="card">Categories
+                    <user-admin name="users" class="card"></user-admin>
+                    <tt-group name="groups">Groups</tt-group>
+                    <section name="categories" class="card">Categories
                         <paper-shadow z="2"></paper-shadow>
                     </section>
-                    <section name="groups">Groups</section>
                     <section name="shops">Shop</section>
 
                 </core-animated-pages>
@@ -111,7 +110,7 @@
 
             ready: function () {
             },
-            openNavMenu : function() {
+            openNavMenu: function () {
                 this.$.main_menu.togglePanel();
             },
             showSplash: function () {
