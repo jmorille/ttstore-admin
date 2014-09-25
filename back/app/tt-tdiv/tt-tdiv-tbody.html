@@ -1,0 +1,37 @@
+<!-- -->
+<link rel="import" href="../components/polymer/polymer.html">
+
+<link rel="import" href="../tt-sortcolumn/tt-sortcolumn.html">
+
+
+<polymer-element name="tt-tdiv-tbody" attributes="columns data">
+
+    <template>
+        <link rel="stylesheet" href="tt-tdiv.css">
+
+        <template repeat="{{line in data}}">
+            <div class="div-table-row">
+                <template repeat="{{col in columns}}">
+                    <div class="div-table-col">{{line[col]}}</div>
+                </template>
+            </div>
+        </template>
+
+    </template>
+
+    <script>
+
+        Polymer('tt-tdiv-tbody', {
+
+            created: function () {
+                //  this.columns = columns || ['col1', 'col2', 'col3', 'col4'];
+            },
+            sortChangeHander: function () {
+                console.log("Sort Handler");
+            }
+
+
+        });
+    </script>
+
+</polymer-element>

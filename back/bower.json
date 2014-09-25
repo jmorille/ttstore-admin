@@ -1,13 +1,13 @@
 {
     "name": "ttstore-admin",
     "version": "0.0.1",
-    "keywords": "seed, polymer, web-components",
-    "main": "ttstore-admin.html",
+    "keywords": "Crud, web-components",
+    "main": "index.html",
     "dependencies": {
-        "polymer": "Polymer/polymer#0.4.1",
-        "platform": "Polymer/platform#0.4.1",
-        "paper-elements": "Polymer/paper-elements#0.4.1",
-        "core-elements": "Polymer/core-elements#0.4.1",
+        "polymer": "Polymer/polymer#^0.4.1",
+        "platform": "Polymer/platform#^0.4.1",
+        "paper-elements": "Polymer/paper-elements#^0.4.1",
+        "core-elements": "Polymer/core-elements#^0.4.1",
         "elasticsearch": "~2.4.1",
         "elastic.js": "~1.2.0",
         "bootstrap": "~3.2.0",
@@ -16,6 +16,11 @@
         "voice-elements": "~0.1.3"
     },
     "devDependencies": {
-        "polymer-test-tools": "Polymer/polymer-test-tools#^0.4.0"
+        "polymer-test-tools": "Polymer/polymer-test-tools#^0.4.1"
+    },
+    "resolutions": {
+        "platform": "^0.4.1",
+        "polymer": "^0.4.1",
+        "core-component-page": "^0.4.1"
     }
 }

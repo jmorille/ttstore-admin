@@ -1,10 +1,11 @@
 <link rel="import" href="../components/polymer/polymer.html">
 
+<link rel="import" href="../components/core-input/core-input.html">
+<link rel="import" href="../components/core-field/core-field.html">
+<link rel="import" href="../components/core-icon/core-icon.html">
+
 <link rel="import" href="../components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../components/paper-input/paper-input.html">
-<link rel="import" href="../components/core-input/core-input.html">
-
-
 <link rel="import" href="../components/paper-shadow/paper-shadow.html">
 
 
@@ -42,10 +43,12 @@
         <div>
 
             <section horizontal layout>
-                <paper-input inputValue="{{searchText}}"
-                             on-input="{{onSearchSuggest}}"
-                             placeHolder="Search Text"></paper-input>
-                <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
+                <core-field>
+                    <paper-input placeHolder="Search Text" inputValue="{{searchText}}"
+                                on-input="{{onSearchSuggest}}"></paper-input>
+                    <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
+                </core-field>
+
             </section>
 
             <section>
