@@ -26,15 +26,14 @@
             }
         </style>
 
-        <div horizontal layout>
-            <div on-tap="{{sortHandler}}"
+        <div on-tap="{{sortHandler}}" horizontal layout>
+            <div
                  aria-sort="{{ (order === 'none') ? 'none' : ( order === 'asc' ? 'ascending' : 'descending' ) }}"
                  aria-label="Title: {{order === 'none' || order === 'asc' ? 'activate to sort column descending' : 'activate to sort column ascending' }}">
                 <content></content>
             </div>
-            <template  if="{{isSortable}}">
-                  <span class="{{'arrow-'+ order}}"></span>
-            </template>
+            <span class="{{'arrow-'+ order}}"></span>
+
         </div>
 
 
@@ -67,15 +66,13 @@
 
             isSortable : function () {
                 if (this.sortable === '' || this.sortable) {
-                    console.error("-------- is sortable");
                     return true;
                 } else   {
-                    console.error("-------- is NOT sortable");
                     return false;
                 }
             },
             sortHandler: function () {
-                if (this.isSortable) {
+                if (this.isSortable()) {
                     this.order = this.switchOrder(this.order);
                 }
             },
@@ -97,7 +94,7 @@
             },
 
             orderChanged: function (oldValue, newValue, args) {
-               // console.log("--------------------- this.sortable",'oldValue=',oldValue, "newValue=", newValue, "args=", args);
+                //console.log("--------------------- this.sortable",'oldValue=',oldValue, "newValue=", newValue, "args=", args);
                 if (newValue !== 'none') {
                     this.fire('sort', {
                         order: this.order,

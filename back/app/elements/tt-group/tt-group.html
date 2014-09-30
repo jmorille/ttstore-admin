@@ -10,8 +10,8 @@
     <template>
 
         <core-animated-pages selected="{{pageSelected}}" flex auto>
-            <tt-group-list name="list"></tt-group-list>
-            <tt-group-edit name="edit"></tt-group-edit>
+            <tt-group-list name="list" on-edit="{{editHandler}}" on-delete="{{deleteHandler}}"></tt-group-list>
+            <tt-group-edit name="edit" entityid="{{entityid}}"></tt-group-edit>
         </core-animated-pages>
 
     </template>
@@ -19,7 +19,7 @@
     <script>
         Polymer('tt-group', {
             pageSelected: 'list',
-
+            entityid : undefined,
             ready: function () {
 
             },
@@ -28,6 +28,13 @@
                 if (refresh) {
                     this.$.list.refreshList();
                 }
+            },
+            editHandler: function (event, data, sender) {
+                this.entityid = data._id;
+                this.pageSelected = 'edit';
+            },
+            deleteHandler: function (event, data, sender) {
+
             }
 
         });

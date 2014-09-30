@@ -4,7 +4,7 @@
 <link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../components/core-icons/editor-icons.html">
 
-<link rel="import" href="../tt-column/tt-column.html">
+<link rel="import" href="tt-column.html">
 
 <polymer-element name="tt-table" attributes="data columns">
     <template>
@@ -53,7 +53,7 @@
                 <th>Action</th>
                 </thead>
                 <tbody>
-                <tr template repeat="{{item in data}}">
+                <tr template repeat="{{item in data.hits}}">
                     <td template repeat="{{col in columns}}" on-click="{{editHandler}}"
                         entity-id="{{item._id}}">
                         {{item._source[col.column]}}
@@ -113,7 +113,6 @@
                             sortable: sortableCol
                         };
                         c.push(colObj);
-                        console.log("Push Column ",  colObj);
                     });
                     // define Columns
                     this.columns = c;
@@ -122,12 +121,10 @@
             },
             unSortAllCoumns: function (exceptCol) {
                 var sortCols = this.shadowRoot.querySelectorAll('tt-column');
-                console.log("Exclude column", exceptCol);
                 console.dir(sortCols);
                 [].forEach.call(sortCols, function (el, i) {
                     if (el != exceptCol) {
                         el.unsort();
-                        console.log("Unsort column", el.column);
                     }
                 });
             }

@@ -41,18 +41,18 @@
         </section>
 
 
-        <tt-table data="{{data.hits.hits}}"
-                  on-edit="{{editHandler}}" on-delete="{{deleteHandler}}"
-                  on-sort="{{sortHandler}}">
+        <tt-table data="{{data.hits}}"  on-sort="{{sortHandler}}">
             <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
-            <tt-column column="lastname" sortable="lastname.raw">Nom</tt-column>
+            <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
             <tt-column column="email" sortable >Email</tt-column>
-            <tt-column column="email"  >Title Col</tt-column>
         </tt-table>
 
 
-        <tt-pagination from="{{searchOpt.from}}" size="{{searchOpt.size}}" total="{{data.hits.total}}"
-                       range="{{rangesize}}" on-change="{{pagingHandler}}"></tt-pagination>
+        <tt-pagination range="{{rangesize}}"
+                       from="{{searchOpt.from}}" size="{{searchOpt.size}}"
+                       total="{{data.hits.total}}"
+                       on-change="{{pagingHandler}}">
+         </tt-pagination>
 
 
 
@@ -67,8 +67,8 @@
 
             created: function () {
                 //   this.searchTest = '';
-//                this.entityColumns = [ { column:'firstname', sortable:'$.raw'},
-//                                       { column:'lastname', sortable:'lastname.raw'},
+//                this.entityColumns = [ { column:'firstname', sortable:'$.raw', title: 'Prénom'},
+//                                       { column:'lastname', sortable:'$.raw', title: 'Nom'},
 //                                       { column:'email'   }
 //                                    ];
                 this.searchOpt = {
@@ -95,19 +95,11 @@
                 });
             },
             sortHandler: function (event, data, sender) {
-                console.log("------------ fire : sortHandler ", data);
-
                 this.searchOpt.sort= [ data.column+":"+data.order ];
                 this.$.service.entitySearch(this.searchOpt);
             },
             pagingHandler: function (e, detail, sender) {
                 this.$.service.entitySearch(this.searchOpt);
-            },
-            editHandler: function (event, data, sender) {
-                this.fire("edit", data);
-            },
-            editHandler: function (event, data, sender) {
-                this.fire("delete", data);
             }
 
 

@@ -1,23 +1,43 @@
 <!-- -->
 <link rel="import" href="../../components/polymer/polymer.html">
 
+<link rel="import" href="tt-group-service.html">
 
-<polymer-element name="tt-group-edit" attributes="">
+<polymer-element name="tt-group-edit" attributes="entityid">
 
 
     <template>
-        <div>Groups edit</div>
+        <tt-group-service id="service" entity="{{data}}"></tt-group-service>
+        
 
+        <template bind="{{data._source}}">
+
+            <paper-input floatingLabel label="First name" inputValue="{{firstname}}" ></paper-input>
+            <paper-input floatingLabel label="Last name" inputValue="{{ lastname}}"></paper-input>
+            <paper-input floatingLabel label="Email" type="email" inputValue="{{email}}"
+                         on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
+                         id="email_comp"
+                         error="Input is not an email!"></paper-input>
+            <paper-input floatingLabel label="Email" type="email" inputValue="{{email2}}"
+                         on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
+                         id="email_comp2"
+                         error="Input is not an email!"></paper-input>
+            <paper-shadow z="2"></paper-shadow>
+        </template>
 
     </template>
 
     <script>
         Polymer('tt-group-edit', {
             pageSelected: 'entityList',
-
+            data: undefined,
             ready: function () {
 
+            },
+            entityidChanged: function () {
+                this.$.service.entityGet({_id: this.entityid});
             }
+
 
         });
     </script>
