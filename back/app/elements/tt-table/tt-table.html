@@ -60,6 +60,7 @@
                 this.unSortAllCoumns(sender);
             },
             rebuildColumns: function(){
+                // https://github.com/stevenrskelton/sortable-table/blob/master/sortable-table.html
                 var columnNodes = this.querySelectorAll('tt-column');
                 var c = [];
                 [].forEach.call(columnNodes, function (el, i) {
