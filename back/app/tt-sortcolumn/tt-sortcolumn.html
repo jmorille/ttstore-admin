@@ -40,7 +40,7 @@
 
             asc: undefined,
             created: function () {
-                console.log("init ", this.activesort);
+              //  console.log("init ", this.activesort);
             },
             activesortChanged: function () {
                 var that = this;
@@ -50,7 +50,7 @@
                         var testColName = currentValue.slice(0, idxSep);
                         if (that.column === testColName) {
                             var testAsc = currentValue.slice(idxSep+1);
-                            console.log("Test Sort",  "col ", that.column, "for", that.activesort , " == > " , testAsc);
+                         //   console.log("Test Sort",  "col ", that.column, "for", that.activesort , " == > " , testAsc);
                             that.setSortOrderFromString(testAsc);
                             return index + 1
                         } else {
@@ -60,7 +60,7 @@
 
                 }, 0);
                 
-                console.log("Active Sort Change", this.column, "Idx", sortIdx);
+             //   console.log("Active Sort Change", this.column, "Idx", sortIdx);
 
             },
             sort: function () {

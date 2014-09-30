@@ -13,8 +13,6 @@
 
 <link rel="import" href="../tt-table/tt-table.html">
 
-<link rel="import" href="../tt-table/tt-table.html">
-
 <link rel="import" href="../../tt-pagination/tt-pagination.html">
 
 <polymer-element name="tt-group-list" attributes="">
@@ -43,12 +41,12 @@
         </section>
 
 
-        <tt-table data="{{data.hits.hits}}" columns="{{entityColumns}}"
+        <tt-table data="{{data.hits.hits}}"
                   on-edit="{{editHandler}}" on-delete="{{deleteHandler}}"
                   on-sort="{{sortHandler}}">
             <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
             <tt-column column="lastname" sortable="lastname.raw">Nom</tt-column>
-            <tt-column column="email" sortable >Title Col</tt-column>
+            <tt-column column="email" sortable >Email</tt-column>
             <tt-column column="email"  >Title Col</tt-column>
         </tt-table>
 
@@ -69,10 +67,10 @@
 
             created: function () {
                 //   this.searchTest = '';
-                this.entityColumns = [ { column:'firstname', sortable:'$.raw'},
-                                       { column:'lastname', sortable:'lastname.raw'},
-                                       { column:'email'   }
-                                    ];
+//                this.entityColumns = [ { column:'firstname', sortable:'$.raw'},
+//                                       { column:'lastname', sortable:'lastname.raw'},
+//                                       { column:'email'   }
+//                                    ];
                 this.searchOpt = {
                     "from": 0,
                     "size": 10,

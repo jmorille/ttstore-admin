@@ -2,8 +2,8 @@
 <link rel="import" href="../../components/polymer/polymer.html">
 
 <link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../components/core-icons/editor-icons.html">
 
-<link rel="import" href="../tt-es-crud/tt-es-crud.html">
 <link rel="import" href="../tt-column/tt-column.html">
 
 <polymer-element name="tt-table" attributes="data columns">
@@ -11,14 +11,43 @@
 
         <link rel="stylesheet" href="../../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
 
+        <style>
+            table {
+                background-color: #ffffff;
+            }
 
-        <div class="table-responsive" style="background-color: white">
+            table thead {
+                font-weight: bold;
+                background-image: linear-gradient(to bottom, #f6f7f8 50%, #d2d7d9 100%);
+                text-align: center;
+                height: 30px;
+                padding: 3px;
+            }
+
+        </style>
+
+        <template id="action">
+            <paper-icon-button icon="editor:mode-edit" entity-id="{{item._id}}" on-tap="{{editHandler}}"></paper-icon-button>
+            <paper-icon-button icon="delete" entity-id="{{item._id}}" on-tap="{{deleteHandler}}"></paper-icon-button>
+        </template>
+
+        <template id="tfooter">
+             <tr>
+                <td colspan="3">Coucou le footer xxxxx xxxxxx  xxxxxx  xxxxx  xxxx xxxxx</td>
+             </tr>
+        </template>
+
+        <template id="theader">
+
+        </template>
+
+        <div class="table-responsive"  >
             <table class="table table-striped table-bordered table-hover">
                 <thead>
                 <th template repeat="{{col in columns}}">
                     <tt-column column="{{col.column}}" sortable="{{col.sortable}}"
-                            on-sort="{{sortHandler}}">
-                        {{col.column}}
+                               on-sort="{{sortHandler}}">
+                        {{col.title}}
                     </tt-column>
                 </th>
                 <th>Action</th>
@@ -27,14 +56,14 @@
                 <tr template repeat="{{item in data}}">
                     <td template repeat="{{col in columns}}" on-click="{{editHandler}}"
                         entity-id="{{item._id}}">
-                       {{item._source[col.column]}}
+                        {{item._source[col.column]}}
                     </td>
                     <td>
-                        <paper-icon-button icon="delete" entity-id="{{item._id}}"
-                                           on-tap="{{deleteHandler}}"></paper-icon-button>
+                        <template bind ref="action" ></template>
                     </td>
                 </tr>
                 </tbody>
+                <!--<tfoot template bind ref="tfooter"></tfoot>-->
             </table>
         </div>
 
@@ -42,6 +71,11 @@
 
     <script>
         Polymer('tt-table', {
+            columns: undefined,
+
+            ready: function() {
+                this.rebuildColumns();
+            },
             getLineEntityId: function (e, data, sender) {
                 var toEdit = sender.attributes['entity-id'].value;
                 return toEdit;
@@ -59,23 +93,40 @@
                 console.log("Event Sort", data);
                 this.unSortAllCoumns(sender);
             },
-            rebuildColumns: function(){
+            rebuildColumns: function () {
                 // https://github.com/stevenrskelton/sortable-table/blob/master/sortable-table.html
                 var columnNodes = this.querySelectorAll('tt-column');
-                var c = [];
-                [].forEach.call(columnNodes, function (el, i) {
-                    c.push({
-                        column: el.column, sortable: el.sortable
+                if (columnNodes.length > 0) {
+                    var c = [];
+                    [].forEach.call(columnNodes, function (elt, i) {
+                        // name
+                        var name = elt.getAttribute('column');
+                        // sortable
+                        var sortableCol = elt.getAttribute('sortable');
+                        // Title
+                        var title = elt.getAttribute('title');
+                        if(!title || title === '') title = elt.textContent.trim();
+                        // Column obj
+                        var colObj = {
+                            column: name,
+                            title: title,
+                            sortable: sortableCol
+                        };
+                        c.push(colObj);
+                        console.log("Push Column ",  colObj);
                     });
-                });
+                    // define Columns
+                    this.columns = c;
+                }
+
             },
-            unSortAllCoumns : function (exceptCol ) {
+            unSortAllCoumns: function (exceptCol) {
                 var sortCols = this.shadowRoot.querySelectorAll('tt-column');
                 console.log("Exclude column", exceptCol);
                 console.dir(sortCols);
                 [].forEach.call(sortCols, function (el, i) {
                     if (el != exceptCol) {
-                         el.unsort();
+                        el.unsort();
                         console.log("Unsort column", el.column);
                     }
                 });

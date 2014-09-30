@@ -158,9 +158,7 @@
             searchOption: function (optToSave) {
                 // Save Options
                 if (optToSave) {
-                    console.log("Before override", this.searchOpt);
                      this.copyProperties(optToSave, this.searchOpt, true);
-                    console.log("After override", this.searchOpt);
                 }
                 // Clone Search Options to send
                 var searchOpt = this.copyProperties(this.searchOpt);

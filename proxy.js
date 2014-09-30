@@ -64,8 +64,8 @@ app.route('/es/*')
 
         //console.log('****** redirect path', redirectPath);
 
-       // var options = url.parse("http://192.168.1.100:9200" + redirectPath);
-        var options = url.parse("http://localhost:9200" + redirectPath);
+         var options = url.parse("http://192.168.1.100:9200" + redirectPath);
+        //var options = url.parse("http://localhost:9200" + redirectPath);
 
         options.headers = request.headers;
         options.method = request.method;

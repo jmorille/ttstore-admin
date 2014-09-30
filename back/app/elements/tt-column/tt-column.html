@@ -1,7 +1,6 @@
 <!-- -->
 <link rel="import" href="../../components/polymer/polymer.html">
 
-<link rel="import" href="../tt-es-crud/tt-es-crud.html">
 
 <polymer-element name="tt-column" attributes="column sortable">
     <template>
@@ -33,7 +32,9 @@
                  aria-label="Title: {{order === 'none' || order === 'asc' ? 'activate to sort column descending' : 'activate to sort column ascending' }}">
                 <content></content>
             </div>
-            <span class="{{'arrow-'+ order}}"></span>
+            <template  if="{{isSortable}}">
+                  <span class="{{'arrow-'+ order}}"></span>
+            </template>
         </div>
 
 
@@ -63,11 +64,21 @@
                         return 'none';
                 }
             },
-            sortHandler: function () {
-                this.order = this.switchOrder(this.order);
+
+            isSortable : function () {
+                if (this.sortable === '' || this.sortable) {
+                    console.error("-------- is sortable");
+                    return true;
+                } else   {
+                    console.error("-------- is NOT sortable");
+                    return false;
+                }
             },
-
-
+            sortHandler: function () {
+                if (this.isSortable) {
+                    this.order = this.switchOrder(this.order);
+                }
+            },
             getOrderColumn: function (column, sortable) {
                 if (sortable === '') {
                     return column;
@@ -86,13 +97,11 @@
             },
 
             orderChanged: function (oldValue, newValue, args) {
-                console.log("--------------------- this.sortable",'oldValue=',oldValue, "newValue=", newValue, "args=", args);
+               // console.log("--------------------- this.sortable",'oldValue=',oldValue, "newValue=", newValue, "args=", args);
                 if (newValue !== 'none') {
                     this.fire('sort', {
                         order: this.order,
-                        column: this.getOrderColumn(this.column, this.sortable),
-                        pp: 'tt-column'
-
+                        column: this.getOrderColumn(this.column, this.sortable)
                     });
                 }
             }

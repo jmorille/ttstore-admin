@@ -103,7 +103,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
 
         validateSize: function (oldValue, newValue) {
             if (oldValue != newValue) {
-                console.log("Change Size : ", { 'oldValue': oldValue, 'newValue': newValue, "current": this.size });
+                //console.log("Change Size : ", { 'oldValue': oldValue, 'newValue': newValue, "current": this.size });
                 // The from size need to be re calculate
                 this.currentpage = this._computeCurrentPage(this.from, newValue);
                 // compute
@@ -117,7 +117,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
         },
         selectPage: function (e, data, sender) {
             var pageid = sender.getAttribute('pageid');
-            console.log("select Page : ", pageid);
+           // console.log("select Page : ", pageid);
             // verb control
             switch (pageid) {
                 case "next" :
@@ -163,7 +163,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
             this.currentRange = this._computePageRange();
         },
         currentpageChanged: function () {
-            console.log("Change current page", this.currentpage);
+            //console.log("Change current page", this.currentpage);
             this.currentRange = this._computePageRange();
             this.from = (this.currentpage - 1) * this.size;
             // Fire Search Event
