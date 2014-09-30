@@ -5,9 +5,6 @@
 
 <polymer-element name="tt-es-crud" attributes="index type entity entities">
 
-    <template>
-        <div>Parent:  {{entities}}</div>
-    </template>
 
     <script src="../../components/elasticsearch/elasticsearch.js"></script>
     <script src="../../components/elastic.js/dist/elastic.js"></script>
@@ -119,7 +116,7 @@
             entitySearch: function (options, callback) {
                 var searchOpt = this.copyProperties(options, {
                     index: this.index,
-                    type: this.type,
+                    type: this.type
                 });
                 // Search Query
                 if (!options.hasOwnProperty("q") && !options.hasOwnProperty("body")) {
@@ -133,7 +130,7 @@
                     if (err) {
                         console.error(err.message);
                     } else  if (resp) {
-                        console.dir(resp);
+                        //console.dir(resp);
                         that.entity = resp;
                         if (callback) {
                             callback(err, resp);
@@ -146,7 +143,7 @@
                     if (err) {
                         console.error(err.message);
                     } else  if (resp) {
-                        console.dir(resp);
+                        //console.dir(resp);
                         that.fire('search-response', resp);
                         that.entities = resp;
                         if (callback) {

@@ -111,7 +111,7 @@
                     "from": 0,
                     "size": 10,
                     "_source": ["firstname", "lastname", "email" ],
-                    "sort": [  "lastname.raw:asc", "firstname.raw:asc" ]
+                    "sort": [  "lastname.raw:asc", "firstname.raw:desc" ]
                 };
 
             },
@@ -120,7 +120,6 @@
             },
             copyProperties: function (src, dest, override) {
                 dest = dest || {};
-                override = override || false;
                 for (var attr in src) {
                     if (src.hasOwnProperty(attr)) {
                         if (override || !dest.hasOwnProperty(attr)) {

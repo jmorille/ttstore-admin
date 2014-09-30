@@ -1,0 +1,87 @@
+<!-- -->
+<link rel="import" href="../../components/polymer/polymer.html">
+
+<link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../tt-es-crud/tt-es-crud.html">
+<link rel="import" href="../tt-column/tt-column.html">
+
+<polymer-element name="tt-table" attributes="data columns">
+    <template>
+
+        <link rel="stylesheet" href="../../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
+
+
+        <div class="table-responsive" style="background-color: white">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <th template repeat="{{col in columns}}">
+                    <tt-column column="{{col.column}}" sortable="{{col.sortable}}"
+                            on-sort="{{sortHandler}}">
+                        {{col.column}}
+                    </tt-column>
+                </th>
+                <th>Action</th>
+                </thead>
+                <tbody>
+                <tr template repeat="{{item in data}}">
+                    <td template repeat="{{col in columns}}" on-click="{{editHandler}}"
+                        entity-id="{{item._id}}">
+                       {{item._source[col.column]}}
+                    </td>
+                    <td>
+                        <paper-icon-button icon="delete" entity-id="{{item._id}}"
+                                           on-tap="{{deleteHandler}}"></paper-icon-button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer('tt-table', {
+            getLineEntityId: function (e, data, sender) {
+                var toEdit = sender.attributes['entity-id'].value;
+                return toEdit;
+            },
+            deleteHandler: function (event, data, sender) {
+                var toEdit = this.getLineEntityId(event, data, sender);
+                this.fire('delete', { _id: toEdit});
+            },
+            editHandler: function (event, data, sender) {
+                var toEdit = this.getLineEntityId(event, data, sender);
+                this.fire('edit', { _id: toEdit});
+            },
+
+            sortHandler: function (event, data, sender) {
+                console.log("Event Sort", data);
+                this.unSortAllCoumns(sender);
+            },
+            rebuildColumns: function(){
+                var columnNodes = this.querySelectorAll('tt-column');
+                var c = [];
+                [].forEach.call(columnNodes, function (el, i) {
+                    c.push({
+                        column: el.column, sortable: el.sortable
+                    });
+                });
+            },
+            unSortAllCoumns : function (exceptCol ) {
+                var sortCols = this.shadowRoot.querySelectorAll('tt-column');
+                console.log("Exclude column", exceptCol);
+                console.dir(sortCols);
+                [].forEach.call(sortCols, function (el, i) {
+                    if (el != exceptCol) {
+                         el.unsort();
+                        console.log("Unsort column", el.column);
+                    }
+                });
+            }
+
+
+
+        });
+    </script>
+</polymer-element>
