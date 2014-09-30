@@ -9,6 +9,7 @@ components
 .idea
 *.iml
 
+npm-debug.log
 
 temp
 .sass-cache

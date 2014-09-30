@@ -17,17 +17,17 @@ upstream lb-ttserver {
 }
 
 
+#server {
+#    listen 80;
+#    return 301 https://$host$request_uri;
+#}
+
+
 server {
     listen 80;
-    return 301 https://$host$request_uri;
-}
-
-
-server {
-    # listen 80;
     listen 443 default_server ssl spdy;
 
-    ssl on;
+    #ssl on;
     ssl_certificate /etc/nginx/ssl/server.crt;
     ssl_certificate_key /etc/nginx/ssl/server.key;
 

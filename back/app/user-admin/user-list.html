@@ -59,6 +59,7 @@
             <div>{{data.hits.total}} records found in {{data.took}} ms</div>
 
 
+
             <div class="table-responsive" style="background-color: white">
                 <table class="table table-striped table-bordered table-hover">
                     <thead>
@@ -88,6 +89,7 @@
 
             <tt-pagination from="{{searchOpt.from}}" size="{{searchOpt.size}}" total="{{data.hits.total}}"
                            range="{{rangesize}}" on-change="{{changePagingHandler}}"></tt-pagination>
+
 
             <paper-shadow z="2"></paper-shadow>
         </div>
