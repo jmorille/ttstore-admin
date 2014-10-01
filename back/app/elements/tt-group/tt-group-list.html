@@ -20,7 +20,6 @@
 
     <template>
 
-        <link rel="stylesheet" href="../../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
 
         <style>
             tt-column {
@@ -43,7 +42,7 @@
 
         <tt-table data="{{data.hits}}"  sort="{{searchOpt.sort}}"
                   on-sort="{{sortHandler}}">
-            <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
+            <tt-column column="firstname" sortable="$.raw">prénom</tt-column>
             <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
             <tt-column column="email" sortable >Email</tt-column>
         </tt-table>
@@ -64,6 +63,8 @@
 
             data: undefined,
             searchOpt: undefined,
+
+            searchText: undefined,
             rangesize: 10,
 
             created: function () {
@@ -85,9 +86,19 @@
             },
             search: function (optToSave) {
                 var that = this;
-                console.log("Search Service", this.$.service);
-                this.$.service.entitySearch(this.searchOpt, function (err, resp) {
-                    console.log("Search Result");
+                // Save Options
+                if (optToSave) {
+                    this.$.service.copyProperties(optToSave, this.searchOpt, true);
+                }
+                // Clone Search Options to send
+                var searchOpt =  this.$.service.copyProperties(this.searchOpt);
+                // Add Search Criteria
+                if (this.searchText) {
+                    searchOpt.body =   ejs.Request().query(ejs.MatchQuery('firstname', this.searchText));
+                }
+                // Search Service
+                 this.$.service.entitySearch(searchOpt, function (err, resp) {
+                    console.log("Search Result for ", searchOpt);
                 });
             },
             searchReset: function () {

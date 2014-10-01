@@ -6,6 +6,8 @@ A Polymer element for paginating model data, rendering a set of pagination contr
 
 <link rel="import" href="../components/polymer/polymer.html">
 
+<link rel="import" href="../components/core-a11y-keys/core-a11y-keys.html">
+
 <!--<link rel="import" href="../components/paper-slider/paper-slider.html">-->
 
 <!--<link rel="import" href="../components/paper-dropdown/paper-dropdown-menu.html">-->
@@ -78,6 +80,8 @@ A Polymer element for paginating model data, rendering a set of pagination contr
         <!--<paper-item label="100"></paper-item>-->
     <!--</paper-dropdown-menu>-->
 
+    <core-a11y-keys target="{{}}" keys="up down left right" on-keys-pressed="{{arrowHandler}}"></core-a11y-keys>
+
 
 </template>
 <script>
@@ -99,6 +103,9 @@ A Polymer element for paginating model data, rendering a set of pagination contr
 
         },
         ready: function () {
+        },
+        arrowHandler: function (ev) {
+            console.log("°°°°°°°°°°°°°°°°°°°°°°°°° : ", ev.detail);
         },
 
         validateSize: function (oldValue, newValue) {
