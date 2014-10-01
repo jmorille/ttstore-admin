@@ -41,7 +41,8 @@
         </section>
 
 
-        <tt-table data="{{data.hits}}"  on-sort="{{sortHandler}}">
+        <tt-table data="{{data.hits}}"  sort="{{searchOpt.sort}}"
+                  on-sort="{{sortHandler}}">
             <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
             <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
             <tt-column column="email" sortable >Email</tt-column>

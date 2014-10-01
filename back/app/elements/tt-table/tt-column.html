@@ -2,7 +2,7 @@
 <link rel="import" href="../../components/polymer/polymer.html">
 
 
-<polymer-element name="tt-column" attributes="column sortable">
+<polymer-element name="tt-column" attributes="column sortable sort">
     <template>
 
         <style>
@@ -44,6 +44,8 @@
             order: 'none',
             column: undefined,
             sortable: undefined,
+            sortableColumn : undefined,
+
             create: function () {
             },
             unsort: function () {
@@ -51,6 +53,14 @@
                     this.order = 'none';
                 }
             },
+
+//            sortableChanged : function () {
+//                this.sortableColumn = this.getOrderColumn(this.column, this.sortable);
+//            },
+//            columnChanged : function () {
+//                this.sortableColumn = this.getOrderColumn(this.column, this.sortable);
+//            },
+
             switchOrder: function (order) {
                 switch (this.order) {
                     case 'none':
@@ -74,6 +84,7 @@
             sortHandler: function () {
                 if (this.isSortable()) {
                     this.order = this.switchOrder(this.order);
+                    this.fireOrderChange();
                 }
             },
             getOrderColumn: function (column, sortable) {
@@ -93,13 +104,46 @@
                 }
             },
 
-            orderChanged: function (oldValue, newValue, args) {
+            fireOrderChange: function () {
                 //console.log("--------------------- this.sortable",'oldValue=',oldValue, "newValue=", newValue, "args=", args);
-                if (newValue !== 'none') {
+                if (this.order !== 'none') {
                     this.fire('sort', {
                         order: this.order,
                         column: this.getOrderColumn(this.column, this.sortable)
                     });
+                }
+            },
+
+            sortChanged: function (oldValue, newValue, args) {
+                var that = this;
+                var expectedOrder = 'none';
+                var expectedOrderIdx = 0;
+                var sortableColumn = this.getOrderColumn(this.column, this.sortable);
+                // Read
+                [].forEach.call(newValue, function (currentValue, i) {
+                    // Test column name
+                    if ( sortableColumn === currentValue) {
+                        expectedOrder = 'asc';
+                        expectedOrderIdx = i;
+                    } else {
+                        // Test Column order sep
+                        var idxSep =  currentValue.indexOf(':');
+                        if (idxSep>1) {
+                            var testColName = currentValue.slice(0, idxSep);
+                            if ( sortableColumn === testColName) {
+                                var testAsc = currentValue.slice(idxSep+1);
+                                if (testAsc=== 'asc' || testAsc==='desc') {
+                                    expectedOrder = testAsc;
+                                    expectedOrderIdx = i;
+                                }
+                            }
+                        }
+                    }
+                })
+                // Set the order
+                if (expectedOrder !== this.order) {
+                   this.order = expectedOrder;
+                   // todo expectedOrderIdx
                 }
             }
 

@@ -1,54 +1,22 @@
 <!-- -->
 <link rel="import" href="components/polymer/polymer.html">
 
+
+<link rel="import" href="components/core-style/core-style.html">
+
 <polymer-element name="tt-theme" attributes="">
 
 
     <template>
 
+        <core-style ref="button"></core-style>
         <style>
-            .p700,.p500, .p100 , .a100, .a200, .a400{
-                height: 100px;
-                width: 400px;
-                display: table;
-                text-align: right;
-                font-size: 22px;
-                font-family: 'RobotoDraft',sans-serif;
-            }
-
-            span {
-                display: table-cell;
-                vertical-align: middle;
-                padding-right: 20px;
-            }
-
-            .p700 {
-                background-color: #303f9f;
-                color: rgba(255, 255, 255, 0.87);
-            }
-            .p500 {
-                background-color: #3f51b5;
-                color: rgba(255, 255, 255, 0.87);
-            }
-            .p100 {
-                background-color: #c5cae9;
-                color:  rgba(0, 0, 0, 0.87);
-            }
-            .a100 {
-                background-color: #ff80ab;
-                color:  white;
-            }
-            .a200 {
-                background-color: #ff4081;
-                color:  rgba(0, 0, 0, 0.87);
-            }
-            .a400 {
-                background-color: #f50057;
-                color:  white;
-            }
 
 
         </style>
+
+
+        <button>Coucou</button>
 
 
         <div class="p500">
@@ -76,6 +44,7 @@
         <div class="a400">
             <span>a400</span>
         </div>
+
 
     </template>
 

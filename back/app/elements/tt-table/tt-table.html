@@ -6,7 +6,7 @@
 
 <link rel="import" href="tt-column.html">
 
-<polymer-element name="tt-table" attributes="data columns">
+<polymer-element name="tt-table" attributes="data columns sort">
     <template>
 
         <link rel="stylesheet" href="../../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
@@ -46,7 +46,7 @@
                 <thead>
                 <th template repeat="{{col in columns}}">
                     <tt-column column="{{col.column}}" sortable="{{col.sortable}}"
-                               on-sort="{{sortHandler}}">
+                               sort="{{sort}}"  on-sort="{{sortHandler}}">
                         {{col.title}}
                     </tt-column>
                 </th>
@@ -72,7 +72,7 @@
     <script>
         Polymer('tt-table', {
             columns: undefined,
-
+            sort: undefined,
             ready: function() {
                 this.rebuildColumns();
             },
@@ -89,10 +89,7 @@
                 this.fire('edit', { _id: toEdit});
             },
 
-            sortHandler: function (event, data, sender) {
-                console.log("Event Sort", data);
-                this.unSortAllCoumns(sender);
-            },
+
             rebuildColumns: function () {
                 // https://github.com/stevenrskelton/sortable-table/blob/master/sortable-table.html
                 var columnNodes = this.querySelectorAll('tt-column');
@@ -119,15 +116,19 @@
                 }
             },
 
-            unSortAllCoumns: function (exceptCol) {
-                var sortCols = this.shadowRoot.querySelectorAll('tt-column');
-                console.dir(sortCols);
-                [].forEach.call(sortCols, function (el, i) {
-                    if (el != exceptCol) {
-                        el.unsort();
-                    }
-                });
-            }
+//            sortHandler: function (event, data, sender) {
+//                console.log("Event Sort", data);
+//                this.unSortAllCoumns(sender);
+//            },
+//            unSortAllCoumns: function (exceptCol) {
+//                var sortCols = this.shadowRoot.querySelectorAll('tt-column');
+//                console.dir(sortCols);
+//                [].forEach.call(sortCols, function (el, i) {
+//                    if (el != exceptCol) {
+//                        el.unsort();
+//                    }
+//                });
+//            }
 
 
 
