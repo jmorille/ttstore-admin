@@ -7,25 +7,44 @@
     <template>
 
         <style>
+            .p700,.p500, .p100 , .a100, .a200, .a400{
+                height: 100px;
+                width: 400px;
+                display: table;
+                text-align: right;
+                font-size: 22px;
+                font-family: 'RobotoDraft',sans-serif;
+            }
+
+            span {
+                display: table-cell;
+                vertical-align: middle;
+                padding-right: 20px;
+            }
+
             .p700 {
                 background-color: #303f9f;
-                color: white;
+                color: rgba(255, 255, 255, 0.87);
             }
             .p500 {
                 background-color: #3f51b5;
-                color: white;
+                color: rgba(255, 255, 255, 0.87);
             }
             .p100 {
-                background-color: #c5caa9;
-            }
-            .a200 {
-                background-color: #ff4081;
+                background-color: #c5cae9;
+                color:  rgba(0, 0, 0, 0.87);
             }
             .a100 {
                 background-color: #ff80ab;
+                color:  white;
+            }
+            .a200 {
+                background-color: #ff4081;
+                color:  rgba(0, 0, 0, 0.87);
             }
             .a400 {
                 background-color: #f50057;
+                color:  white;
             }
 
 
@@ -33,17 +52,29 @@
 
 
         <div class="p500">
-            500
+            <span>500</span>
         </div>
 
         <div class="p100">
-            100
+             <span>100</span>
         </div>
         <div class="p500">
-            500
+             <span>500</span>
         </div>
         <div class="p700">
-            700
+             <span>700</span>
+        </div>
+
+        <div class="a100">
+            <span>a100</span>
+        </div>
+
+        <div class="a200">
+            <span>a200</span>
+        </div>
+
+        <div class="a400">
+            <span>a400</span>
         </div>
 
     </template>
