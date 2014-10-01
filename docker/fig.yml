@@ -1,12 +1,12 @@
 es:
-  image: jmorille/elasticsearch
+  image: jmorille/es
   ports:
    - "9200:9200"
   expose:
    - "9200"
   volumes:
-   - /data2/ttstore/logs:/opt/elasticsearch-1.3.2/logs
-   - /data2/ttstore/data:/opt/elasticsearch-1.3.2/data
+   - /data2/ttstore/logs:/opt/elasticsearch-1.3.3/logs
+   - /data2/ttstore/data:/opt/elasticsearch-1.3.3/data
 ttserver:
   image: jmorille/ttserver
   ports:
