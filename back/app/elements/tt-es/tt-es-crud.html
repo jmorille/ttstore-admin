@@ -1,0 +1,65 @@
+<!-- -->
+<link rel="import" href="../../components/polymer/polymer.html">
+
+
+<link rel="import" href="tt-es-base.html">
+
+<polymer-element name="tt-es-crud" hidden  extends="tt-es-base" attributes="entity">
+
+
+    <script>
+        Polymer('tt-es-crud', {
+
+
+            entityGet: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    refresh: true,
+                    id: entity._id
+                };
+                this.client.get(opt, this.entityCallback(this, callback));
+            },
+            entityUpdate: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    refresh: true,
+                    id: entity._id,
+                    version: entity._version,
+                    body: entity._source
+                };
+                this.client.index(opt, this.entityCallback(this, callback));
+            },
+            entityDelete: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    refresh: true,
+                    id: entity._id,
+                    version: entity._version
+                };
+                this.client.delete(opt, this.entityCallback(this, callback));
+            },
+
+            entityCallback: function (that, callback) {
+                return function (err, resp) {
+                    if (err) {
+                        console.error(err.message);
+                    } else  if (resp) {
+                        //console.dir(resp);
+                        that.entity = resp;
+                        if (callback) {
+                            callback(err, resp);
+                        }
+                    }
+                };
+            },
+
+
+        });
+    </script>
+</polymer-element>

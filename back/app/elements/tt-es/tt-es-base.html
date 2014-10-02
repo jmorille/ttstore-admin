@@ -1,0 +1,79 @@
+<!-- -->
+<link rel="import" href="../../components/polymer/polymer.html">
+
+<link rel="import" href="tt-es-base-lib.html">
+
+<polymer-element name="tt-es-base" hidden attributes="index type">
+
+
+    <script>
+        Polymer('tt-es-base', {
+            host: {
+                //  protocol: 'https',
+                //  host: '192.168.1.100',
+                // port : 9200,
+                //  port : 443,
+                // port : 8000,
+                //  path : '/'
+                path: '/es'
+            },
+
+
+            client: undefined,
+
+
+            created: function () {
+                this.response = [];
+                if (!this.host.host) {
+                    this.host.host = window.location.hostname;
+                }
+                if (!this.host.port) {
+                    if (window.location.port) {
+                        this.host.port = window.location.port;
+                    } else {
+                        switch (window.location.protocol) {
+                            case 'https:' :
+                                this.host.port = 443;
+                                break;
+                            case 'http:' :
+                                this.host.port = 80;
+                                break;
+                        }
+                    }
+                }
+                if (!this.host.protocol) {
+                    switch (window.location.protocol) {
+                        case 'https:' :
+                            this.host.protocol = 'https';
+                            break;
+                        case 'http:' :
+                            this.host.protocol = 'http';
+                            break;
+                    }
+                }
+                console.log("host.protocol : ", this.host.protocol);
+                console.log("host.host     : ", this.host.host);
+                console.log("host.port     : ", this.host.port);
+            },
+            ready: function () {
+                this.client = new elasticsearch.Client({
+                    host: this.host,
+                    log: 'info'
+                });
+
+            },
+            copyProperties: function (src, dest, override) {
+                dest = dest || {};
+                for (var attr in src) {
+                    if (src.hasOwnProperty(attr)) {
+                        if (override || !dest.hasOwnProperty(attr)) {
+                            dest[attr] = src[attr];
+                        }
+                    }
+                }
+                return dest;
+            }
+
+        });
+    </script>
+</polymer-element>

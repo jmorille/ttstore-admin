@@ -8,12 +8,11 @@
 <link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
 
 
-<link rel="import" href="tt-group-service.html">
-<link rel="import" href="../tt-es-crud/tt-es-crud.html">
+
+<link rel="import" href="../tt-es/tt-es-search.html">
 
 <link rel="import" href="../tt-table/tt-table.html">
-
-<link rel="import" href="../../tt-pagination/tt-pagination.html">
+<link rel="import" href="../tt-table/tt-pagination.html">
 
 <polymer-element name="tt-group-list" attributes="">
 
@@ -28,7 +27,7 @@
 
         </style>
 
-        <tt-group-service id="service" entities="{{data}}"></tt-group-service>
+        <tt-es-search id="service" index="users" type="user" entities="{{data}}"></tt-es-search>
 
 
         <section horizontal layout>

@@ -4,22 +4,26 @@ A Polymer element for paginating model data, rendering a set of pagination contr
 -->
 
 
-<link rel="import" href="../components/polymer/polymer.html">
+<link rel="import" href="../../components/polymer/polymer.html">
 
-<link rel="import" href="../components/core-a11y-keys/core-a11y-keys.html">
+<link rel="import" href="../../components/core-a11y-keys/core-a11y-keys.html">
 
-<!--<link rel="import" href="../components/paper-slider/paper-slider.html">-->
+<!--<link rel="import" href="../../components/paper-slider/paper-slider.html">-->
 
-<!--<link rel="import" href="../components/paper-dropdown/paper-dropdown-menu.html">-->
-<!--<link rel="import" href="../components/paper-item/paper-item.html">-->
+<!--<link rel="import" href="../../components/paper-dropdown/paper-dropdown-menu.html">-->
+<!--<link rel="import" href="../../components/paper-item/paper-item.html">-->
 
 <polymer-element name="tt-pagination" attributes="from size total range">
 
 <template>
-    <link rel="stylesheet" href="../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
+    <link rel="stylesheet" href="../../components/bootstrap/dist/css/bootstrap.css" shim-shadowdom>
     <style>
         :host {
             display: block;
+        }
+
+        .pagination > .active > a {
+            z-index : 0;
         }
     </style>
 
@@ -73,14 +77,16 @@ A Polymer element for paginating model data, rendering a set of pagination contr
         </li>
     </ul>
 
+
+
     <!--<paper-dropdown-menu  selected="20" valueattr="label">-->
-        <!--<paper-item label="10"></paper-item>-->
-        <!--<paper-item label="20"></paper-item>-->
-        <!--<paper-item label="50"></paper-item>-->
-        <!--<paper-item label="100"></paper-item>-->
+    <!--<paper-item label="10"></paper-item>-->
+    <!--<paper-item label="20"></paper-item>-->
+    <!--<paper-item label="50"></paper-item>-->
+    <!--<paper-item label="100"></paper-item>-->
     <!--</paper-dropdown-menu>-->
 
-    <core-a11y-keys target="{{}}" keys="up down left right" on-keys-pressed="{{arrowHandler}}"></core-a11y-keys>
+    <core-a11y-keys target="{{}}" keys="up down left right pagedown" on-keys-pressed="{{arrowHandler}}"></core-a11y-keys>
 
 
 </template>
@@ -89,9 +95,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
     Polymer('tt-pagination', {
 
         firstpage: 1,
-        observe: {
-            size: 'validateSize'
-        },
+        lastpage: 1,
         currentpage: 2,
         created: function () {
             this.currentRange = [];
@@ -107,8 +111,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
         arrowHandler: function (ev) {
             console.log("°°°°°°°°°°°°°°°°°°°°°°°°° : ", ev.detail);
         },
-
-        validateSize: function (oldValue, newValue) {
+        sizeChanged: function (oldValue, newValue, args) {
             if (oldValue != newValue) {
                 //console.log("Change Size : ", { 'oldValue': oldValue, 'newValue': newValue, "current": this.size });
                 // The from size need to be re calculate
@@ -124,7 +127,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
         },
         selectPage: function (e, data, sender) {
             var pageid = sender.getAttribute('pageid');
-           // console.log("select Page : ", pageid);
+            // console.log("select Page : ", pageid);
             // verb control
             switch (pageid) {
                 case "next" :
