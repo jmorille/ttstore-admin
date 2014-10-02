@@ -88,7 +88,8 @@
                     <div>Hello World!</div>
                 </core-toolbar>
 
-                <core-animated-pages selected="{{selected}}" flex auto>
+                <core-animated-pages selected="{{selected}}" flex auto
+                                     on-core-select="{{selectedPrepareHandler}}">
 
 
                     <user-admin name="users" class="card"></user-admin>
@@ -122,6 +123,15 @@
             },
             showCategories: function () {
                 this.selected = 'categories';
+            },
+            selectedPrepareHandler: function (event, data, target) {
+//                if (data.isSelected) {
+//                    console.log("------ prepare : ", this.selected );
+//                    console.log("------ event : ", event );
+//                    console.log("------ data : ", data );
+//                    console.log("------ detail : ", event.detail );
+//
+//                }
             }
 
         });

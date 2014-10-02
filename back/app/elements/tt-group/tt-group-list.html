@@ -18,6 +18,8 @@
 
 <link rel="import" href="../tt-table/tt-table.html">
 <link rel="import" href="../tt-table/tt-pagination.html">
+<link rel="import" href="../tt-table/tt-column.html">
+
 
 <polymer-element name="tt-group-list" attributes="">
 
@@ -63,15 +65,23 @@
                         <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
                     </core-field>
                     <paper-item id="filter_panel_button" icon="filter" label="Filters"
-                                       on-tap="{{toggleFilter}}">
-                     </paper-item>
+                                on-tap="{{toggleFilter}}">
+                    </paper-item>
                 </section>
 
                 <tt-table data="{{data.hits}}" sort="{{searchOpt.sort}}"
                           on-sort="{{sortHandler}}">
-                    <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
-                    <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
-                    <tt-column column="email" sortable>Email</tt-column>
+                    <tt-thead>
+                        <th>
+                            <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
+                        </th>
+                        <th>
+                            <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
+                        </th>
+                        <th>
+                            <tt-column column="email" sortable>Email</tt-column>
+                        </th>
+                    </tt-thead>
                 </tt-table>
 
 

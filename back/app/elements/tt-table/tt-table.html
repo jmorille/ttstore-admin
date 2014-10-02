@@ -27,26 +27,27 @@
         </style>
 
         <template id="action">
-            <paper-icon-button icon="editor:mode-edit" entity-id="{{item._id}}" on-tap="{{editHandler}}"></paper-icon-button>
+            <paper-icon-button icon="editor:mode-edit" entity-id="{{item._id}}"
+                               on-tap="{{editHandler}}"></paper-icon-button>
             <paper-icon-button icon="delete" entity-id="{{item._id}}" on-tap="{{deleteHandler}}"></paper-icon-button>
         </template>
 
         <template id="tfooter">
-             <tr>
-                <td colspan="3">Coucou le footer xxxxx xxxxxx  xxxxxx  xxxxx  xxxx xxxxx</td>
-             </tr>
+            <tr>
+                <td colspan="3">Coucou le footer xxxxx xxxxxx xxxxxx xxxxx xxxx xxxxx</td>
+            </tr>
         </template>
 
         <template id="theader">
 
         </template>
 
-        <div class="table-responsive"  >
+        <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover" data-mode="reflow">
                 <thead>
                 <th template repeat="{{col in columns}}">
                     <tt-column column="{{col.column}}" sortable="{{col.sortable}}"
-                               sort="{{sort}}"  on-sort="{{sortHandler}}">
+                               sort="{{sort}}" on-sort="{{sortHandler}}">
                         {{col.title}}
                     </tt-column>
                 </th>
@@ -59,7 +60,7 @@
                         {{item._source[col.column]}}
                     </td>
                     <td>
-                        <template bind ref="action" ></template>
+                        <template bind ref="action"></template>
                     </td>
                 </tr>
                 </tbody>
@@ -67,13 +68,16 @@
             </table>
         </div>
 
+
+
+
     </template>
 
     <script>
         Polymer('tt-table', {
             columns: undefined,
             sort: undefined,
-            ready: function() {
+            ready: function () {
                 this.rebuildColumns();
             },
             getLineEntityId: function (e, data, sender) {
@@ -102,7 +106,7 @@
                         var sortableCol = elt.getAttribute('sortable');
                         // Title
                         var title = elt.getAttribute('title');
-                        if(!title || title === '') title = elt.textContent.trim();
+                        if (!title || title === '') title = elt.textContent.trim();
                         // Column obj
                         var colObj = {
                             column: name,
@@ -129,7 +133,6 @@
 //                    }
 //                });
 //            }
-
 
 
         });
