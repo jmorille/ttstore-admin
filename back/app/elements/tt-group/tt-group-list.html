@@ -4,9 +4,12 @@
 
 <link rel="import" href="../../components/core-field/core-field.html">
 
+<link rel="import" href="../../components/core-drawer-panel/core-drawer-panel.html">
+<link rel="import" href="../../components/core-header-panel/core-header-panel.html">
+
+
 <link rel="import" href="../../components/paper-input/paper-input.html">
 <link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
-
 
 
 <link rel="import" href="../tt-es/tt-es-search.html">
@@ -25,9 +28,30 @@
                 text-transform: capitalize;
             }
 
+            [drawer] {
+                background-color: greenyellow;
+                border-right: 1px solid #ccc;
+
+            }
+
+            [main] {
+                background-image: linear-gradient(60deg, #c5cae9, white);
+
+            }
+
+            /*#filter_panel_button{*/
+            /*display: none;*/
+            /*}*/
+
+            core-drawer-panel[narrow] #filter_panel_button {
+                display: inline-block
+            }
+
+
         </style>
 
         <tt-es-search id="service" index="users" type="user" entities="{{data}}"></tt-es-search>
+
 
 
         <section horizontal layout>
@@ -36,24 +60,38 @@
                              on-input="{{onSearchSuggest}}"></paper-input>
                 <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
             </core-field>
+            <paper-icon-button id="filter_panel_button" icon="filter" on-tap="{{toggleFilter}}"></paper-icon-button>
+
         </section>
 
 
-        <tt-table data="{{data.hits}}"  sort="{{searchOpt.sort}}"
-                  on-sort="{{sortHandler}}">
-            <tt-column column="firstname" sortable="$.raw">prénom</tt-column>
-            <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
-            <tt-column column="email" sortable >Email</tt-column>
-        </tt-table>
+        <section style=" position: absolute; width: 100vw;height: 100vh">
+            <core-drawer-panel id="filter_panel"  >
+                <div main  style="background-color: greenyellow">
+                    <section>
+                        <tt-table data="{{data.hits}}" sort="{{searchOpt.sort}}"
+                                  on-sort="{{sortHandler}}">
+                            <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
+                            <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
+                            <tt-column column="email" sortable>Email</tt-column>
+                        </tt-table>
 
 
-        <tt-pagination range="{{rangesize}}"
-                       from="{{searchOpt.from}}" size="{{searchOpt.size}}"
-                       total="{{data.hits.total}}"
-                       on-change="{{pagingHandler}}">
-         </tt-pagination>
+                        <tt-pagination range="{{rangesize}}"
+                                       from="{{searchOpt.from}}" size="{{searchOpt.size}}"
+                                       total="{{data.hits.total}}"
+                                       on-change="{{pagingHandler}}">
+                        </tt-pagination>
 
-
+                    </section>
+                </div>
+                <div drawer rightDrawer style="background-color: red" class="right-drawer">
+                    <section>
+                        Filter ..
+                    </section>
+                </div>
+            </core-drawer-panel>
+        </section>
 
     </template>
 
@@ -83,6 +121,9 @@
             ready: function () {
 
             },
+            toggleFilter: function () {
+                this.$.filter_panel.togglePanel();
+            },
             search: function (optToSave) {
                 var that = this;
                 // Save Options
@@ -90,13 +131,13 @@
                     this.$.service.copyProperties(optToSave, this.searchOpt, true);
                 }
                 // Clone Search Options to send
-                var searchOpt =  this.$.service.copyProperties(this.searchOpt);
+                var searchOpt = this.$.service.copyProperties(this.searchOpt);
                 // Add Search Criteria
                 if (this.searchText) {
-                    searchOpt.body =   ejs.Request().query(ejs.MatchQuery('firstname', this.searchText));
+                    searchOpt.body = ejs.Request().query(ejs.MatchQuery('firstname', this.searchText));
                 }
                 // Search Service
-                 this.$.service.entitySearch(searchOpt, function (err, resp) {
+                this.$.service.entitySearch(searchOpt, function (err, resp) {
                     console.log("Search Result for ", searchOpt);
                 });
             },
@@ -106,7 +147,7 @@
                 });
             },
             sortHandler: function (event, data, sender) {
-                this.searchOpt.sort= [ data.column+":"+data.order ];
+                this.searchOpt.sort = [ data.column + ":" + data.order ];
                 this.$.service.entitySearch(this.searchOpt);
             },
             pagingHandler: function (e, detail, sender) {

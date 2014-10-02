@@ -13,7 +13,9 @@
 
         <core-animated-pages selected="{{pageSelected}}" flex auto>
             <tt-group-list name="list" on-edit="{{editHandler}}" on-delete="{{deleteHandler}}"></tt-group-list>
-            <tt-group-edit name="edit" entityid="{{entityid}}"></tt-group-edit>
+            <tt-group-edit name="edit" entityid="{{entityid}}"
+                    on-cancel="{{onEditCancelHandler}}"
+                    ></tt-group-edit>
         </core-animated-pages>
 
     </template>
@@ -37,6 +39,9 @@
             },
             deleteHandler: function (event, data, sender) {
 
+            },
+            onEditCancelHandler: function () {
+                this.openList();
             }
 
         });

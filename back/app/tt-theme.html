@@ -1,6 +1,8 @@
 <!-- -->
 <link rel="import" href="components/polymer/polymer.html">
 
+<link rel="import" href="components/core-drawer-panel/core-drawer-panel.html">
+<link rel="import" href="components/core-header-panel/core-header-panel.html">
 
 <link rel="import" href="components/core-style/core-style.html">
 
@@ -16,34 +18,62 @@
         </style>
 
 
-        <button>Coucou</button>
+        <core-drawer-panel>
+            <div drawer class="left-drawer"></div>
+            <core-drawer-panel main rightDrawer>
+                <div drawer class="right-drawer">
+                    <section>
+                        aaaaaaaaaaaaaaaaaaaaaaaaaaa
+                    </section>
+                </div>
+                <div main> <section>wwwwwwwwwwwwwwwwwww</section></div>
+            </core-drawer-panel>
+        </core-drawer-panel>
 
 
-        <div class="p500" horizontal layout center end-justified>
-            <div>500</div>
-        </div>
 
-        <div class="p100"  horizontal layout center end-justified>
-             <span>100</span>
-        </div>
-        <div class="p500"  horizontal layout center end-justified>
-             <span>500</span>
-        </div>
-        <div class="p700"  horizontal layout center end-justified>
-             <span>700</span>
-        </div>
 
-        <div class="a100"  horizontal layout center end-justified>
-            <span>a100</span>
-        </div>
 
-        <div class="a200"  horizontal layout center end-justified>
-            <span>a200</span>
-        </div>
 
-        <div class="a400"  horizontal layout center end-justified>
-            <span>a400</span>
-        </div>
+        <core-drawer-panel rightDrawer>
+            <core-header-panel drawer>
+                <div>
+                    Filter ..
+                    <button>Coucou</button>
+                </div>
+            </core-header-panel>
+
+            <core-header-panel main>
+                <section>
+                    <div class="p500" horizontal layout center end-justified>
+                        <div>500</div>
+                    </div>
+
+                    <div class="p100" horizontal layout center end-justified>
+                        <span>100</span>
+                    </div>
+                    <div class="p500" horizontal layout center end-justified>
+                        <span>500</span>
+                    </div>
+                    <div class="p700" horizontal layout center end-justified>
+                        <span>700</span>
+                    </div>
+
+                    <div class="a100" horizontal layout center end-justified>
+                        <span>a100</span>
+                    </div>
+
+                    <div class="a200" horizontal layout center end-justified>
+                        <span>a200</span>
+                    </div>
+
+                    <div class="a400" horizontal layout center end-justified>
+                        <span>a400</span>
+                    </div>
+                </section>
+            </core-header-panel>
+
+        </core-drawer-panel>
 
 
     </template>
