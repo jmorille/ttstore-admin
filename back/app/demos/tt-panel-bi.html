@@ -1,14 +1,14 @@
 
-<link rel="import" href="components/polymer/polymer.html">
+<link rel="import" href="../components/polymer/polymer.html">
 
-<link rel="import" href="components/core-drawer-panel/core-drawer-panel.html">
-<link rel="import" href="components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../components/core-drawer-panel/core-drawer-panel.html">
+<link rel="import" href="../components/core-header-panel/core-header-panel.html">
 
-<link rel="import" href="components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../components/paper-icon-button/paper-icon-button.html">
 
-<link rel="import" href="components/core-icon/core-icon.html">
-<link rel="import" href="components/core-item/core-item.html">
-<link rel="import" href="components/core-icons/core-icons.html">
+<link rel="import" href="../components/core-icon/core-icon.html">
+<link rel="import" href="../components/core-item/core-item.html">
+<link rel="import" href="../components/core-icons/core-icons.html">
 
 <polymer-element name="tt-panel-bi" attributes="">
 
@@ -49,14 +49,14 @@
         </style>
 
 
-        <core-drawer-panel id="main_panel">
+        <core-drawer-panel id="main_panel" >
             <div drawer class="left-drawer">
                 <section>
                     Premier menu
                     <paper-icon-button icon="search" on-tap="{{searchReset}}" label="Search"></paper-icon-button>
                 </section>
             </div>
-            <core-drawer-panel main rightDrawer id="second_panel">
+            <core-drawer-panel main rightDrawer id="second_panel" responsiveWidth="840px">
                 <div drawer class="right-drawer">
                     <section>
                         Second menu

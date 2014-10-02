@@ -11,6 +11,8 @@
 <link rel="import" href="../../components/paper-input/paper-input.html">
 <link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
 
+<link rel="import" href="../../components/paper-item/paper-item.html">
+
 
 <link rel="import" href="../tt-es/tt-es-search.html">
 
@@ -29,19 +31,17 @@
             }
 
             [drawer] {
-                background-color: greenyellow;
                 border-right: 1px solid #ccc;
-
+                background-image: linear-gradient(60deg, #c5cae9, white);
             }
 
             [main] {
-                background-image: linear-gradient(60deg, #c5cae9, white);
 
             }
 
-            /*#filter_panel_button{*/
-            /*display: none;*/
-            /*}*/
+            #filter_panel_button {
+                display: none;
+            }
 
             core-drawer-panel[narrow] #filter_panel_button {
                 display: inline-block
@@ -53,45 +53,55 @@
         <tt-es-search id="service" index="users" type="user" entities="{{data}}"></tt-es-search>
 
 
+        <template id="result_list">
+            <div vertical layout>
 
-        <section horizontal layout>
-            <core-field>
-                <paper-input placeHolder="Search Text" inputValue="{{searchText}}"
-                             on-input="{{onSearchSuggest}}"></paper-input>
-                <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
-            </core-field>
-            <paper-icon-button id="filter_panel_button" icon="filter" on-tap="{{toggleFilter}}"></paper-icon-button>
+                <section horizontal layout>
+                    <core-field>
+                        <paper-input placeHolder="Search Text" inputValue="{{searchText}}"
+                                     on-input="{{onSearchSuggest}}"></paper-input>
+                        <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
+                    </core-field>
+                    <paper-item id="filter_panel_button" icon="filter" label="Filters"
+                                       on-tap="{{toggleFilter}}">
+                     </paper-item>
+                </section>
 
-        </section>
-
-
-        <section style=" position: absolute; width: 100vw;height: 100vh">
-            <core-drawer-panel id="filter_panel"  >
-                <div main  style="background-color: greenyellow">
-                    <section>
-                        <tt-table data="{{data.hits}}" sort="{{searchOpt.sort}}"
-                                  on-sort="{{sortHandler}}">
-                            <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
-                            <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
-                            <tt-column column="email" sortable>Email</tt-column>
-                        </tt-table>
+                <tt-table data="{{data.hits}}" sort="{{searchOpt.sort}}"
+                          on-sort="{{sortHandler}}">
+                    <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
+                    <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
+                    <tt-column column="email" sortable>Email</tt-column>
+                </tt-table>
 
 
-                        <tt-pagination range="{{rangesize}}"
-                                       from="{{searchOpt.from}}" size="{{searchOpt.size}}"
-                                       total="{{data.hits.total}}"
-                                       on-change="{{pagingHandler}}">
-                        </tt-pagination>
+                <tt-pagination range="{{rangesize}}"
+                               from="{{searchOpt.from}}" size="{{searchOpt.size}}"
+                               total="{{data.hits.total}}"
+                               on-change="{{pagingHandler}}">
+                </tt-pagination>
+            </div>
+        </template>
 
-                    </section>
-                </div>
-                <div drawer rightDrawer style="background-color: red" class="right-drawer">
-                    <section>
-                        Filter ..
-                    </section>
-                </div>
-            </core-drawer-panel>
-        </section>
+        <template id="result_filter">
+            <h2>Filter</h2>
+        </template>
+
+        <core-drawer-panel rightDrawer id="filter_panel" responsiveWidth="1024px"
+                           style="height: 100vh;">
+            <div drawer class="right-drawer">
+                <section>
+
+                    <template bind ref="result_filter"></template>
+                </section>
+            </div>
+            <div main>
+                <section>
+                    <template bind ref="result_list"></template>
+                </section>
+            </div>
+        </core-drawer-panel>
+
 
     </template>
 
