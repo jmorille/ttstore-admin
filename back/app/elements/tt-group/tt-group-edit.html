@@ -10,7 +10,7 @@
 
 
     <template>
-        <tt-es-crud id="service" index="users" type="user"  entity="{{data}}"></tt-es-crud>
+        <tt-es-crud id="service" index="users" type="user" entity="{{data}}"></tt-es-crud>
 
 
         <section>
@@ -21,18 +21,20 @@
 
 
         <template bind="{{data._source}}">
+            <section id="editForm">
 
-            <paper-input floatingLabel label="First name" inputValue="{{firstname}}" ></paper-input>
-            <paper-input floatingLabel label="Last name" inputValue="{{ lastname}}"></paper-input>
-            <paper-input floatingLabel label="Email" type="email" inputValue="{{email}}"
-                         on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
-                         id="email_comp"
-                         error="Input is not an email!"></paper-input>
-            <paper-input floatingLabel label="Email" type="email" inputValue="{{email2}}"
-                         on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
-                         id="email_comp2"
-                         error="Input is not an email!"></paper-input>
-            <paper-shadow z="2"></paper-shadow>
+                <paper-input floatingLabel label="First name" inputValue="{{firstname}}"></paper-input>
+                <paper-input floatingLabel label="Last name" inputValue="{{ lastname}}"></paper-input>
+                <paper-input floatingLabel label="Email" type="email" inputValue="{{email}}"
+                             on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
+                             id="email_comp"
+                             error="Input is not an email!"></paper-input>
+                <paper-input floatingLabel label="Email" type="email" inputValue="{{email2}}"
+                             on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
+                             id="email_comp2"
+                             error="Input is not an email!"></paper-input>
+                <paper-shadow z="2"></paper-shadow>
+            </section>
         </template>
 
     </template>
@@ -49,7 +51,7 @@
 
             onSave: function () {
                 if (this.isValid()) {
-                    console.log("entity-save" , this.entity);
+                    console.log("entity-save", this.entity);
                     this.fire('save', this.entity);
                 } else {
                     this.$.toast_validate_ko.show();
@@ -67,6 +69,18 @@
             },
 
             isValid: function () {
+                var childNodes = this.shadowRoot.querySelectorAll('#editForm > *');
+                [].forEach.call(childNodes, function (childNode, i) {
+                    if (typeof childNode['checkValidity'] == 'function') {
+                        var validField = childNode['checkValidity']();
+                        console.log("--  : " + childNode.inputValue + " : is valid " + validField);
+                        if (!validField) {
+                            validFields = validField;
+                            console.err("--  : " + childNode.id + " : is valid " + validField);
+                        }
+                    }
+
+                });
                 return true;
             }
 
