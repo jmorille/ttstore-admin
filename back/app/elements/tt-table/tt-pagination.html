@@ -53,7 +53,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
     <ul class="pagination pagination-lg">
         <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
             on-tap="{{selectPage}}" pageid="first">
-            <a>First</a>
+            <a>&vartriangleleft;</a>
         </li>
         <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
             on-tap="{{selectPage}}" pageid="previous">
@@ -73,7 +73,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
         </li>
         <li class="{{ currentpage >= lastpage ? 'disabled' : '' }}"
             on-tap="{{selectPage}}" pageid="last">
-            <a>Last</a>
+            <a>&vartriangleright;</a>
         </li>
     </ul>
 

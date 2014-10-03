@@ -26,13 +26,24 @@
                 return function (err, resp) {
                     if (err) {
                         console.error(err.message);
+                        // Fire Event
+                        that.fire("error", {
+                            error: err,
+                            response:resp,
+                            status: resp.status
+                        });
                     } else  if (resp) {
-                        //console.dir(resp);
-                        that.fire('search-response', resp);
+                        // Save Response
                         that.entities = resp;
-                        if (callback) {
-                            callback(err, resp);
-                        }
+                        // Fire Event
+                        that.fire("response", {
+                            response:resp,
+                            status: resp.status
+                        });
+                    }
+                    // Send To Callback
+                    if (callback) {
+                        callback(err, resp);
                     }
                 };
             }
