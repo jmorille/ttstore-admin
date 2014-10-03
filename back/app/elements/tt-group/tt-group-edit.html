@@ -190,7 +190,7 @@
                     // Merge Not Conflict
                     if (difMergeable) {
                         for (var attr in difMergeable) {
-                           // TODO this.data._source[attr] = difMergeable[attr];
+                            that.data._source[attr] = difMergeable[attr];
                         }
                     }
                     // TODO Conflict
@@ -233,7 +233,13 @@
             console.log("Entity Delete ------------------");
         },
         onClose: function () {
-            this.fire('cancel', this.entity);
+            var diff = this.diffProperties(this.dataOri._source, this.data._source);
+            if (diff) {
+              // TODO Show Popup
+              //  this.$.toast_save_not_need.show();
+            } else {
+                this.fire('cancel', this.entity);
+            }
         },
 
         isValid: function (errorCallback) {
