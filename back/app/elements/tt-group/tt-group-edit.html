@@ -177,22 +177,46 @@
                 if (!err) {
                     var diffUser = that.diffProperties( dataOri._source, data._source);
                     var difServer = that.diffProperties( dataOri._source, resp._source);
-                    var difDelta = that.diffProperties(difServer, diffUser);
-                    var difConflict = that.diffProperties(diffUser, difServer);
+                    // Compute confliect
+                    var difConflict = that.existProperties(difServer, diffUser);
+                    var difMergeable = that.notExistProperties(difServer, diffUser);
                     console.log("---------- Conflict resolution");
                     console.log("Diff User", diffUser);
                     console.log("Diff Server", difServer);
-                    console.log("Diff Delta", difDelta);
-                    console.log("Diff Conflict", difConflict);
                     console.log("---------- ");
-                    console.log("Data", data._source);
-                    console.log("Data Ori", dataOri._source);
-                    console.log("Resp ", resp._source);
+                    console.log("Conflict User-Server", difConflict);
+                    console.log("Mergeable User", difMergeable);
+                    console.log("---------- ");
+                    // Merge Not Conflict
+                    if (difMergeable) {
+                        for (var attr in difMergeable) {
+                           // TODO this.data._source[attr] = difMergeable[attr];
+                        }
+                    }
+                    // TODO Conflict
+                    // difConflict
                     console.log("---------- Conflict resolution END");
                 }
             }
         },
-
+        existProperties: function (server, client, conflict) {
+            conflict = conflict || {};
+            for (var attr in server) {
+               if ( server.hasOwnProperty(attr) && client.hasOwnProperty(attr)) {
+                   conflict[attr] = client[attr];
+               }
+            }
+            return this.isEmptyObj(conflict) ? undefined : conflict;
+        },
+        notExistProperties: function (server, client, conflict) {
+            conflict = conflict || {};
+            for (var attr in client) {
+                if ( client.hasOwnProperty(attr) && !server.hasOwnProperty(attr)) {
+                    conflict[attr] = client[attr];
+                }
+            }
+            return this.isEmptyObj(conflict) ? undefined : conflict;
+        },
         notifValidityErrors: function (errorNodes) {
             this.$.toast_validate_ko.show();
         },
