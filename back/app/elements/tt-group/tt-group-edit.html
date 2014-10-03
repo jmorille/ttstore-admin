@@ -21,81 +21,103 @@
 <polymer-element name="tt-group-edit" attributes="entityid data">
 
 
-    <template>
+<template>
 
-        <core-style ref="tt-group-edit"></core-style>
+    <core-style ref="tt-group-edit"></core-style>
 
-        <tt-es-crud id="service" index="users" type="user"
-                    on-error="{{crudErrorHandler}}"
-                    on-success="{{crudSuccesHandler}}"
-                    entity="{{data}}"></tt-es-crud>
+    <tt-es-crud id="service" index="users" type="user"
+                on-error="{{crudErrorHandler}}"
+                on-success="{{crudSuccesHandler}}"
+                entity="{{data}}"></tt-es-crud>
 
-        <section>
-            <paper-icon-button icon="delete" on-tap="{{onDelete}}"></paper-icon-button>
-            <paper-icon-button icon="check" on-tap="{{onSave}}"></paper-icon-button>
-            <paper-icon-button icon="close" on-tap="{{onClose}}"></paper-icon-button>
+    <section>
+        <paper-icon-button icon="delete" on-tap="{{onDelete}}"></paper-icon-button>
+        <paper-icon-button icon="check" on-tap="{{onSave}}"></paper-icon-button>
+        <paper-icon-button icon="close" on-tap="{{onClose}}"></paper-icon-button>
+    </section>
+
+
+    <template bind="{{ data._source}}">
+        <section id="editForm">
+            <paper-input floatingLabel label="First name" inputValue="{{ firstname}}"></paper-input>
+            <paper-input floatingLabel label="Last name" inputValue="{{ lastname}}"></paper-input>
+            <paper-input floatingLabel label="Email" type="email" inputValue="{{email}}"
+                         on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
+                         id="email_comp"
+                         error="Input is not an email!"></paper-input>
+            <paper-input floatingLabel label="Email" type="email" inputValue="{{email2}}"
+                         on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
+                         id="email_comp2"
+                         error="Input is not an email!"></paper-input>
+            <paper-shadow z="2"></paper-shadow>
         </section>
-
-
-        <template bind="{{ data._source}}">
-            <section id="editForm">
-                <paper-input floatingLabel label="First name" inputValue="{{ firstname}}"></paper-input>
-                <paper-input floatingLabel label="Last name" inputValue="{{ lastname}}"></paper-input>
-                <paper-input floatingLabel label="Email" type="email" inputValue="{{email}}"
-                             on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
-                             id="email_comp"
-                             error="Input is not an email!"></paper-input>
-                <paper-input floatingLabel label="Email" type="email" inputValue="{{email2}}"
-                             on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
-                             id="email_comp2"
-                             error="Input is not an email!"></paper-input>
-                <paper-shadow z="2"></paper-shadow>
-            </section>
-        </template>
-
-        <paper-toast id="toast_save_ok" class="capsule" text="Entity Save."></paper-toast>
-        <paper-toast id="toast_save_ko" class="capsule toast-error" text="Error in saving Entity"></paper-toast>
-        <paper-toast id="toast_save_ko_conflict" class="capsule toast-error"
-                     text="Conflict in saving Entity"></paper-toast>
-
-        <paper-toast id="toast_validate_ko" class="capsule toast-error" text="Error in validate Entity"></paper-toast>
-
-
     </template>
 
-    <script>
-        Polymer('tt-group-edit', {
-            data: undefined,
-            // On Save : Reload the Data
-            reloadOnSave: false,
-            ready: function () {
+    <paper-toast id="toast_save_ok" class="capsule" text="Entity Save."></paper-toast>
+    <paper-toast id="toast_save_not_need" class="capsule" text="Nothing to Save."></paper-toast>
 
-            },
-            createContentTemplate: function () {
-                if (this.$.content) {
-                    console.log("Content template create form content");
-                    var tpl = document.createElement('template');
-                    tpl.id = 'contentTemplate';
-                    tpl.innerHTML = this.$.content.innerHTML;
-                    // Add To ShadowRoot
-                    this.shadowRoot.appendChild(tpl);
-                }
-            },
+    <paper-toast id="toast_save_ko" class="capsule toast-error" text="Error in saving Entity"></paper-toast>
+    <paper-toast id="toast_save_ko_conflict" class="capsule toast-error"
+                 text="Conflict in saving Entity"></paper-toast>
 
-            entityidChanged: function () {
-                if (this.entityid) {
-                    // Update Mode
-                    this.$.service.entityGet({_id: this.entityid});
-                } else {
-                    // Create Mode
-                    this.data = {
-                        _source: {}
-                    };
-                }
-            },
- 
-            onSave: function () {
-                if (this.isValid(this.notifValidityErrors.bind(this))) {
+    <paper-toast id="toast_validate_ko" class="capsule toast-error" text="Error in validate Entity"></paper-toast>
+
+
+</template>
+
+<script>
+    Polymer('tt-group-edit', {
+        entityid: undefined,
+        data: undefined,
+        dataOri: undefined,
+        // On Save : Reload the Data
+        reloadOnSave: false,
+        ready: function () {
+
+        },
+        observe: {
+            'data._version': 'dataChanged'
+        },
+//            createContentTemplate: function () {
+//                if (this.$.content) {
+//                    console.log("Content template create form content");
+//                    var tpl = document.createElement('template');
+//                    tpl.id = 'contentTemplate';
+//                    tpl.innerHTML = this.$.content.innerHTML;
+//                    // Add To ShadowRoot
+//                    this.shadowRoot.appendChild(tpl);
+//                }
+//            },
+
+        entityidChanged: function () {
+            if (this.entityid) {
+                // Update Mode
+                this.onGet();
+            } else {
+                // Create Mode
+                this.data = {
+                    _source: {}
+                };
+            }
+        },
+        dataChanged: function () {
+            // call also for _version change
+            this.dataOri = this.$.service.copyProperties(this.data);
+        },
+
+
+        isEmptyObj: function (obj) {
+            return (Object.getOwnPropertyNames(obj).length === 0);
+        },
+        onGet: function (callback) {
+            this.$.service.entityGet({_id: this.entityid} , callback );
+        },
+
+        onSave: function () {
+            if (this.isValid(this.notifValidityErrors.bind(this))) {
+                // Compute Diff
+                if (this.isDiff(this.notifNotDiff.bind(this))) {
+                    // Save Or Create
                     if (this.data._id) {
                         console.log("---- Update entity :", this.data);
                         this.$.service.entityUpdate(this.data);
@@ -103,85 +125,153 @@
                         console.log("---- Create entity :", this.data);
                         this.$.service.entityCreate(this.data);
                     }
-                    // this.fire('save', this.entity);
                 }
-            },
+                // this.fire('save', this.entity);
+            }
+        },
 
-            crudSuccesHandler: function (event, detail, target) {
-                var resp = detail.response;
-                // Increment version or reload data ?
-                if (this.reloadOnSave) {
-                    console.log("Reload on save");
-                    this.$.service.entityGet({_id: resp._id});
-                } else {
-                    this.data._version = resp._version;
+        crudSuccesHandler: function (event, detail, target) {
+            var resp = detail.response;
+            // Check Existing id
+            if (this.entityid) {
+                this.entityid = resp._id;
+            }
+            if (this.data._id) {
+                this.data._id = resp._id;
+            }
+            // Increment version or reload data ?
+            if (this.reloadOnSave) {
+                console.log("Reload on save");
+                this.onGet();
+                this.$.service.entityGet({_id: resp._id});
+            } else {
+                // Update version
+                this.data._version = resp._version;
+                // Clone the version
+                //this.dataOri = this.$.service.copyProperties(this.data._source);
+            }
+            // Show Notification
+            //this.job('toast_save_ok', function () {
+            this.$.toast_save_ok.show();
+            // }, 100);
+        },
+
+        crudErrorHandler: function (event, detail, target) {
+            var err = detail.error;
+            var resp = detail.response;
+            var status = resp.status;
+            if (status === 409) {
+                // 409 : Conflict
+                this.$.toast_save_ko_conflict.show();
+               // console.error(err);
+                // conflict resolution with reload data
+                this.onGet(this.conflictResolution(this,this.dataOri, this.data));
+            } else {
+                //this.job('toast_save_ko', function () {
+                this.$.toast_save_ko.show();
+                //}, 100);
+            }
+        },
+        conflictResolution: function (that, dataOri, data) {
+            return function (err, resp) {
+                if (!err) {
+                    var diffUser = that.diffProperties( dataOri._source, data._source);
+                    var difServer = that.diffProperties( dataOri._source, resp._source);
+                    var difDelta = that.diffProperties(difServer, diffUser);
+                    var difConflict = that.diffProperties(diffUser, difServer);
+                    console.log("---------- Conflict resolution");
+                    console.log("Diff User", diffUser);
+                    console.log("Diff Server", difServer);
+                    console.log("Diff Delta", difDelta);
+                    console.log("Diff Conflict", difConflict);
+                    console.log("---------- ");
+                    console.log("Data", data._source);
+                    console.log("Data Ori", dataOri._source);
+                    console.log("Resp ", resp._source);
+                    console.log("---------- Conflict resolution END");
                 }
-                // Show Notification
-                //this.job('toast_save_ok', function () {
-                    this.$.toast_save_ok.show();
-               // }, 100);
-            },
+            }
+        },
 
-            crudErrorHandler: function (event, detail, target) {
-                var err = detail.error;
-                var resp = detail.response;
-                var status = resp.status;
-                if (status === 409) {
-                    // 409 : Conflict
-                    this.$.toast_save_ko_conflict.show();
-                    console.error(err);
-                } else {
-                    //this.job('toast_save_ko', function () {
-                    this.$.toast_save_ko.show();
-                    //}, 100);
-                }
+        notifValidityErrors: function (errorNodes) {
+            this.$.toast_validate_ko.show();
+        },
+        notifNotDiff: function () {
+            this.job('toast_save_not_need', function () {
+                this.$.toast_save_not_need.show();
+            }, 100);
+        },
 
-            },
+        onDelete: function () {
+            console.log("Entity Delete");
+            var entityTodel = this.entity;
+            this.fire('delete', entityTodel);
+            console.log("Entity Delete ------------------");
+        },
+        onClose: function () {
+            this.fire('cancel', this.entity);
+        },
 
-            notifValidityErrors: function (errorNodes) {
-                this.$.toast_validate_ko.show();
-            },
-
-
-            onDelete: function () {
-                console.log("Entity Delete");
-                var entityTodel = this.entity;
-                this.fire('delete', entityTodel);
-                console.log("Entity Delete ------------------");
-            },
-            onClose: function () {
-                this.fire('cancel', this.entity);
-            },
-
-            isValid: function (errorCallback) {
-                var childNodes = this.shadowRoot.querySelectorAll('#editForm > *');
-                var nodeFocus = undefined;
-                var errorNodes = [];
-                var valid = true;
-                [].forEach.call(childNodes, function (childNode, i) {
-                    if (typeof childNode['checkValidity'] == 'function') {
-                        var isFieldValid = childNode['checkValidity']();
-                        if (!isFieldValid) {
-                            valid = false;
-                            errorNodes.push(childNode);
-                            if (!nodeFocus) {
-                                nodeFocus = childNode;
-                            }
+        isValid: function (errorCallback) {
+            var childNodes = this.shadowRoot.querySelectorAll('#editForm > *');
+            var nodeFocus = undefined;
+            var errorNodes = [];
+            var valid = true;
+            [].forEach.call(childNodes, function (childNode, i) {
+                if (typeof childNode['checkValidity'] == 'function') {
+                    var isFieldValid = childNode['checkValidity']();
+                    if (!isFieldValid) {
+                        valid = false;
+                        errorNodes.push(childNode);
+                        if (!nodeFocus) {
+                            nodeFocus = childNode;
                         }
                     }
-                });
-                if (nodeFocus) {
-                    nodeFocus.focus();
                 }
-                console
-                if (errorCallback && errorNodes.length > 0) {
-                    errorCallback(errorNodes);
-                }
-                return valid;
+            });
+            if (nodeFocus) {
+                nodeFocus.focus();
             }
 
+            if (errorCallback && errorNodes.length > 0) {
+                errorCallback(errorNodes);
+            }
+            return valid;
+        },
+        isDiff: function (notDiffCallback) {
+            var diff = this.diffProperties(this.dataOri._source, this.data._source);
+            if (diff) {
+                return true;
+            } else {
+                if (notDiffCallback) {
+                    notDiffCallback();
+                }
+            }
+        },
+
+        diffProperties: function (first, second, diffs) {
+            diffs = diffs || {};
+            // Compare ref to Object
+            for (var attr in second) {
+                if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
+                    if (first[attr] !== second[attr]) {
+                        diffs[attr] = second[attr];
+                    }
+                } else if (typeof first[attr] == 'object' && typeof second[attr] == 'object') {
+                    // Check recursif
+                    var subDiffs = this.diffProperties(first[attr], second[attr], {});
+                    if (subDiffs) {
+                        diffs[attr] = subDiffs;
+                    }
+                } else if (first[attr] !== second[attr]) {
+                    diffs[attr] = second[attr];
+                }
+            }
+            return this.isEmptyObj(diffs) ? undefined : diffs;
+        }
 
 
-        });
-    </script>
+
+    });
+</script>
 </polymer-element>
