@@ -13,7 +13,7 @@
 
 
         <core-animated-pages selected="{{pageSelected}}" flex auto>
-            <tt-group-list name="list" on-edit="{{editHandler}}" on-delete="{{deleteHandler}}"></tt-group-list>
+            <tt-group-list name="list" on-add="{{addHandler}}" on-edit="{{editHandler}}" on-delete="{{deleteHandler}}"></tt-group-list>
             <tt-group-edit name="edit" entityid="{{entityid}}"
                            on-cancel="{{onEditCancelHandler}}">
 
@@ -36,6 +36,10 @@
                 if (refresh) {
                     this.$.list.refreshList();
                 }
+            },
+            addHandler: function () {
+                this.entityid = null;
+                this.pageSelected = 'edit';
             },
             editHandler: function (event, data, sender) {
                 this.entityid = data._id;

@@ -68,7 +68,7 @@
 <script>
     Polymer('tt-group-edit', {
         entityid: undefined,
-        data: undefined,
+        data: data = undefined,
         dataOri: undefined,
         // On Save : Reload the Data
         reloadOnSave: false,
@@ -88,20 +88,26 @@
 //                    this.shadowRoot.appendChild(tpl);
 //                }
 //            },
+        createEmptyEntity: function () {
+          return {
+              _source: {}
+          };
+        },
 
         entityidChanged: function () {
-            if (this.entityid) {
+            console.log("entityidChanged for ", this.entityid);
+            if (!this.entityid) {
+                // Create Mode
+                this.data = this.createEmptyEntity();
+            } else {
                 // Update Mode
                 this.onGet();
-            } else {
-                // Create Mode
-                this.data = {
-                    _source: {}
-                };
+                console.log("entityidChanged create empty data ", this.data);
             }
         },
         dataChanged: function () {
             // call also for _version change
+            console.log("dataChanged for ", this.data);
             this.dataOri = this.$.service.copyProperties(this.data);
         },
 

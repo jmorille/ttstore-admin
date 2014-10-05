@@ -64,6 +64,8 @@
                                      on-input="{{onSearchSuggest}}"></paper-input>
                         <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
                     </core-field>
+                    <paper-item icon="add" label="Add" on-tap="{{addButtonHandler}}">
+                    </paper-item>
                     <paper-item id="filter_panel_button" icon="filter" label="Filters"
                                 on-tap="{{toggleFilter}}">
                     </paper-item>
@@ -171,6 +173,10 @@
             },
             pagingHandler: function (e, detail, sender) {
                 this.$.service.entitySearch(this.searchOpt);
+            },
+
+            addButtonHandler: function () {
+                this.fire('add');
             }
 
 
