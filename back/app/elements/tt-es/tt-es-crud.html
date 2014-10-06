@@ -31,7 +31,7 @@
                     version: entity._version,
                     body: entity._source
                 };
-                this.client.index(opt, this.entitySuccesCallback(this, callback));
+                this.client.index(opt, this.entitySaveCallback(this, callback));
             },
             entityUpdate: function (entity, callback) {
                 var opt = {
@@ -45,7 +45,7 @@
                         doc: entity._source
                      }
                 };
-                this.client.update(opt, this.entitySuccesCallback(this, callback));
+                this.client.update(opt, this.entitySaveCallback(this, callback));
             },
             entityCreate: function (entity, callback) {
                 var opt = {
@@ -55,7 +55,7 @@
                     refresh: true,
                     body: entity._source
                 };
-                this.client.index(opt, this.entitySuccesCallback(this, callback));
+                this.client.index(opt, this.entitySaveCallback(this, callback));
             },
             entityDelete: function (entity, callback) {
                 var opt = {
@@ -66,7 +66,7 @@
                     id: entity._id,
                     version: entity._version
                 };
-                this.client.delete(opt, this.entitySuccesCallback(this, callback));
+                this.client.delete(opt, this.entityDeleteCallback(this, callback));
             },
 
             entityGetCallback: function (that, callback) {
@@ -83,7 +83,7 @@
                 };
                 return this.entityCallback(that, setEntityCallback);
             },
-            entitySuccesCallback: function (that, callback) {
+            entityDeleteCallback: function (that, callback) {
                 var setEntityCallback =  function (err, resp) {
                     // Send To Callback
                     if (callback) {
@@ -92,7 +92,21 @@
                     // Event
                     if (!err) {
                         // Fire Event
-                        that.fire("success", that.entityCallbackContent(err, resp));
+                        that.fire("delete", that.entityCallbackContent(err, resp));
+                    }
+                };
+                return this.entityCallback(that, setEntityCallback);
+            },
+            entitySaveCallback: function (that, callback) {
+                var setEntityCallback =  function (err, resp) {
+                    // Send To Callback
+                    if (callback) {
+                        callback(err, resp);
+                    }
+                    // Event
+                    if (!err) {
+                        // Fire Event
+                        that.fire("save", that.entityCallbackContent(err, resp));
                     }
                 };
                 return this.entityCallback(that, setEntityCallback);
@@ -100,7 +114,7 @@
             entityCallback: function (that, callback) {
                 return function (err, resp) {
                     if (err) {
-                        console.error(err.message);
+                      //  console.error(err.message);
                         // Fire Event
                         that.fire("error", that.entityCallbackContent(err, resp));
                     } else  if (resp) {
@@ -116,10 +130,22 @@
                 };
             },
             entityCallbackContent: function (err, resp) {
+                // Compute Normal Response Status
+                var status = undefined;
+                if ( resp.status) {
+                    status = resp.status;
+                } else if (resp.hasOwnProperty('found')) {
+                    if (resp.found === true) {
+                        status = 200;
+                    } else   if (resp.found === false) {
+                        status = 404;
+                    }
+                }
+                // Create Message Event
                 return {
                     error: err,
                     response:resp,
-                    status: resp.status
+                    status: status
                 }
             }
 
