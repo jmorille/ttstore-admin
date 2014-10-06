@@ -3,14 +3,20 @@
 
 <polymer-element name="tt-crud-message" attributes="messages">
 
-
+    <template if="{{ messages.length > 1  }}">
+        <ul>
+            <template repeat="{{msg in messages }}">
+                <li>{{msg}}</li>
+            </template>
+        </ul>
+    </template>
 
 
     <script>
         Polymer('tt-crud-message', {
-            messages : undefined,
-            created: {
-
+            messages: undefined,
+            created: function () {
+                this.messages =  this.messages || [];
             }
 
         });
