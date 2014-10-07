@@ -27,13 +27,6 @@
                 on-save="{{crudSaveHandler}}" on-delete="{{crudDeleteHandler}}"
                 entity="{{data}}"></tt-es-crud>
 
-    <section>
-        <paper-icon-button id="deleteButton" icon="delete" on-tap="{{onDelete}}"></paper-icon-button>
-        <paper-icon-button id="saveButton" icon="check" on-tap="{{onSave}}"></paper-icon-button>
-        <paper-icon-button id="closeButton"  icon="close" on-tap="{{onClose}}"></paper-icon-button>
-    </section>
-
-
     <template bind="{{ data._source}}">
         <section id="editForm">
             <paper-input floatingLabel label="First name" inputValue="{{ firstname}}"></paper-input>

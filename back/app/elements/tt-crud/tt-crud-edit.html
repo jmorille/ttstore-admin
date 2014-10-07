@@ -4,6 +4,9 @@
 
 <link rel="import" href="../../components/paper-toast/paper-toast.html">
 
+<link rel="import" href="tt-crud-menu.html">
+
+
 <core-style id="tt-group-edit"  >
     .toast-error {
     background-color: {{g.paperInput.invalidColor}};
@@ -14,6 +17,9 @@
 <template>
 
     <core-style ref="tt-group-edit"></core-style>
+
+    <tt-crud-menu on-tap-delete="{{onDelete}}" on-tap-save="{{onSave}}"  on-tap-close="{{onClose}}" ></tt-crud-menu>
+
 
 
     <paper-toast id="toast_save_ok" class="capsule" text="Entity Save."></paper-toast>
@@ -46,16 +52,7 @@ Polymer('tt-crud-edit', {
     observe: {
         'data._version': 'dataChanged'
     },
-//            createContentTemplate: function () {
-//                if (this.$.content) {
-//                    console.log("Content template create form content");
-//                    var tpl = document.createElement('template');
-//                    tpl.id = 'contentTemplate';
-//                    tpl.innerHTML = this.$.content.innerHTML;
-//                    // Add To ShadowRoot
-//                    this.shadowRoot.appendChild(tpl);
-//                }
-//            },
+
     createEmptyEntity: function () {
         return {
             _id: undefined,
@@ -66,7 +63,9 @@ Polymer('tt-crud-edit', {
 
     entityidChanged: function () {
         console.log("entityidChanged for ", this.entityid);
-        if (!this.entityid) {
+        if (this.entityid === '') {
+            // Blank case, no model to create
+        } else if (!this.entityid) {
             // Create Mode
             this.data = this.createEmptyEntity();
             console.log("entityidChanged create empty data ", this.data);
@@ -79,7 +78,17 @@ Polymer('tt-crud-edit', {
     dataChanged: function () {
         // call also for _version change=
         console.log("--- dataChanged for ", this.data);
+        // Clone the data for conflict resolution
         this.dataOri = this.$.service.copyProperties(this.data);
+        // Manage the bar
+//        if (this.data._source) {
+//            this.$.deleteButton.removeAttribute('disabled' );
+//            this.$.saveButton.removeAttribute('disabled' );
+//        } else {
+//            this.$.deleteButton.setAttribute('disabled', 'true');
+//            this.$.saveButton.setAttribute('disabled', false);
+//        }
+
     },
 
 
@@ -108,7 +117,6 @@ Polymer('tt-crud-edit', {
     },
     crudDeleteHandler: function (event, detail, target) {
         this.$.toast_delete_ok.show();
-        this.$.deleteButton.disabled = true;
         this.entityid = '';
     },
 

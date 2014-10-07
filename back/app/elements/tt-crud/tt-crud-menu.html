@@ -1,0 +1,41 @@
+<link rel="import" href="../../components/paper-input/paper-input.html">
+
+
+<polymer-element name="tt-crud-menu" attributes="roles">
+    <template>
+
+        <section>
+            <paper-icon-button id="deleteButton" icon="delete" aria-label="delete"
+                               disabled?="{{!isDelete}}" on-tap="{{onDelete}}">
+             </paper-icon-button>
+            <paper-icon-button id="saveButton" icon="check" aria-label="save" disabled?="{{!isSave}}" on-tap="{{onSave}}">
+            </paper-icon-button>
+            <paper-icon-button id="closeButton" icon="close" aria-label="close" disabled?="{{!isClose}}"  on-tap="{{onClose}}">
+            </paper-icon-button>
+        </section>
+
+    </template>
+
+    <script>
+        Polymer('tt-crud-menu', {
+            isDelete : true,
+            isSave : true,
+            isClose : true,
+            created: function () {
+
+            },
+            onSave: function () {
+                this.fire('tap-save');
+            },
+            onDelete: function () {
+                this.fire('tap-delete');
+            },
+            onClose: function () {
+                this.fire('tap-close');
+            }
+
+
+
+        });
+    </script>
+</polymer-element>

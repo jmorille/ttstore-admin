@@ -24,6 +24,15 @@
                 padding: 3px;
             }
 
+
+            @media screen and (max-width: 800px) {
+                th.optional,
+                td.optional {
+                    display: none;
+                }
+            }
+
+
         </style>
 
         <template id="action">
@@ -32,22 +41,13 @@
             <paper-icon-button icon="delete" entity-id="{{item._id}}" on-tap="{{deleteHandler}}"></paper-icon-button>
         </template>
 
-        <template id="tfooter">
-            <tr>
-                <td colspan="3">Coucou le footer xxxxx xxxxxx xxxxxx xxxxx xxxx xxxxx</td>
-            </tr>
-        </template>
-
-        <template id="theader">
-
-        </template>
 
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover" data-mode="reflow">
                 <thead>
-                <th template repeat="{{col in columns}}">
+                <th template repeat="{{col in columns}}" class="{{ col.classNames }}">
                     <tt-column column="{{col.column}}" sortable="{{col.sortable}}"
-                               sort="{{sort}}" on-sort="{{sortHandler}}">
+                               sort="{{sort}}" on-sort="{{sortHandler}}" >
                         {{col.title}}
                     </tt-column>
                 </th>
@@ -55,20 +55,19 @@
                 </thead>
                 <tbody>
                 <tr template repeat="{{item in data.hits}}">
-                    <td template repeat="{{col in columns}}" on-click="{{editHandler}}"
-                        entity-id="{{item._id}}">
+                    <td template repeat="{{col in columns}}"  class="{{ col.classNames }}"
+                        on-click="{{editHandler}}" entity-id="{{item._id}}">
                         {{item._source[col.column]}}
                     </td>
                     <td>
                         <template bind ref="action"></template>
                     </td>
                 </tr>
+
                 </tbody>
-                <!--<tfoot template bind ref="tfooter"></tfoot>-->
+                <tfoot template bind ref="tfooter"></tfoot>
             </table>
         </div>
-
-
 
 
     </template>
@@ -100,10 +99,17 @@
                 if (columnNodes.length > 0) {
                     var c = [];
                     [].forEach.call(columnNodes, function (elt, i) {
+                        var classNames = '';
                         // name
                         var name = elt.getAttribute('column');
                         // sortable
                         var sortableCol = elt.getAttribute('sortable');
+                        // Optional
+                        var optional = elt.getAttribute('optional');
+
+                        if (optional === '') {
+                            classNames = 'optional';
+                        }
                         // Title
                         var title = elt.getAttribute('title');
                         if (!title || title === '') title = elt.textContent.trim();
@@ -111,7 +117,8 @@
                         var colObj = {
                             column: name,
                             title: title,
-                            sortable: sortableCol
+                            sortable: sortableCol,
+                            classNames: classNames
                         };
                         c.push(colObj);
                     });
