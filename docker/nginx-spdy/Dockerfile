@@ -55,6 +55,7 @@ RUN cd /tmp/nginx-${NGINX_VERSION} \
       --with-http_realip_module \
       --with-http_spdy_module \
       --with-http_gzip_static_module \
+      --with-http_gunzip_module \
       --with-ipv6 \
       --with-pcre   \
 	&& make install

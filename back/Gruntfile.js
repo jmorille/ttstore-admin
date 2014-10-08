@@ -81,6 +81,19 @@ module.exports = function (grunt) {
             }
         },
 
+
+        // gzip assets 1-to-1 for production
+        compress: {
+            default: {
+                options: {
+                    mode: 'gzip'
+                },
+                expand: true,
+                src: ['dist/*.html'],
+                dest: 'distgz/'
+            }
+        },
+
         pagespeed: {
             options: {
                 nokey: true

@@ -32,6 +32,9 @@ server {
     ssl_certificate_key /etc/nginx/ssl/server.key;
 
     location / {
+     # gzip_static on;
+     #  gunzip on;
+
        root /data/wwww;
        index index.html;
        expires 0;
