@@ -81,6 +81,11 @@ COPY /build/sites-enabled /etc/nginx/sites-enabled
 # RUN [ "/build/install.sh" , "setup" ]
 
 
+# forward request and error logs to docker log collector
+# #######################
+#RUN ln -sf /dev/stdout /var/log/nginx/access.log
+#RUN ln -sf /dev/stderr /var/log/nginx/error.log
+
 
 # Expose
 # #######################
@@ -92,4 +97,7 @@ VOLUME ["/data/wwww", "/etc/nginx/logs", "/var/lib/nginx", "/etc/nginx/ssl" ]
 # Start Command
 # #######################
 # WORKDIR /etc/nginx/
-CMD ["/usr/sbin/nginx"]
+#CMD ["/usr/sbin/nginx"]
+CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
+
+

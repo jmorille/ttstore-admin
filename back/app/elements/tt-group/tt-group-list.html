@@ -56,7 +56,7 @@
 
 
         <template id="result_list">
-            <div vertical layout >
+            <div vertical layout>
 
                 <section horizontal layout>
                     <core-field>
@@ -74,15 +74,15 @@
                 <tt-table data="{{data.hits}}" sort="{{searchOpt.sort}}"
                           on-sort="{{sortHandler}}">
                     <thead thead>
-                        <th>
-                            <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
-                        </th>
-                        <th>
-                            <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
-                        </th>
-                        <th>
-                            <tt-column column="email" optional sortable >Email</tt-column>
-                        </th>
+                    <th>
+                        <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
+                    </th>
+                    <th>
+                        <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
+                    </th>
+                    <th>
+                        <tt-column column="email" optional sortable>Email</tt-column>
+                    </th>
                     </thead>
                 </tt-table>
 
@@ -109,7 +109,7 @@
             </div>
             <div main>
 
-                    <template bind ref="result_list"></template>
+                <template bind ref="result_list"></template>
             </div>
         </core-drawer-panel>
 
@@ -142,6 +142,11 @@
             ready: function () {
 
             },
+            dataChanged: function () {
+                console.log("***************************");
+                console.dir(this.data);
+                console.log("***************************");
+            },
             toggleFilter: function () {
                 this.$.filter_panel.togglePanel();
             },
@@ -155,11 +160,28 @@
                 var searchOpt = this.$.service.copyProperties(this.searchOpt);
                 // Add Search Criteria
                 if (this.searchText) {
-                    searchOpt.body = ejs.Request().query(ejs.MatchQuery('firstname', this.searchText));
+                    searchOpt.body = ejs.Request()
+                            .query(ejs.MatchQuery('firstname', this.searchText)).toJSON();
+                 } else {
+                    searchOpt.body = ejs.Request().query(ejs.MatchAllQuery()).toJSON();
                 }
+
                 // Add Facets
                 if (true) {
-
+                    searchOpt.body.aggs = {
+                        "firstname": {
+                            "terms": {
+                                "order" : { "_count" : "desc" },
+                                "field": "firstname"
+                            }
+                        },
+                        "lastname": {
+                            "terms": {
+                                "order" : { "_count" : "desc" },
+                                "field": "lastname"
+                            }
+                        }
+                    };
                 }
                 // Search Service
                 this.$.service.entitySearch(searchOpt, function (err, resp) {
