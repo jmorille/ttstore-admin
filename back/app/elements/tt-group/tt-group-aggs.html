@@ -1,0 +1,46 @@
+<link rel="import" href="../../components/paper-input/paper-input.html">
+
+
+<polymer-element name="tt-group-aggs" attributes="aggs">
+
+   <template>
+       <div>
+
+
+           <template repeat="{{filterName in aggs| enumerate}}">
+               <h2>{{filterName}}</h2>
+
+               <ul>
+               <template repeat="{{ filter in aggs[filterName].buckets }}">
+                   <li>{{filter.key}} ({{filter.doc_count}})</li>
+               </template>
+               </ul>
+           </template>
+           </ul>
+
+       </div>
+
+
+   </template>
+
+    <script>
+        Polymer('tt-group-aggs', {
+            created: function () {
+            },
+            enumerate : function (obj) {
+                if (obj) {
+                    return Object.keys(obj);
+                }
+                return undefined;
+//                var  agg  = [];
+//                for (var key in obj) {
+//                    agg.push( obj[key] );
+//                    console.log("enumerate", key, "=",obj[key]  );
+//                }
+//                return agg;
+            }
+
+
+        });
+    </script>
+</polymer-element>

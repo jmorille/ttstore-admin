@@ -23,7 +23,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
         }
 
         .pagination > .active > a {
-            z-index : 0;
+            z-index: 0;
         }
     </style>
 
@@ -50,35 +50,36 @@ A Polymer element for paginating model data, rendering a set of pagination contr
     <!--<div>lastpage : {{lastpage}}</div>-->
     <!--</template>-->
 
-    <ul class="pagination pagination-lg">
-        <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
-            on-tap="{{selectPage}}" pageid="first">
-            <a>&vartriangleleft;</a>
-        </li>
-        <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
-            on-tap="{{selectPage}}" pageid="previous">
-            <a>&laquo;</a>
-        </li>
-        <template repeat="{{n in currentRange}}">
-            <li class="{{currentpage === n ? 'active' : ''}}"
-                on-tap="{{selectPage}}" pageid="{{n}}">
-                <a>{{n}}
-                    <template if="{{currentpage === n }}"><span class="sr-only">(*)</span></template>
-                </a>
+    <template if="{{total > 0}}">
+        <ul class="pagination pagination-lg">
+            <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
+                on-tap="{{selectPage}}" pageid="first">
+                <a>&vartriangleleft;</a>
             </li>
-        </template>
-        <li class="{{ currentpage >= lastpage ? 'disabled' : '' }}"
-            on-tap="{{selectPage}}" pageid="next">
-            <a>&raquo;</a>
-        </li>
-        <li class="{{ currentpage >= lastpage ? 'disabled' : '' }}"
-            on-tap="{{selectPage}}" pageid="last">
-            <a>&vartriangleright;</a>
-        </li>
-    </ul>
+            <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
+                on-tap="{{selectPage}}" pageid="previous">
+                <a>&laquo;</a>
+            </li>
+            <template repeat="{{n in currentRange}}">
+                <li class="{{currentpage === n ? 'active' : ''}}"
+                    on-tap="{{selectPage}}" pageid="{{n}}">
+                    <a>{{n}}
+                        <template if="{{currentpage === n }}"><span class="sr-only">(*)</span></template>
+                    </a>
+                </li>
+            </template>
+            <li class="{{ currentpage >= lastpage ? 'disabled' : '' }}"
+                on-tap="{{selectPage}}" pageid="next">
+                <a>&raquo;</a>
+            </li>
+            <li class="{{ currentpage >= lastpage ? 'disabled' : '' }}"
+                on-tap="{{selectPage}}" pageid="last">
+                <a>&vartriangleright;</a>
+            </li>
+        </ul>
+    </template>
 
-
-
+    <div>{{currentpage}} >= {{lastpage}} ==> {{ currentpage >= lastpage }}</div>
     <!--<paper-dropdown-menu  selected="20" valueattr="label">-->
     <!--<paper-item label="10"></paper-item>-->
     <!--<paper-item label="20"></paper-item>-->
@@ -86,7 +87,8 @@ A Polymer element for paginating model data, rendering a set of pagination contr
     <!--<paper-item label="100"></paper-item>-->
     <!--</paper-dropdown-menu>-->
 
-    <core-a11y-keys target="{{}}" keys="up down left right pagedown pageup" on-keys-pressed="{{arrowHandler}}"></core-a11y-keys>
+    <core-a11y-keys target="{{}}" keys="up down left right pagedown pageup"
+                    on-keys-pressed="{{arrowHandler}}"></core-a11y-keys>
 
 
 </template>
@@ -95,18 +97,18 @@ A Polymer element for paginating model data, rendering a set of pagination contr
     Polymer('tt-pagination', {
 
         firstpage: 1,
-        lastpage: 1,
-        currentpage: 2,
+        lastpage: 0,
+        currentpage: undefined,
         created: function () {
             this.currentRange = [];
-            // init
-            this.size = this.size || 10;
-            this.from = this.from || 0;
-            this.currentpage = this._computeCurrentPage(this.from, this.size);
-            this.range = this.range || 10;
-
+            this.total = 0;
         },
         ready: function () {
+            // init
+            this.from = this.from || 0;
+            this.size = this.size || 10;
+            //   this.currentpage = this._computeCurrentPage(this.from, this.size);
+            this.range = this.range || 10;
         },
         arrowHandler: function (ev) {
             console.log("°°°°°°°°°°°°°°°°°°°°°°°°° : ", ev.detail);
@@ -119,10 +121,13 @@ A Polymer element for paginating model data, rendering a set of pagination contr
                 // compute
                 this.lastpage = this._computeLastPage();
                 // Fire Search Event
-                this._firePagingChangeEvent();
+                if (oldValue !== undefined) {
+                    //console.log("°°°°°°°°°°°°°°°°°°°°°°°°° : Fire Event sizeChanged",oldValue);
+                    this._firePagingChangeEvent();
+                }
             }
         },
-        fromChanged: function () {
+        fromChanged: function (oldValue, newValue, args) {
             this.currentpage = this._computeCurrentPage(this.from, this.size);
         },
         selectPage: function (e, data, sender) {
@@ -152,7 +157,9 @@ A Polymer element for paginating model data, rendering a set of pagination contr
             // Do operation
             if ((typeof pageid === 'string') && (pageid.indexOf('+') === 0)) {
                 var inc = parseInt(pageid.slice(1), 10);
+                //console.log("Select  page + ", inc, ' current ', this.currentpage, " /this.lastpage , ", this.lastpage);
                 this.currentpage = Math.min(this.lastpage, this.currentpage + inc);
+                //console.log("Select  page + ", inc, ' current ', this.currentpage);
             } else if ((typeof pageid === 'string') && (pageid.indexOf('-') === 0)) {
                 var inc = parseInt(pageid.slice(1), 10);
                 this.currentpage = Math.max(this.firstpage, this.currentpage - inc);
@@ -172,12 +179,15 @@ A Polymer element for paginating model data, rendering a set of pagination contr
         rangeChanged: function () {
             this.currentRange = this._computePageRange();
         },
-        currentpageChanged: function () {
-            //console.log("Change current page", this.currentpage);
+        currentpageChanged: function (oldValue, newValue, args) {
+            //console.log("Change current page", oldValue, " --> ", newValue);
             this.currentRange = this._computePageRange();
-            this.from = (this.currentpage - 1) * this.size;
+            this.from = Math.max(0, (this.currentpage - 1) * this.size);
             // Fire Search Event
-            this._firePagingChangeEvent();
+            if (oldValue !== undefined) {
+                // console.log("°°°°°°°°°°°°°°°°°°°°°°°°° : Fire Event currentPage",oldValue, " --> ", newValue);
+                this._firePagingChangeEvent();
+            }
         },
 
         _firePagingChangeEvent: function () {
@@ -218,12 +228,12 @@ A Polymer element for paginating model data, rendering a set of pagination contr
 
         _computeLastPage: function () {
             // return Math.ceil(this.total / this.size);
-            return this.size > 0 ? Math.ceil(this.total / this.size) : 0;
+            return this.size > 0 ? Math.max(1, Math.ceil(this.total / this.size)) : 0;
         },
         _computeCurrentPage: function (from, size) {
             from = from || this.from;
             size = size || this.size;
-            var nextCurrent = size > 0 ? Math.max(1, Math.floor(from / size) + 1) : 1;
+            var nextCurrent = size > 0 ? Math.max(1, Math.floor(from / size) + 1) : 0;
             //  console.log("compute current page :", nextCurrent);
             return nextCurrent;
         }

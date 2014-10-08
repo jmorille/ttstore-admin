@@ -87,8 +87,8 @@
                 </table>
             </div>
 
-            <tt-pagination from="{{searchOpt.from}}" size="{{searchOpt.size}}" total="{{data.hits.total}}"
-                           range="{{rangesize}}" on-change="{{changePagingHandler}}"></tt-pagination>
+            <!--<tt-pagination from="{{searchOpt.from}}" size="{{searchOpt.size}}" total="{{data.hits.total}}"-->
+                           <!--range="{{rangesize}}" on-change="{{changePagingHandler}}"></tt-pagination>-->
 
 
             <paper-shadow z="2"></paper-shadow>
@@ -116,7 +116,7 @@
 
             },
             ready: function () {
-                this.refreshList();
+                //this.refreshList();
             },
             copyProperties: function (src, dest, override) {
                 dest = dest || {};
