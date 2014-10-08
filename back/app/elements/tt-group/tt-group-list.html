@@ -28,213 +28,218 @@
 <polymer-element name="tt-group-list" attributes="">
 
 
-    <template>
+<template>
 
 
-        <style>
-            tt-column {
-                text-transform: capitalize;
-            }
+    <style>
+        tt-column {
+            text-transform: capitalize;
+        }
 
-            [drawer] {
-                border-right: 1px solid #ccc;
-                background-image: linear-gradient(60deg, #c5cae9, white);
-            }
+        [drawer] {
+            border-right: 1px solid #ccc;
+            background-image: linear-gradient(60deg, #c5cae9, white);
+        }
 
-            [main] {
+        [main] {
 
-            }
+        }
 
-            /*#filter_panel_button {*/
-                /*display: none;*/
-            /*}*/
+        /*#filter_panel_button {*/
+        /*display: none;*/
+        /*}*/
 
-            core-drawer-panel[narrow] #filter_panel_button {
-                display: inline-block
-            }
-
-
-        </style>
-
-        <tt-es-search id="service" index="users" type="user" entities="{{data}}"></tt-es-search>
+        core-drawer-panel[narrow] #filter_panel_button {
+            display: inline-block
+        }
 
 
-        <template id="result_list">
-            <div vertical layout>
+    </style>
 
-                <section horizontal layout>
-                    <core-field>
-                        <paper-input placeHolder="Search Text" inputValue="{{searchText}}"
-                                     on-input="{{onSearchSuggest}}"></paper-input>
-                        <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
-                    </core-field>
-                    <paper-item icon="add" label="Add" on-tap="{{addButtonHandler}}">
-                    </paper-item>
-                    <paper-item id="filter_panel_button" icon="filter" label="Filters"
-                                on-tap="{{toggleFilter}}">
-                    </paper-item>
-                </section>
-
-                <div>{{data.hits.total}} records found in {{data.took}} ms</div>
-
-                <tt-table data="{{data.hits}}" sort="{{searchOpt.sort}}"
-                          on-sort="{{sortHandler}}">
-                    <thead thead>
-                    <th>
-                        <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
-                    </th>
-                    <th>
-                        <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
-                    </th>
-                    <th>
-                        <tt-column column="email" optional sortable>Email</tt-column>
-                    </th>
-                    </thead>
-                    <div action>
-                        <paper-icon-button icon="editor:mode-edit" entity-id="{{item._id}}"
-                                           on-tap="{{editHandler}}"></paper-icon-button>
-                        <paper-icon-button icon="delete" entity-id="{{item._id}}" on-tap="{{deleteHandler}}"></paper-icon-button>
-                    </div>
-                </tt-table>
+    <tt-es-search id="service" index="users" type="user" entities="{{data}}"></tt-es-search>
 
 
-                <tt-pagination range="{{rangesize}}"
-                               from="{{searchOpt.from}}" size="{{searchOpt.size}}"
-                               total="{{data.hits.total}}"
-                               on-change="{{pagingHandler}}">
-                </tt-pagination>
-
-            </div>
-        </template>
-
-        <template id="result_filter">
-            <h2>Filter</h2>
-            <tt-group-aggs aggs="{{data.aggregations}}"></tt-group-aggs>
-        </template>
-
-        <core-drawer-panel rightDrawer id="filter_panel" responsiveWidth="1024px"
-                           style="height: 100vh;" flex>
-            <div drawer class="right-drawer">
-                <section>
-                    <template bind ref="result_filter"></template>
-                </section>
-            </div>
-            <div main>
-
-                <template bind ref="result_list"></template>
-            </div>
-        </core-drawer-panel>
-
-
-        <core-a11y-keys target="{{}}" keys="up down left right pagedown pageup" on-keys-pressed="{{keyPressHandler}}"></core-a11y-keys>
-
-
+    <template id="request_query">
+        <section horizontal layout>
+            <core-field>
+                <paper-input placeHolder="Search Text" inputValue="{{searchText}}"
+                             on-input="{{onSearchSuggest}}"></paper-input>
+                <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
+            </core-field>
+            <paper-item icon="add" label="Add" on-tap="{{addButtonHandler}}">
+            </paper-item>
+            <paper-item id="filter_panel_button" icon="filter" label="Filters"
+                        on-tap="{{toggleFilter}}">
+            </paper-item>
+        </section>
     </template>
 
-    <script>
-        Polymer('tt-group-list', {
+    <template id="result_list">
+        <div vertical layout>
 
-            data: undefined,
-            searchOpt: undefined,
 
-            searchText: undefined,
-            rangesize: 10,
+            <div>{{data.hits.total}} records found in {{data.took}} ms</div>
 
-            created: function () {
-                //   this.searchTest = '';
+            <tt-table data="{{data.hits}}" sort="{{searchOpt.sort}}"
+                      on-sort="{{sortHandler}}">
+                <thead thead>
+                <th>
+                    <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
+                </th>
+                <th>
+                    <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
+                </th>
+                <th>
+                    <tt-column column="email" optional sortable>Email</tt-column>
+                </th>
+                </thead>
+                <div action>
+                    <paper-icon-button icon="editor:mode-edit" entity-id="{{item._id}}"
+                                       on-tap="{{editHandler}}"></paper-icon-button>
+                    <paper-icon-button icon="delete" entity-id="{{item._id}}"
+                                       on-tap="{{deleteHandler}}"></paper-icon-button>
+                </div>
+            </tt-table>
+
+
+            <tt-pagination range="{{rangesize}}"
+                           from="{{searchOpt.from}}" size="{{searchOpt.size}}"
+                           total="{{data.hits.total}}"
+                           on-change="{{pagingHandler}}">
+            </tt-pagination>
+
+        </div>
+    </template>
+
+    <template id="result_filter">
+        <h2>Filter</h2>
+        <tt-group-aggs aggs="{{data.aggregations}}"></tt-group-aggs>
+    </template>
+
+    <core-drawer-panel rightDrawer id="filter_panel" responsiveWidth="1024px"
+                       style="height: 100vh;" flex>
+        <div drawer class="right-drawer">
+            <section>
+                <template bind ref="result_filter"></template>
+            </section>
+        </div>
+        <div main>
+            <template bind ref="request_query"></template>
+            <template bind ref="result_list"></template>
+        </div>
+    </core-drawer-panel>
+
+
+    <core-a11y-keys target="{{}}" keys="up down left right pagedown pageup"
+                    on-keys-pressed="{{keyPressHandler}}"></core-a11y-keys>
+
+
+</template>
+
+<script>
+    Polymer('tt-group-list', {
+
+        data: undefined,
+        searchOpt: undefined,
+
+        searchText: undefined,
+        rangesize: 10,
+
+        created: function () {
+            //   this.searchTest = '';
 //                this.entityColumns = [ { column:'firstname', sortable:'$.raw', title: 'Prénom'},
 //                                       { column:'lastname', sortable:'$.raw', title: 'Nom'},
 //                                       { column:'email'   }
 //                                    ];
-                this.searchOpt = {
-                    "from": 3,
-                    "size": 3,
-                    "_source": ["firstname", "lastname", "email" ],
-                    "sort": [  "lastname.raw:asc", "firstname.raw:asc" ]
-                };
+            this.searchOpt = {
+                "from": 3,
+                "size": 3,
+                "_source": ["firstname", "lastname", "email" ],
+                "sort": [  "lastname.raw:asc", "firstname.raw:asc" ]
+            };
 
-            },
-            ready: function () {
+        },
+        ready: function () {
 
-            },
-//            dataChanged: function () {
-//                console.log("***************************");
-//                console.dir(this.data);
-//                console.log("***************************");
-//            },
-            toggleFilter: function () {
-                this.$.filter_panel.togglePanel();
-            },
-            keyPressHandler: function (ev) {
-                console.log("°°°°°°°°°°°°°°°°°°°°°°°°° : ", ev.detail);
-            },
+        },
+        dataChanged: function () {
+            console.log("***************************");
+            console.dir(this.data);
+            console.log("***************************");
+        },
+        toggleFilter: function () {
+            this.$.filter_panel.togglePanel();
+        },
+        keyPressHandler: function (ev) {
+            console.log("°°°°°°°°°°°°°°°°°°°°°°°°° : ", ev.detail);
+        },
 
-            searchQueryBody: function () {
-                var body = undefined;
-                // Query
-                if (this.searchText) {
-                     body = ejs.Request()
-                            .query(ejs.MatchQuery('firstname', this.searchText)).toJSON();
-                } else {
-                    body = ejs.Request().query(ejs.MatchAllQuery()).toJSON();
-                }
-                // Facets
-                // Add Facets
-                if (true) {
-                    body.aggs = {
-                        "firstname": {
-                            "terms": {
-                                "order": { "_count": "desc" },
-                                "field": "firstname"
-                            }
-                        },
-                        "lastname": {
-                            "terms": {
-                                "order": { "_count": "desc" },
-                                "field": "lastname"
-                            }
-                        }
-                    };
-                }
-                return body;
-            },
-            search: function (optToSave) {
-                console.log("------------- search Groups");
-                var that = this;
-                // Save Options
-                if (optToSave) {
-                    this.$.service.copyProperties(optToSave, this.searchOpt, true);
-                }
-                // Clone Search Options to send
-                var searchOpt = this.$.service.copyProperties(this.searchOpt);
-                // Add Search Criteria
-                searchOpt.body = this.searchQueryBody();
-
-                // Search Service
-                this.$.service.entitySearch(searchOpt, function (err, resp) {
-                    console.log("Search Result for ", searchOpt);
-                });
-            },
-            searchReset: function () {
-                this.search({
-                    from: 0
-                });
-            },
-            sortHandler: function (event, data, sender) {
-                var sort = {sort: [ data.column + ":" + data.order ]};
-               // console.log("sortHandler", data);
-                this.search(sort);
-            },
-            pagingHandler: function (e, detail, sender) {
-              //console.log("----- pagingHandler", detail);
-                this.search();
-            },
-
-            addButtonHandler: function () {
-                this.fire('add');
+        searchQueryBody: function () {
+            var body = undefined;
+            // Query
+            if (this.searchText) {
+                body = ejs.Request()
+                        .query(ejs.MatchQuery('firstname', this.searchText)).toJSON();
+            } else {
+                body = ejs.Request().query(ejs.MatchAllQuery()).toJSON();
             }
+            // Facets
+            // Add Facets
+            if (true) {
+                body.aggs = {
+                    "firstname": {
+                        "terms": {
+                            "order": { "_count": "desc" },
+                            "field": "firstname"
+                        }
+                    },
+                    "lastname": {
+                        "terms": {
+                            "order": { "_count": "desc" },
+                            "field": "lastname"
+                        }
+                    }
+                };
+            }
+            return body;
+        },
+        search: function (optToSave) {
+            console.log("------------- search Groups");
+            var that = this;
+            // Save Options
+            if (optToSave) {
+                this.$.service.copyProperties(optToSave, this.searchOpt, true);
+            }
+            // Clone Search Options to send
+            var searchOpt = this.$.service.copyProperties(this.searchOpt);
+            // Add Search Criteria
+            searchOpt.body = this.searchQueryBody();
+
+            // Search Service
+            this.$.service.entitySearch(searchOpt, function (err, resp) {
+                console.log("Search Result for ", searchOpt);
+            });
+        },
+        searchReset: function () {
+            this.search({
+                from: 0
+            });
+        },
+        sortHandler: function (event, data, sender) {
+            var sort = {sort: [ data.column + ":" + data.order ]};
+            // console.log("sortHandler", data);
+            this.search(sort);
+        },
+        pagingHandler: function (e, detail, sender) {
+            //console.log("----- pagingHandler", detail);
+            this.search();
+        },
+
+        addButtonHandler: function () {
+            this.fire('add');
+        }
 
 
-        });
-    </script>
+    });
+</script>
 </polymer-element>

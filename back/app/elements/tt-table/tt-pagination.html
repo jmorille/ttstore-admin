@@ -50,7 +50,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
     <!--<div>lastpage : {{lastpage}}</div>-->
     <!--</template>-->
 
-    <template if="{{total > 0}}">
+    <template if="{{lastpage > 1}}">
         <ul class="pagination pagination-lg">
             <li class="{{currentpage <= 1 ? 'disabled' : '' }}"
                 on-tap="{{selectPage}}" pageid="first">
@@ -79,7 +79,7 @@ A Polymer element for paginating model data, rendering a set of pagination contr
         </ul>
     </template>
 
-    <div>{{currentpage}} >= {{lastpage}} ==> {{ currentpage >= lastpage }}</div>
+
     <!--<paper-dropdown-menu  selected="20" valueattr="label">-->
     <!--<paper-item label="10"></paper-item>-->
     <!--<paper-item label="20"></paper-item>-->

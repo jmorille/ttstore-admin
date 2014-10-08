@@ -8,10 +8,10 @@
 
 
            <template repeat="{{filterName in aggs| enumerate}}">
-               <h2>{{filterName}}</h2>
+               <h2>{{filterName.name}}</h2>
 
                <ul>
-               <template repeat="{{ filter in aggs[filterName].buckets }}">
+               <template repeat="{{ filter in filterName.buckets }}">
                    <li>{{filter.key}} ({{filter.doc_count}})</li>
                </template>
                </ul>
@@ -28,16 +28,13 @@
             created: function () {
             },
             enumerate : function (obj) {
-                if (obj) {
-                    return Object.keys(obj);
+                var  agg  = [];
+                for (var key in obj) {
+                    var line = obj[key];
+                    line.name = key;
+                    agg.push(line);
                 }
-                return undefined;
-//                var  agg  = [];
-//                for (var key in obj) {
-//                    agg.push( obj[key] );
-//                    console.log("enumerate", key, "=",obj[key]  );
-//                }
-//                return agg;
+                return agg;
             }
 
 
