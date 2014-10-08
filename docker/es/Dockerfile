@@ -20,7 +20,7 @@ ENV HTTP_PROXY $http_proxy
 ENV HTTPS_PROXY $http_proxy
 ENV NO_PROXY $no_proxy
 
-
+ENV ES_HEAP_SIZE 4g
 
 
 # Install build

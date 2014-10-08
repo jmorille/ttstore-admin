@@ -90,7 +90,8 @@ module.exports = function (grunt) {
                 },
                 expand: true,
                 src: ['dist/*.html'],
-                dest: 'distgz/'
+                dest: 'distgz/',
+                ext: '.html.gz'
             }
         },
 
