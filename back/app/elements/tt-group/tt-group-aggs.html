@@ -4,15 +4,22 @@
 <polymer-element name="tt-group-aggs" attributes="aggs">
 
    <template>
+       <style>
+           .filter-value {
+               text-transform: capitalize;
+           }
+
+       </style>
+
        <div>
 
 
            <template repeat="{{filterName in aggs| enumerate}}">
-               <h2>{{filterName.name}}</h2>
+               <h2>{{filterName.name| filterLabelMapper}}</h2>
 
                <ul>
                <template repeat="{{ filter in filterName.buckets }}">
-                   <li>{{filter.key}} ({{filter.doc_count}})</li>
+                   <li class="filter-value">{{filter.key}} ({{filter.doc_count}})</li>
                </template>
                </ul>
            </template>
@@ -25,7 +32,18 @@
 
     <script>
         Polymer('tt-group-aggs', {
+
             created: function () {
+                this.filterLabel = {
+                    firstname : 'Prénom'
+                };
+            },
+            filterLabelMapper: function (filterName) {
+                var label = filterName;
+                if (this.filterLabel[filterName]) {
+                    label = this.filterLabel[filterName];
+                }
+                return label;
             },
             enumerate : function (obj) {
                 var  agg  = [];

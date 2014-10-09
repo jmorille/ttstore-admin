@@ -18,6 +18,7 @@
                            on-delete="{{deleteHandler}}">
             </tt-group-list>
             <tt-group-edit id="edit" name="edit" entityid="{{entityid}}"
+                           on-save="{{onSaveHandler}}"
                            on-cancel="{{onEditCancelHandler}}"
                            on-delete="{{onEditCancelHandler}}">
 
@@ -36,14 +37,16 @@
             openList: function (refresh) {
                 this.pageSelected = 'list';
                 if (refresh) {
-                   // this.$.list.search();
+                   this.$.list.search();
                 }
             },
             addHandler: function () {
+                console.log("################# addHandler");
                 this.entityid = null;
                 this.pageSelected = 'edit';
             },
             editHandler: function (event, data, sender) {
+                console.log("################# editHandler");
                 this.entityid = data._id;
                 this.pageSelected = 'edit';
             },
@@ -52,6 +55,11 @@
                 console.error("TODO Delete " , data._id);
             },
             onEditCancelHandler: function () {
+                console.log("################# onEditCancelHandler");
+                this.openList(true);
+            },
+            onSaveHandler: function () {
+                console.log("################# onSaveHandler");
                 this.openList(true);
             }
 

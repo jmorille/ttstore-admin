@@ -1,0 +1,46 @@
+
+<link rel="import" href="../components/polymer/polymer.html">
+
+<link rel="import" href="../components/paper-input/paper-input.html">
+<link rel="import" href="tt-add-event-parent.html">
+
+<polymer-element name="tt-add-event-listener" extends="tt-add-event-parent" attributes="">
+
+
+    <template>
+
+       <div id="monTruc">Main Container</div>
+
+        <paper-input ></paper-input>
+
+    </template>
+
+    <script>
+        Polymer('tt-add-event-listener', {
+            ready: function() {
+                this.super();
+                this._scrollHandler = this.scroll.bind(this);
+                this.$.monTruc.addEventListener('click', this._scrollHandler);
+            },
+
+            detached: function() {
+                this.$.monTruc.removeEventListener('click', this._scrollHandler);
+            },
+
+            /**
+             * Returns the scrollable element.
+             *
+             * @property scroller
+             * @type Object
+             */
+            get scroller() {
+                return this.$.monTruc;
+            },
+            scroll: function (e) {
+                console.log("################################");
+            }
+
+
+        });
+    </script>
+</polymer-element>

@@ -74,7 +74,7 @@
                     if (!err) {
                         that.entity = resp;
                         // Fire Event
-                        that.fire("get",resp);
+                        that.fire("getted",resp);
                     }
                     // Send To Callback
                     if (callback) {
@@ -92,7 +92,7 @@
                     // Event
                     if (!err) {
                         // Fire Event
-                        that.fire("delete", that.entityCallbackContent(err, resp));
+                        that.fire("deleted", that.entityCallbackContent(err, resp));
                     }
                 };
                 return this.entityCallback(that, setEntityCallback);
@@ -106,7 +106,7 @@
                     // Event
                     if (!err) {
                         // Fire Event
-                        that.fire("save", that.entityCallbackContent(err, resp));
+                        that.fire("saved", that.entityCallbackContent(err, resp));
                     }
                 };
                 return this.entityCallback(that, setEntityCallback);

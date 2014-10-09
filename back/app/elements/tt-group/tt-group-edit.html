@@ -14,44 +14,46 @@
 <link rel="import" href="../tt-es/tt-es-crud.html">
 
 
+<polymer-element name="tt-group-edit" extends="tt-crud-edit" attributes="entityid data">
 
-<polymer-element name="tt-group-edit" extends="tt-crud-edit"  attributes="entityid data">
 
+    <template>
 
-<template>
+        <shadow></shadow>
 
-    <shadow></shadow>
+        <tt-es-crud id="service" index="users" type="user"
+                    on-error="{{crudErrorHandler}}"
+                    on-saved="{{crudSaveHandler}}" on-deleted="{{crudDeleteHandler}}"
+                    entity="{{data}}"></tt-es-crud>
 
-    <tt-es-crud id="service" index="users" type="user"
-                on-error="{{crudErrorHandler}}"
-                on-save="{{crudSaveHandler}}" on-delete="{{crudDeleteHandler}}"
-                entity="{{data}}"></tt-es-crud>
-
-    <template bind="{{ data._source}}">
         <section id="editForm">
-            <paper-input floatingLabel label="First name" inputValue="{{ firstname}}"></paper-input>
-            <paper-input floatingLabel label="Last name" inputValue="{{ lastname}}"></paper-input>
-            <paper-input floatingLabel label="Email" type="email" inputValue="{{email}}"
-                         on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
+            <paper-input alacon floatingLabel label="First name" inputValue="{{ data._source.firstname}}"></paper-input>
+            <paper-input alacon floatingLabel label="Last name" inputValue="{{ data._source.lastname}}"></paper-input>
+            <paper-input alacon floatingLabel label="Email" type="email" inputValue="{{data._source.email}}"
                          id="email_comp"
                          error="Input is not an email!"></paper-input>
-            <paper-input floatingLabel label="Email" type="email" inputValue="{{email2}}"
-                         on-input-invalid="{{inputInvalid}}" on-input-valid="{{inputValid}}"
+            <paper-input floatingLabel label="Email" type="email" inputValue="{{data._source.email2}}"
                          id="email_comp2"
                          error="Input is not an email!"></paper-input>
             <paper-shadow z="2"></paper-shadow>
         </section>
+
+
     </template>
 
+    <script>
+        Polymer('tt-group-edit', {
+
+            ready: function () {
+                this.super();
+            },
 
 
-</template>
 
-<script>
-Polymer('tt-group-edit', {
+            scroll: function (e) {
+                console.log("################################");
+            }
 
-
-
-});
-</script>
+        });
+    </script>
 </polymer-element>
