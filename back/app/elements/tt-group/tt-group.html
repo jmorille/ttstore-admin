@@ -18,7 +18,7 @@
                            on-delete="{{deleteHandler}}">
             </tt-group-list>
             <tt-group-edit id="edit" name="edit" entityid="{{entityid}}"
-                           on-save="{{onSaveHandler}}"
+                           on-save="{{onEditCancelHandler}}"
                            on-cancel="{{onEditCancelHandler}}"
                            on-delete="{{onEditCancelHandler}}">
 
@@ -56,10 +56,7 @@
             },
             onEditCancelHandler: function () {
                 console.log("################# onEditCancelHandler");
-                this.openList(true);
-            },
-            onSaveHandler: function () {
-                console.log("################# onSaveHandler");
+                this.entityid= undefined;
                 this.openList(true);
             }
 

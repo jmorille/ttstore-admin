@@ -9,14 +9,17 @@
 
 <core-style id="tt-group-edit">
     .toast-error {
-    background-color: {{g.paperInput.invalidColor}};
+      background-color: {{g.paperInput.invalidColor}};
     }
+
+
 </core-style>
 
 <polymer-element name="tt-crud-edit" attributes="entityid data">
 <template>
 
     <core-style ref="tt-group-edit"></core-style>
+ 
 
     <tt-crud-menu save="{{isSaveEnabled}}"
                   on-tap-delete="{{onDelete}}" on-tap-save="{{onSaveButton}}" on-tap-close="{{onClose}}">
@@ -114,12 +117,26 @@ Polymer('tt-crud-edit', {
     },
     onSaveButton: function () {
         console.log("### onSave Button");
-        this.onSave();
-        this.fire('save', this.entity);
+        var toastCallback =  this.notifValidityErrors.bind(this);
+        var validationCallback  = function(errorNodes) {
+            console.log("On Save Button Error " , errorNodes.length);
+            if (errorNodes.length > 0 ) {
+                errorNodes[0].focus();
+            }
+            toastCallback(errorNodes);
+        };
+        if (this.onSave(validationCallback)) {
+            this.fire('save', this.entity);
+        }
     },
-    onSave: function () {
-        console.log("### onSave");
-        if (this.isValid(this.notifValidityErrors.bind(this))) {
+    onSave: function (validationCallback) {
+//        var cb = validationCallback;
+//        if (cb === undefined) {
+//            cb =   this.notifValidityErrors.bind(this);
+//        }
+        validationCallback = validationCallback ||  this.notifValidityErrors.bind(this);
+        console.log("### onSave", validationCallback, " type ", typeof validationCallback);
+        if (this.isValid(validationCallback) ) {
             // Compute Diff
             if (this.isDiff(this.notifNotDiff.bind(this))) {
                 // Save Or Create
@@ -131,7 +148,10 @@ Polymer('tt-crud-edit', {
                     this.$.service.entityCreate(this.data);
                 }
             }
+        } else {
+            return false;
         }
+        return true;
     },
     crudDeleteHandler: function (event, detail, target) {
         console.log("## toast_delete_ok");
@@ -284,7 +304,6 @@ Polymer('tt-crud-edit', {
         var inputFieldNodes = Array.prototype.filter.call(childNodes, function (childNode) {
             return typeof childNode['checkValidity'] === 'function';
         });
-        console.log("--------------- getFornInputField : " , inputFieldNodes);
         return inputFieldNodes;
     },
 
@@ -298,7 +317,7 @@ Polymer('tt-crud-edit', {
             return false;
         });
         if (errorNodes.length > 0) {
-            errorNodes[0].focus();
+           // errorNodes[0].focus();
             valid = false;
         }
         if (errorCallback && errorNodes.length > 0) {
@@ -361,7 +380,7 @@ Polymer('tt-crud-edit', {
     inputFieldBlur: function (event) {
        console.log("*** Blur " , event );
         this.job('save', function () {
-            this.onSave('save');
+            this.onSave();
         }, 200);
     },
     inputFieldFocus: function (event) {
