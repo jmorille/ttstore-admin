@@ -62,7 +62,24 @@ module.exports = function (grunt) {
                 ]
             }
         },
-
+        useminPrepare: {
+            html: '<%= yeoman.app %>/index.html',
+            options: {
+                dest: '<%= yeoman.dist %>'
+            }
+        },
+        usemin: {
+            html: ['<%= yeoman.dist %>/{,*/}*.html'],
+            css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
+            options: {
+                dirs: ['<%= yeoman.dist %>'],
+                blockReplacements: {
+                    vulcanized: function (block) {
+                        return '<link rel="import" href="' + block.dest + '">';
+                    }
+                }
+            }
+        },
         // vulcanize
         vulcanize: {
             default: {
@@ -128,8 +145,10 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'clean:dist',
+        'useminPrepare',
         'autoprefixer',
-        'vulcanize'
+        'vulcanize',
+        'usemin'
     ]);
 
     grunt.registerTask('default', [

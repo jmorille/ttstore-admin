@@ -3,41 +3,45 @@
 
 <polymer-element name="tt-group-aggs" attributes="aggs">
 
-   <template>
-       <style>
-           .filter-value {
-               text-transform: capitalize;
-           }
+    <template>
+        <style>
+            .filter-value {
+                text-transform: capitalize;
+            }
 
-       </style>
+        </style>
 
-       <div>
-
-
-           <template repeat="{{filterName in aggs| enumerate}}">
-               <h2>{{filterName.name| filterLabelMapper}}</h2>
-
-               <ul>
-               <template repeat="{{ filter in filterName.buckets }}">
-                   <li class="filter-value">{{filter.key}} ({{filter.doc_count}})</li>
-               </template>
-               </ul>
-           </template>
-           </ul>
-
-       </div>
+        <div>
 
 
-   </template>
+            <template repeat="{{filterName in aggs| enumerate}}">
+                <h2>{{filterName.name| filterLabelMapper}}</h2>
+
+                <ul>
+                    <template repeat="{{ filter in filterName.buckets }}">
+                        <li class="filter-value"
+                            filter-name="{{filterName.name}}" filter-value="{{filter.key}}" on-tap="{{filterHandler}}">
+                            {{filter.key}} ({{filter.doc_count}})
+                        </li>
+                    </template>
+                </ul>
+            </template>
+            </ul>
+
+        </div>
+
+
+    </template>
 
     <script>
         Polymer('tt-group-aggs', {
 
             created: function () {
                 this.filterLabel = {
-                    firstname : 'Prénom'
+                    firstname: 'Prénom'
                 };
             },
+
             filterLabelMapper: function (filterName) {
                 var label = filterName;
                 if (this.filterLabel[filterName]) {
@@ -45,8 +49,8 @@
                 }
                 return label;
             },
-            enumerate : function (obj) {
-                var  agg  = [];
+            enumerate: function (obj) {
+                var agg = [];
                 for (var key in obj) {
                     var line = obj[key];
                     line.name = key;
@@ -54,6 +58,19 @@
                     agg.push(line);
                 }
                 return agg;
+            },
+            getLineFilterId: function (e, data, sender) {
+                var filterName = sender.attributes['filter-name'].value;
+                var filterValue = sender.attributes['filter-value'].value;
+                var filter = {
+                    name: filterName,
+                    value: filterValue
+                };
+                return filter;
+            },
+            filterHandler: function (e, data, sender) {
+                var filter = this.getLineFilterId(e, data, sender);
+                this.fire('filter', filter);
             }
 
 
