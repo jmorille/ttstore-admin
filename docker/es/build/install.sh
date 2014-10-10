@@ -2,9 +2,10 @@
 
 ES_HOME=/opt/elasticsearch
 
-INSTALL_ES_VERSION=elasticsearch-1.3.3
+INSTALL_ES_VERSION=elasticsearch-1.3.4
 
 function installTools {
+  echo ""
   echo "### Install  Base Tools"
   echo "### ########################################################"
   apt-get update
@@ -12,12 +13,14 @@ function installTools {
 }
 
 function installAddAptRepositor {
+  echo ""
   echo "### Install  add-apt-repositor"
   echo "### ########################################################"
   apt-get install -q -y software-properties-common
 }
 
 function installJDK7 {
+    echo ""
     echo "### Install Java 7"
     echo "### ########################################################"
     add-apt-repository ppa:webupd8team/java
@@ -30,6 +33,7 @@ function installJDK7 {
 
 
 function installEs {
+  echo ""
   echo "### Install ElasticSearch in : $ES_HOME"
   echo "### ########################################################"
   curl -L -s -o /opt/elasticsearch.tar.gz https://download.elasticsearch.org/elasticsearch/elasticsearch/$INSTALL_ES_VERSION.tar.gz
@@ -40,6 +44,7 @@ function installEs {
 
 function configProxy {
  if [ -n $HTTP_PROXY ]; then
+    echo ""
     echo "### Config Proxy :  $HTTP_PROXY"
     echo "### ########################################################"
     echo "## Config Proxy : ElasticSearch Plugins"
@@ -50,6 +55,7 @@ function configProxy {
 
 
 function installEsPlugins {
+  echo ""
   echo "### Install ElasticSearch Plugins"
   echo "### ########################################################"
   echo "### Install ElasticSearch Plugins : head"
@@ -60,18 +66,40 @@ function installEsPlugins {
 }
 
 function configEs {
+  echo ""
   echo "### Config Elasticsearch"
   echo "### ########################################################"
-  #sed -i'' 's/#path.data: \/path\/to\/data/path.data: \/data\/es-ttstore/' $ES_HOME/config/elasticsearch.yml
-  #printEs
+  # Set to true to instruct the operating system to never swap the ElasticSearch process
+  sed -i'' 's/#bootstrap.mlockall: true/bootstrap.mlockall: true/' $ES_HOME/config/elasticsearch.yml
+  # Paths
+  sed -i'' 's/#path.data: \/path\/to\/data$/path.data: \/data/' $ES_HOME/config/elasticsearch.yml
+  sed -i'' 's/#path.logs: \/path\/to\/logs/path.logs: \/logs/' $ES_HOME/config/elasticsearch.yml
+  sed -i'' 's/#path.work: \/path\/to\/work/path.work: \/work/' $ES_HOME/config/elasticsearch.yml
+  # Config ulimits
+  echo "*         soft    nofile          1048576"   >> /etc/security/limits.conf
+  echo "*         hard    nofile          1048576"   >> /etc/security/limits.conf
+  echo "*         -       memlock         unlimited" >> /etc/security/limits.conf
+  echo "root      soft    nofile          1048576"   >> /etc/security/limits.conf
+  echo "root      hard    nofile          1048576"   >> /etc/security/limits.conf
+  echo "root      -       memlock         unlimited" >> /etc/security/limits.conf
+
+  printEs
 }
 
 function printEs {
- grep -v '^#' /opt/elasticsearch/config/elasticsearch.yml | grep ":"
+  echo ""
+  echo "### Print Config Elasticsearch"
+  echo "### ########################################################"
+  grep -v '^#' /opt/elasticsearch/config/elasticsearch.yml | grep ":"
+  echo ""
+  echo "### Print Config Elasticsearch"
+  echo "### ########################################################"
+  grep -v '^#' /etc/security/limits.conf
 }
 
 
 function cleanBuildInstall {
+  echo ""
   echo "### Clean Docker Image"
   echo "### ########################################################"
    apt-get -y autoremove
