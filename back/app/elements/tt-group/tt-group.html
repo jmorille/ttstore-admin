@@ -42,12 +42,12 @@
             },
             addHandler: function () {
                 console.log("################# addHandler");
-                this.entityid = null;
+                this.entityid = undefined;
                 this.pageSelected = 'edit';
             },
             editHandler: function (event, data, sender) {
-                console.log("################# editHandler");
                 this.entityid = data._id;
+                console.log("################# editHandler",   this.entityid);
                 this.pageSelected = 'edit';
             },
             deleteHandler: function (event, data, sender) {
@@ -55,8 +55,8 @@
                 console.error("TODO Delete " , data._id);
             },
             onEditCancelHandler: function () {
-                console.log("################# onEditCancelHandler");
-                this.entityid= undefined;
+                console.log("################# onEditCancelHandler,   this.entityid = undefined");
+                this.entityid= '';
                 this.openList(true);
             }
 

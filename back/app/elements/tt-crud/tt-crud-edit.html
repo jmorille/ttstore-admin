@@ -9,7 +9,7 @@
 
 <core-style id="tt-group-edit">
     .toast-error {
-      background-color: {{g.paperInput.invalidColor}};
+    background-color: {{g.paperInput.invalidColor}};
     }
 
 
@@ -46,13 +46,17 @@
 
 <script>
 Polymer('tt-crud-edit', {
+    // Config
+    autosave: '',
+    autocreate: '',
+    // On Save : Reload the Data
+    reloadOnSave: false,
+    // Model
     entityid: '',
     data: data = undefined,
     dataOri: undefined,
-    // On Save : Reload the Data
-    reloadOnSave: false,
-    // Crud Menu
-    isSaveEnabled : false,
+    // Crud Menu Status
+    isSaveEnabled: false,
 
     //
     ready: function () {
@@ -79,22 +83,22 @@ Polymer('tt-crud-edit', {
 
     entityidChanged: function (oldValue, newValue, args) {
         //console.log("entityidChanged for ", this.entityid);
-        if (this.entityid === '') {
+        if (this.entityid === '' || this.entityid === null) {
             // Blank case, no model to create
-        } else if (!this.entityid) {
+        } else if (this.entityid === undefined) {
             // Create Mode
             this.data = this.createEmptyEntity();
-          //  console.log("entityidChanged create empty data ", this.data);
+            //  console.log("entityidChanged create empty data ", this.data);
         } else if (!this.data || !this.data._id || this.data._id !== this.entityid) {
             // Update Mode
             this.onGet();
-          //  console.log("entityidChanged load data ", this.entityid);
+            //  console.log("entityidChanged load data ", this.entityid);
         }
     },
     dataChanged: function (oldValue, newValue, args) {
 
         // call also for _version change=
-     //   console.log("--- dataChanged for ", this.data);
+        //   console.log("--- dataChanged for ", this.data);
         // Clone the data for conflict resolution
         this.dataOri = this.$.service.copyProperties(this.data);
         // Manage the bar
@@ -117,10 +121,10 @@ Polymer('tt-crud-edit', {
     },
     onSaveButton: function () {
         console.log("### onSave Button");
-        var toastCallback =  this.notifValidityErrors.bind(this);
-        var validationCallback  = function(errorNodes) {
-            console.log("On Save Button Error " , errorNodes.length);
-            if (errorNodes.length > 0 ) {
+        var toastCallback = this.notifValidityErrors.bind(this);
+        var validationCallback = function (errorNodes) {
+            console.log("On Save Button Error ", errorNodes.length);
+            if (errorNodes.length > 0) {
                 errorNodes[0].focus();
             }
             toastCallback(errorNodes);
@@ -129,23 +133,27 @@ Polymer('tt-crud-edit', {
             this.fire('save', this.entity);
         }
     },
+    isModeCreate : function () {
+       return !this.data._id;
+    },
+
     onSave: function (validationCallback) {
 //        var cb = validationCallback;
 //        if (cb === undefined) {
 //            cb =   this.notifValidityErrors.bind(this);
 //        }
-        validationCallback = validationCallback ||  this.notifValidityErrors.bind(this);
+        validationCallback = validationCallback || this.notifValidityErrors.bind(this);
         console.log("### onSave", validationCallback, " type ", typeof validationCallback);
-        if (this.isValid(validationCallback) ) {
+        if (this.isValid(validationCallback)) {
             // Compute Diff
             if (this.isDiff(this.notifNotDiff.bind(this))) {
                 // Save Or Create
-                if (this.data._id) {
-                    console.log("---- Update entity :", this.data);
-                    this.$.service.entityUpdate(this.data);
-                } else {
+                if (this.isModeCreate()) {
                     console.log("---- Create entity :", this.data);
                     this.$.service.entityCreate(this.data);
+                } else {
+                    console.log("---- Update entity :", this.data);
+                    this.$.service.entityUpdate(this.data);
                 }
             }
         } else {
@@ -270,8 +278,10 @@ Polymer('tt-crud-edit', {
         return this.isEmptyObj(conflict) ? undefined : conflict;
     },
     notifValidityErrors: function (errorNodes) {
-        console.log("## toast_validate_ko");
-        this.$.toast_validate_ko.show();
+        if (errorNodes) {
+            console.log("## toast_validate_ko");
+            this.$.toast_validate_ko.show();
+        }
     },
     notifNotDiff: function () {
 //        this.job('toast_save_not_need', function () {
@@ -295,7 +305,7 @@ Polymer('tt-crud-edit', {
 //            //  this.$.toast_save_not_need.show();
 //            console.log("Diff detected, close refused !!!!")
 //        } else {
-            this.fire('cancel', this.entity);
+        this.fire('cancel', this.entity);
 //        }
     },
 
@@ -316,11 +326,13 @@ Polymer('tt-crud-edit', {
             }
             return false;
         });
-        if (errorNodes.length > 0) {
-           // errorNodes[0].focus();
+        if (!errorNodes || errorNodes.length > 0) {
+            // errorNodes[0].focus();
             valid = false;
+        } else {
+            errorNodes = undefined;
         }
-        if (errorCallback && errorNodes.length > 0) {
+        if (errorCallback) {
             errorCallback(errorNodes);
         }
         return valid;
@@ -359,32 +371,38 @@ Polymer('tt-crud-edit', {
 
     addInputWatcher: function () {
         var childNodes = this.getFornInputField();
-      //  console.log("---------- addInputWatcher", childNodes);
+        //  console.log("---------- addInputWatcher", childNodes);
         for (var i = 0; i < childNodes.length; i++) {
             var childNode = childNodes[i];
-          //  console.log("---------- addInputWatcher", childNode);
+            //  console.log("---------- addInputWatcher", childNode);
             childNode.addEventListener('blur', this.blurListener);
             childNode.addEventListener('input', this.focusListener);
-        };
+        }
+        ;
     },
     removeInputWatcher: function () {
         var childNodes = this.getFornInputField();
-      //  console.log("---------- removeInputWatcher", childNodes);
+        //  console.log("---------- removeInputWatcher", childNodes);
         for (var i = 0; i < childNodes.length; i++) {
             var childNode = childNodes[i];
-          //  console.log("---------- removeInputWatcher", childNode);
-            childNode.removeElementListener('blur',  this.blurListener );
-            childNode.removeElementListener('input', this.focusListener );
-        };
+            //  console.log("---------- removeInputWatcher", childNode);
+            childNode.removeElementListener('blur', this.blurListener);
+            childNode.removeElementListener('input', this.focusListener);
+        }
+        ;
     },
     inputFieldBlur: function (event) {
-       console.log("*** Blur " , event );
-        this.job('save', function () {
-            this.onSave();
-        }, 200);
+        console.log("*** Blur ", event);
+        var autosave = this.isModeCreate() ? (this.autocreate === '' ||  this.autocreate === true) :  ( this.autosave === ''  || this.autosave === true );
+        // Auto save
+        if (autosave) {
+            this.job('save', function () {
+                this.onSave();
+            }, 200);
+        }
     },
     inputFieldFocus: function (event) {
-       //  console.log("*** Focus " , event);
+        //  console.log("*** Focus " , event);
         this.isSaveEnabled = true;
 
     }
