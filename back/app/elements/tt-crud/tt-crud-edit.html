@@ -49,6 +49,7 @@ Polymer('tt-crud-edit', {
     // Config
     autosave: '',
     autocreate: '',
+    validateautofocus : '',
     // On Save : Reload the Data
     reloadOnSave: false,
     // Model
@@ -178,7 +179,7 @@ Polymer('tt-crud-edit', {
             this.entityid = resp._id;
         }
         // Increment version or reload data ?
-        if (this.reloadOnSave) {
+        if (this.reloadOnSave === '' || this.reloadOnSave === true) {
             console.log("Reload on save");
             this.onGet();
             this.$.service.entityGet({_id: resp._id});
@@ -278,7 +279,10 @@ Polymer('tt-crud-edit', {
         return this.isEmptyObj(conflict) ? undefined : conflict;
     },
     notifValidityErrors: function (errorNodes) {
-        if (errorNodes) {
+        if (errorNodes && errorNodes.length >0 ) {
+            if (this.validateautofocus === '' || this.validateautofocus === true) {
+                errorNodes[0].focus();
+            }
             console.log("## toast_validate_ko");
             this.$.toast_validate_ko.show();
         }
@@ -312,7 +316,11 @@ Polymer('tt-crud-edit', {
     getFornInputField: function () {
         var childNodes = this.shadowRoot.querySelectorAll('#editForm > *');
         var inputFieldNodes = Array.prototype.filter.call(childNodes, function (childNode) {
-            return typeof childNode['checkValidity'] === 'function';
+             if (typeof childNode['checkValidity'] === 'function') {
+                 console.dir("childNode", childNode);
+                return true;
+            };
+            return false;
         });
         return inputFieldNodes;
     },
@@ -374,7 +382,7 @@ Polymer('tt-crud-edit', {
         //  console.log("---------- addInputWatcher", childNodes);
         for (var i = 0; i < childNodes.length; i++) {
             var childNode = childNodes[i];
-            //  console.log("---------- addInputWatcher", childNode);
+            console.log("---------- addInputWatcher", childNode);
             childNode.addEventListener('blur', this.blurListener);
             childNode.addEventListener('input', this.focusListener);
         }

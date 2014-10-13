@@ -6,9 +6,12 @@
 <link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../components/paper-toast/paper-toast.html">
 
+<link rel="import" href="../../components/paper-toast/paper-toast.html">
 
-<link rel="import" href="../../components/paper-input/paper-input.html">
+<link rel="import" href="../../components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../components/paper-radio-button/paper-radio-button.html">
 
+<link rel="import" href="../../components/paper-toggle-button/paper-toggle-button.html">
 
 <link rel="import" href="../tt-crud/tt-crud-edit.html">
 <link rel="import" href="../tt-es/tt-es-crud.html">
@@ -35,7 +38,18 @@
             <paper-input floatingLabel label="Email" type="email" inputValue="{{data._source.email2}}"
                          id="email_comp2"
                          error="Input is not an email!"></paper-input>
-            <paper-shadow z="2"></paper-shadow>
+
+
+            <paper-radio-group selected="{{radioSelected}}">
+                <paper-radio-button name="small" label="Small"></paper-radio-button>
+                <paper-radio-button name="medium" label="Medium"></paper-radio-button>
+                <paper-radio-button name="large" label="Large"></paper-radio-button>
+            </paper-radio-group>
+
+            <div center horizontal layout>
+                <div>Actif</div>
+                <paper-toggle-button checked="{{singleSelected}}" label="Actif"></paper-toggle-button>
+            </div>
         </section>
 
 
@@ -43,12 +57,17 @@
 
     <script>
         Polymer('tt-group-edit', {
-
+            radioSelected : 'medium',
+            singleSelected : true,
             ready: function () {
                 this.super();
             },
-
-
+            radioSelectedChanged: function () {
+                console.log("radioSelected", this.radioSelected);
+            },
+            singleSelectedChanged: function () {
+                console.log("singleSelected", this.singleSelected);
+            },
 
             scroll: function (e) {
                 console.log("################################");
