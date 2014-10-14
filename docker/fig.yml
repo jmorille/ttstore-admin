@@ -5,10 +5,10 @@ es:
   expose:
    - "9200"
   volumes:
-   - /data2/ttstore/logs:/logs
-   - /data2/ttstore/data:/data
-   - /data2/ttstore/work:/work
-   - /data2/ttstore/tmp:/tmp
+   - /data/ttstore/logs:/logs
+   - /data/ttstore/data:/data
+   - /data/ttstore/work:/work
+   - /data/ttstore/tmp:/tmp
 ttserver:
   image: jmorille/ttserver
   ports:
@@ -26,7 +26,7 @@ web:
    - "80:80"
   volumes:
    - /home/a000cqp/project/ttstore-admin/back:/data/wwww
-   - /data2/ttsore-ngnix/logs:/etc/nginx/logs
+   - /data/ttsore-ngnix/logs:/etc/nginx/logs
   links:
    - "es:es"
    - "ttserver:ttserver"
