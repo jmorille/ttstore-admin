@@ -6,18 +6,27 @@ var express = require("express"),
     port = parseInt(process.env.PORT, 10) || 8000;
 
 
+
+
 // https://github.com/senchalabs/connect#middleware
 var compression = require('compression');
 var serveStatic = require('serve-static');
+var logger  = require('morgan');
 
+// redirect
 var url = require('url');
 var http = require('http');
+
+// Model
+var users = require('./server/models/users');
 
 
 var oneDay = 86400000;
 var favicon = require('serve-favicon');
 
 // https://github.com/strongloop/express/tree/master/examples
+
+app.use(logger('dev'));
 
 app.use(methodOverride());
 app.use(bodyParser.json({
@@ -49,9 +58,17 @@ var client = new elasticsearch.Client({
 
 
 
+// create application/json parser
+var jsonParser = bodyParser.json({ type: 'text/plain' });
 
 
-app.route('/es/*')
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+app.route('/es/*').all(jsonParser, users());
+
+
+app.route('/XXes/*')
     .all(function (request, response, next) {
         var start = new Date();
 

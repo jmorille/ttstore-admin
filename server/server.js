@@ -10,13 +10,25 @@ var express = require("express"),
 var compression = require('compression');
 var serveStatic = require('serve-static');
 
+// logger
+// create a write stream (in append mode)
+var accessLogStream = fs.createWriteStream(__dirname + '/log/access.log', {flags: 'a'})
+var logger  = require('morgan');
+app.use(logger('dev', {stream: accessLogStream})); // combined
+
+
+
+
 var url = require('url');
 var http = require('http');
+
+var users = require('./models/users');
 
 
 var oneDay = 86400000;
 
 // https://github.com/strongloop/express/tree/master/examples
+
 
 app.use(methodOverride());
 app.use(bodyParser.json({
