@@ -65,10 +65,10 @@ var jsonParser = bodyParser.json({ type: 'text/plain' });
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-app.route('/es/*').all(jsonParser, users());
+app.route('/es/users/*').all(jsonParser, users(client));
 
 
-app.route('/XXes/*')
+app.route('/esx/*')
     .all(function (request, response, next) {
         var start = new Date();
 

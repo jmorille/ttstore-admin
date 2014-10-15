@@ -1,0 +1,49 @@
+<!-- -->
+<link rel="import" href="../../../components/polymer/polymer.html">
+
+
+<link rel="import" href="../../../components/core-ajax/core-ajax.html">
+
+<polymer-element name="tt-ajax-search" hidden attributes="options response">
+
+    <template>
+
+        <core-ajax id="service"  auto url="/esx/users/search" handleAs="json"
+                   headers='{ "Accept-Encoding": "gzip, deflate"}'
+                body="{{options}}"
+                response="{{response}}"
+                method="POST"
+                on-core-error="{{handleError}}"
+                on-core-response="{{handleResponse}}">
+        </core-ajax>
+
+
+    </template>
+
+    <script>
+        Polymer('tt-ajax-search', {
+
+            entitySearch: function () {
+                // Search Query
+                if (!this.options.hasOwnProperty("q") && !this.options.hasOwnProperty("body")) {
+                    this.options.body = ejs.Request().query(ejs.MatchAllQuery());
+                }
+                this.$.client.go();
+            },
+
+            handleResponse: function (resp) {
+                this.fire("response", {
+                    response:resp,
+                    status: resp.status
+                });
+            },
+            handleError: function (resp) {
+                this.fire("error", {
+                    error: resp,
+                    status: resp.status
+                });
+            }
+
+        });
+    </script>
+</polymer-element>

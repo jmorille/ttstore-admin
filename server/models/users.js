@@ -5,33 +5,57 @@
  */
 
 var url = require('url');
+var http = require('http');
 
-var exports = module.exports = function users(root, options) {
+var exports = module.exports = function users(client, options) {
 
-//    if (!root) {
-//        throw new TypeError('root path required')
-//    }
+    if (!client) {
+        throw new TypeError('client required')
+    }
     console.log("Module export users ");
-    return function users(req, res, next) {
-        var reqUrl = url.parse(req.url, true, true);
-        console.log("request method", req.method );
-        console.log("request headers", req.headers );
+    return function users(request, response) {
+        var reqUrl = url.parse(request.url, true, true);
+        //console.log("request method", request.method);
+        console.log("request headers", request.headers);
+        //console.log("request payload ", JSON.stringify(request.body, null, 4));
 
-
-        console.log("request payload ",JSON.stringify( req.body, null, 4));
-
+        // post data
+        var payload = request.body;
+        // http://stackoverflow.com/questions/6158933/how-to-make-an-http-post-request-in-node-js
+        
         var redirectPath = reqUrl.pathname.slice(3);
         var options = {
-            protocol : 'http',
+            protocol: 'http:',
             port: '9200',
             hostname: '192.168.1.100',
-            pathname : redirectPath,
-            query : reqUrl.query
+            headers: request.headers,
+            method: request.method,
+            pathname: redirectPath,
+            query: reqUrl.query,
+            body: payload
         };
+        console.log("redirect to ", url.format(options));
 
-        console.log("redirect to ", url.format(options) );
+        var esConnector = http.request(options, function (res) {
+            console.log("Redirect", options);
+            response.writeHead(res.statusCode, res.headers);
+            res.pipe(response, {end: true })
+                .on('error', function (e) {
+                    console.error("Error in pipe redirect", e);
+                });//tell 'response' end=true
+            console.log('    *', new Date(Date.now()).toUTCString(), "-", "statusCode", res.statusCode);
+        });
+        esConnector.on('error', function (e) {
+            console.error("Error in request redirect", e);
+        });
+       // request.pipe(esConnector, {end: true});
 
-       // next();
+        // post the data
+        post_req.write(post_data);
+        post_req.end();
+
+
+        // next();
     }
 
 
