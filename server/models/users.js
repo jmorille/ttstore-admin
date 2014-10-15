@@ -31,7 +31,7 @@ var exports = module.exports = function users(root, options) {
 
         console.log("redirect to ", url.format(options) );
 
-        next();
+       // next();
     }
 
 

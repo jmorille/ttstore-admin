@@ -12,7 +12,7 @@ var serveStatic = require('serve-static');
 
 // logger
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(__dirname + '/log/access.log', {flags: 'a'})
+var accessLogStream = fs.createWriteStream(  '/log/access.log', {flags: 'a'})
 var logger  = require('morgan');
 app.use(logger('dev', {stream: accessLogStream})); // combined
 

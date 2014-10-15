@@ -36,7 +36,7 @@ RUN exec /build/install.sh
 # Expose
 # #######################
 EXPOSE 8000
-VOLUME ["/opt/ttserver"]
+VOLUME ["/opt/ttserver", "/log"]
 
 
 # Start Command
