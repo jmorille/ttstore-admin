@@ -91,8 +91,10 @@
                 <core-animated-pages selected="{{selected}}" flex auto
                                      on-core-select="{{selectedPrepareHandler}}">
 
-
-                    <user-admin name="users" class="card"></user-admin>
+                    <section name="users" class="card">Users
+                        <paper-shadow z="2"></paper-shadow>
+                    </section>
+                    <!--<user-admin name="users" class="card"></user-admin>-->
                     <tt-group name="groups">Groups</tt-group>
 
                     <section name="categories" class="card">Categories

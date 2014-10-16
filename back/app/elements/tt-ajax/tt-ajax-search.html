@@ -1,39 +1,42 @@
 <!-- -->
-<link rel="import" href="../../../components/polymer/polymer.html">
+<link rel="import" href="../../components/polymer/polymer.html">
 
 
-<link rel="import" href="../../../components/core-ajax/core-ajax.html">
+<link rel="import" href="../../components/core-ajax/core-ajax.html">
 
 <polymer-element name="tt-ajax-search" hidden attributes="options response">
 
     <template>
-
-        <core-ajax id="service"  auto url="/esx/users/search" handleAs="json"
-                   headers='{ "Accept-Encoding": "gzip, deflate"}'
-                body="{{options}}"
-                response="{{response}}"
-                method="POST"
-                on-core-error="{{handleError}}"
-                on-core-response="{{handleResponse}}">
+        <!--application/json-->
+        <core-ajax id="service" url="/es/users/_search" handleAs="json"
+                   contentType="application/json"
+                   body="{{optionstring}}"
+                   response="{{response}}"
+                   method="POST"
+                   on-core-error="{{handleError}}"
+                   on-core-response="{{handleResponse}}">
         </core-ajax>
 
 
     </template>
 
     <script>
+        'use strict';
         Polymer('tt-ajax-search', {
-
+            optionstring : '',
             entitySearch: function () {
                 // Search Query
                 if (!this.options.hasOwnProperty("q") && !this.options.hasOwnProperty("body")) {
                     this.options.body = ejs.Request().query(ejs.MatchAllQuery());
                 }
-                this.$.client.go();
+                this.$.service.go();
             },
-
+            optionsChanged: function () {
+                this.optionstring =  JSON.stringify(this.options);
+            },
             handleResponse: function (resp) {
                 this.fire("response", {
-                    response:resp,
+                    response: resp,
                     status: resp.status
                 });
             },
@@ -42,7 +45,28 @@
                     error: resp,
                     status: resp.status
                 });
+            },
+
+            copyProperties: function (src, dest, override) {
+                dest = dest || {};
+                for (var attr in src) {
+                    if (typeof src[attr] == 'object' && !Array.isArray(src[attr])) {
+                        // console.log("copyProperties type : ", attr, " --> ", typeof src[attr], " / is Array "  , Array.isArray(src[attr]) );
+                        if (override || !dest.hasOwnProperty(attr)) {
+                            var subDest = this.copyProperties(src[attr]);
+                            // console.log("sub dest", subDest);
+                            dest[attr] = subDest;
+                        }
+                    } else  if (src.hasOwnProperty(attr)) {
+                        if (override || !dest.hasOwnProperty(attr)) {
+                            dest[attr] = src[attr];
+                        }
+                    }
+                }
+                return dest;
             }
+
+
 
         });
     </script>

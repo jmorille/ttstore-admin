@@ -59,7 +59,8 @@
 
     </style>
 
-    <!--<tt-es-search id="service" index="users" type="user" entities="{{data}}"></tt-es-search>-->
+    <tt-es-search id="service" index="users" type="user" entities="{{data}}"></tt-es-search>
+    <tt-ajax-search id="service" index="users" type="user" response="{{data}}"></tt-ajax-search>
 
     <template id="request_query">
         <section horizontal layout>
@@ -135,7 +136,6 @@
     <core-a11y-keys target="{{}}" keys="up down left right pagedown pageup"
                     on-keys-pressed="{{keyPressHandler}}"></core-a11y-keys>
 
-    <tt-ajax-search id="service" index="users" type="user" options="{{searchOpt}}" response="{{data}}"></tt-ajax-search>
 
 </template>
 
@@ -213,11 +213,15 @@
             if (optToSave) {
                 this.$.service.copyProperties(optToSave, this.searchOpt, true);
             }
+            // Clone Search Options to send
+            var searchOpt = this.$.service.copyProperties(this.searchOpt);
             // Add Search Criteria
-            this.searchOpt.body = this.searchQueryBody();
+            searchOpt.body = this.searchQueryBody();
 
             // Search Service
-            this.$.service.entitySearch();
+            this.$.service.entitySearch(searchOpt, function (err, resp) {
+                console.log("Search Result for ", searchOpt);
+            });
         },
         searchReset: function () {
             this.search({

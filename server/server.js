@@ -9,6 +9,8 @@ var express = require("express"),
 // https://github.com/senchalabs/connect#middleware
 var compression = require('compression');
 var serveStatic = require('serve-static');
+var fs = require('fs');
+
 
 // logger
 // create a write stream (in append mode)
@@ -44,14 +46,21 @@ app.use(compression({
 
 
 var elasticsearch = require('elasticsearch');
+//   host: '192.168.1.100:9200',
 var client = new elasticsearch.Client({
-    host: '192.168.1.100:9200',
-    log: 'trace'
+    host: 'es:9200',
+    log: 'info'
 });
 
 
+// create application/json parser
+var jsonParser = bodyParser.json();
+// create application/x-www-form-urlencoded parser
 
-app.route('/es/*')
+
+app.route('/es/users/*').all(jsonParser, users(client));
+
+app.route('/esx/*')
     .all(function (request, response, next) {
         var start = new Date();
 

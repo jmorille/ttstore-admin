@@ -30,6 +30,16 @@ function installJDK7 {
     apt-get install -q -y oracle-java7-installer
 }
 
+function installJDK8 {
+    echo ""
+    echo "### Install Java 8"
+    echo "### ########################################################"
+    add-apt-repository ppa:webupd8team/java
+    apt-get update
+    echo "debconf shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
+    echo "debconf shared/accepted-oracle-license-v1-1 seen true" | debconf-set-selections
+    apt-get install -q -y oracle-java8-installer
+}
 
 
 function installEs {
@@ -75,6 +85,13 @@ function configEs {
   sed -i'' 's/#path.data: \/path\/to\/data$/path.data: \/data/' $ES_HOME/config/elasticsearch.yml
   sed -i'' 's/#path.logs: \/path\/to\/logs/path.logs: \/logs/' $ES_HOME/config/elasticsearch.yml
   sed -i'' 's/#path.work: \/path\/to\/work/path.work: \/work/' $ES_HOME/config/elasticsearch.yml
+   # Add Specifics Conf
+  echo "" >> $ES_HOME/config/elasticsearch.yml
+  echo "#################################### Http ####################################" >> $ES_HOME/config/elasticsearch.yml
+  echo "" >> $ES_HOME/config/elasticsearch.yml
+  echo "http.compression : true" >> $ES_HOME/config/elasticsearch.yml
+  echo "http.cors.enabled : false" >> $ES_HOME/config/elasticsearch.yml
+
   # Config ulimits
   echo "*         soft    nofile          1048576"   >> /etc/security/limits.conf
   echo "*         hard    nofile          1048576"   >> /etc/security/limits.conf
