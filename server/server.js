@@ -14,11 +14,9 @@ var fs = require('fs');
 
 // logger
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(  '/log/access.log', {flags: 'a'})
-var logger  = require('morgan');
+var logger = require('morgan');
+var accessLogStream = fs.createWriteStream('/log/access.log', {flags: 'a'})
 app.use(logger('dev', {stream: accessLogStream})); // combined
-
-
 
 
 var url = require('url');
@@ -43,10 +41,7 @@ app.use(compression({
 }));
 
 
-
-
 var elasticsearch = require('elasticsearch');
-//   host: '192.168.1.100:9200',
 var client = new elasticsearch.Client({
     host: 'es:9200',
     log: 'info'
