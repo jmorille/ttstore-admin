@@ -29,11 +29,10 @@
                 if (!this.options.hasOwnProperty("q") && !this.options.hasOwnProperty("body")) {
                     this.options.body = ejs.Request().query(ejs.MatchAllQuery());
                 }
+                this.optionstring =  JSON.stringify(this.options);
                 this.$.service.go();
             },
-            optionsChanged: function () {
-                this.optionstring =  JSON.stringify(this.options);
-            },
+          
             handleResponse: function (resp) {
                 this.fire("response", {
                     response: resp,
