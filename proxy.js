@@ -53,10 +53,11 @@ app.route('/components/*')
 var elasticsearch = require('elasticsearch');
 var client = new elasticsearch.Client({
     host: '192.168.1.100:9200',
-    log: 'trace'
+    log: 'info'
 });
 
 
+app.use(bodyParser.json());
 
 // create application/json parser
 var jsonParser = bodyParser.json({ type: 'text/plain' });
@@ -65,7 +66,7 @@ var jsonParser = bodyParser.json({ type: 'text/plain' });
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-app.route('/es/users/*').all(jsonParser, users(client));
+users(app, client);
 
 
 app.route('/esx/*')

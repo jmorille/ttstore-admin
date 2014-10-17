@@ -19,12 +19,25 @@ function registerIndex(payload) {
 }
 
 
-function users(client) {
+function users(app, client) {
     console.log("Module model users ");
+    if (!app) {
+        throw new TypeError('app required');
+    }
     if (!client) {
         throw new TypeError('client required');
     }
-    return esapi(client, registerIndex);
+
+    var crudapi =  esapi(client, registerIndex);
+    var index = 'users';
+
+
+    app.post('/'  + index + '/_search', crudapi.search);
+    app.get('/'  + index + '/:id',  crudapi.findById);
+    app.post('/'  + index + '' , crudapi.create);
+    app.put('/'  + index + '/:id', crudapi.update);
+    app.delete('/'  + index + '/:id', crudapi.delete);
+
 }
 
 
