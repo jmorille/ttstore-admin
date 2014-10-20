@@ -2,7 +2,6 @@
 
 
 function esapi(client, registerIndex) {
-    console.log("Module model users ");
     if (!client) {
         throw new TypeError('client required');
     }
@@ -32,15 +31,20 @@ function esapi(client, registerIndex) {
                 response.send(resp);
             });
         },
-        get: function (request, response) {
-            var opt = registerIndexPrimary(request.body);
+        findById: function (request, response) {
+            var entityId = request.params.id;
+            var opt = registerIndexPrimary({
+                id: entityId
+            });
             client.get(opt, function (err, resp) {
                 if (err) {
                     console.error("Elasticsearch Error", err);
                 }
+                //  res.statusCode = 404;
                 response.send(resp);
             });
         },
+        // http://blog.kevinblanco.io/creating-a-simple-crud-with-node-js-express-mongodb-and-angularjs-part-1/
         update: function (request, response) {
             var opt = registerIndexPrimary(request.body, true);
             client.update(opt, function (err, resp) {
@@ -72,4 +76,4 @@ function esapi(client, registerIndex) {
 }
 
 
-module.exports = esapis;
+module.exports = esapi;

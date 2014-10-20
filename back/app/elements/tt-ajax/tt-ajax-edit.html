@@ -4,15 +4,15 @@
 
 <link rel="import" href="../../components/core-ajax/core-ajax.html">
 
-<polymer-element name="tt-ajax-search" hidden attributes="options response index">
+<polymer-element name="tt-ajax-edit" hidden attributes="index options response">
 
     <template>
         <!--application/json-->
         <core-ajax id="service" url="/{{index}}/_search" handleAs="json"
                    contentType="application/json"
-                   body="{{optionstring}}"
+                   params="{{optionstring}}"
                    response="{{response}}"
-                   method="POST"
+                   method="GET"
                    on-core-error="{{handleError}}"
                    on-core-response="{{handleResponse}}">
         </core-ajax>
@@ -22,9 +22,8 @@
 
     <script>
         'use strict';
-        Polymer('tt-ajax-search', {
+        Polymer('tt-ajax-edit', {
             optionstring : '',
-
             entitySearch: function () {
                 // Search Query
                 if (!this.options.hasOwnProperty("q") && !this.options.hasOwnProperty("body")) {
@@ -33,7 +32,7 @@
                 this.optionstring =  JSON.stringify(this.options);
                 this.$.service.go();
             },
-
+          
             handleResponse: function (resp) {
                 this.fire("response", {
                     response: resp,
