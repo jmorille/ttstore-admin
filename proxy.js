@@ -51,8 +51,9 @@ app.route('/components/*')
     });
 
 var elasticsearch = require('elasticsearch');
+//host: '192.168.1.100:9200',
 var client = new elasticsearch.Client({
-    host: '192.168.1.100:9200',
+    host: '127.0.0.1:9200',
     log: 'info'
 });
 

@@ -1,0 +1,41 @@
+<!-- -->
+<link rel="import" href="../../components/polymer/polymer.html">
+
+
+<link rel="import" href="../../components/core-ajax/core-ajax.html">
+
+<polymer-element name="tt-ajax-body-post" hidden attributes="index body response entityid">
+
+    <template>
+        <!--application/json-->
+        <core-ajax id="service" url="/s/{{index}}/{{entityid}}" handleAs="json"
+                   contentType="application/json"
+                   body="{{body}}"
+                   response="{{response}}"
+                   method="POST" >
+        </core-ajax>
+
+
+
+        <div on-tap="{{typeOfBody}}">Type of body {{bodyType}}</div>
+
+    </template>
+
+    <script>
+        'use strict';
+        Polymer('tt-ajax-body-post', {
+            bodyType: undefined,
+            bodyJson : {
+                'name' : 'name'
+            },
+            typeOfBody : function () {
+                this.bodyType = typeof this.$.service.body;
+            }
+
+
+
+
+
+        });
+    </script>
+</polymer-element>
