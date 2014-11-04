@@ -45,12 +45,16 @@ function esapi(client, registerIndex) {
             });
         },
         // http://blog.kevinblanco.io/creating-a-simple-crud-with-node-js-express-mongodb-and-angularjs-part-1/
-        update: function (request, response) {
+        update: function (request, response, next) {
             var opt = registerIndexPrimary(request.body, true);
+            var entityId = request.params.id;
+            opt.id = entityId;
+            console.info("Elasticsearch Request Update ", opt);
             client.update(opt, function (err, resp) {
                 if (err) {
-                    console.error("Elasticsearch Error", err);
+                    console.error("Elasticsearch Error", err, " for option ", opt);
                 }
+                console.info("Elasticsearch Response", resp);
                 response.send(resp);
             });
         },

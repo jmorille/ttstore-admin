@@ -1,0 +1,156 @@
+<!-- -->
+<link rel="import" href="../../components/polymer/polymer.html">
+
+
+<link rel="import" href="tt-ajax-jquery.html">
+
+<polymer-element name="tt-ajax-jquery" hidden  extends="tt-es-base" attributes="entity">
+
+
+
+    <script>
+        Polymer('tt-ajax-jquery', {
+
+
+            entityGet: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    id: entity._id
+                };
+                this.client.get(opt, this.entityGetCallback(this, callback));
+            },
+
+            entityIndex: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    refresh: true,
+                    id: entity._id,
+                    version: entity._version,
+                    body: entity._source
+                };
+                this.client.index(opt, this.entitySaveCallback(this, callback));
+            },
+            entityUpdate: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    refresh: true,
+                    id: entity._id,
+                    version: entity._version,
+                    body : {
+                        doc: entity._source
+                    }
+                };
+                this.client.update(opt, this.entitySaveCallback(this, callback));
+            },
+            entityCreate: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    refresh: true,
+                    body: entity._source
+                };
+                this.client.index(opt, this.entitySaveCallback(this, callback));
+            },
+            entityDelete: function (entity, callback) {
+                var opt = {
+                    index: this.index,
+                    type: this.type,
+                    preference: "_primary",
+                    refresh: true,
+                    id: entity._id,
+                    version: entity._version
+                };
+                this.client.delete(opt, this.entityDeleteCallback(this, callback));
+            },
+
+            entityGetCallback: function (that, callback) {
+                var setEntityCallback =  function (err, resp) {
+                    if (!err) {
+                        that.entity = resp;
+                        // Fire Event
+                        that.fire("getted",resp);
+                    }
+                    // Send To Callback
+                    if (callback) {
+                        callback(err, resp);
+                    }
+                };
+                return this.entityCallback(that, setEntityCallback);
+            },
+            entityDeleteCallback: function (that, callback) {
+                var setEntityCallback =  function (err, resp) {
+                    // Send To Callback
+                    if (callback) {
+                        callback(err, resp);
+                    }
+                    // Event
+                    if (!err) {
+                        // Fire Event
+                        that.fire("deleted", that.entityCallbackContent(err, resp));
+                    }
+                };
+                return this.entityCallback(that, setEntityCallback);
+            },
+            entitySaveCallback: function (that, callback) {
+                var setEntityCallback =  function (err, resp) {
+                    // Send To Callback
+                    if (callback) {
+                        callback(err, resp);
+                    }
+                    // Event
+                    if (!err) {
+                        // Fire Event
+                        that.fire("saved", that.entityCallbackContent(err, resp));
+                    }
+                };
+                return this.entityCallback(that, setEntityCallback);
+            },
+            entityCallback: function (that, callback) {
+                return function (err, resp) {
+                    if (err) {
+                        //  console.error(err.message);
+                        // Fire Event
+                        that.fire("error", that.entityCallbackContent(err, resp));
+                    } else  if (resp) {
+                        // Save Response
+                        console.log("Response", resp);
+                        // Fire Event
+                        that.fire("response", resp  );
+                    }
+                    // Send To Callback
+                    if (callback) {
+                        callback(err, resp);
+                    }
+                };
+            },
+            entityCallbackContent: function (err, resp) {
+                // Compute Normal Response Status
+                var status = undefined;
+                if ( resp.status) {
+                    status = resp.status;
+                } else if (resp.hasOwnProperty('found')) {
+                    if (resp.found === true) {
+                        status = 200;
+                    } else   if (resp.found === false) {
+                        status = 404;
+                    }
+                }
+                // Create Message Event
+                return {
+                    error: err,
+                    response:resp,
+                    status: status
+                }
+            }
+
+
+        });
+    </script>
+</polymer-element>

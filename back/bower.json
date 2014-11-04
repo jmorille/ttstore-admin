@@ -14,7 +14,8 @@
     "i18next-element": "git@github.com:Polymer/i18next-element.git",
     "i18next": "~1.7.4",
     "voice-elements": "~0.1.3",
-    "app-router": "~1.0.0"
+    "app-router": "~1.0.0",
+    "jquery": "~2.1.1"
   },
   "devDependencies": {
     "polymer-test-tools": "Polymer/polymer-test-tools#^0.4.2"

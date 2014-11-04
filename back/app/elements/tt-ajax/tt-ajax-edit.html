@@ -4,17 +4,42 @@
 
 <link rel="import" href="../../components/core-ajax/core-ajax.html">
 
-<polymer-element name="tt-ajax-edit" hidden attributes="index options response entityid">
+<polymer-element name="tt-ajax-edit" hidden attributes="index data response entityid">
 
     <template>
         <!--application/json-->
-        <core-ajax id="service" url="/s/{{index}}/{{entityid}}" handleAs="json"
+        <core-ajax id="service_get" url="/s/{{index}}/{{entityid}}" handleAs="json"
                    contentType="application/json"
-                   params="{{optionstring}}"
-                   response="{{response}}"
+                   response="{{data}}"
                    method="GET"
                    on-core-error="{{handleError}}"
-                   on-core-response="{{handleResponse}}">
+                   on-core-response="{{handleGetResponse}}">
+        </core-ajax>
+
+        <core-ajax id="service_create" url="/s/{{index}}" handleAs="json"
+                   contentType="application/json"
+                   body="{{datastring}}"
+                   response="{{response}}"
+                   method="POST"
+                   on-core-error="{{handleError}}"
+                   on-core-response="{{handleSaveResponse}}">
+        </core-ajax>
+
+        <core-ajax id="service_update" url="/s/{{index}}/{{entityid}}" handleAs="json"
+                   contentType="application/json"
+                   body="{{datastring}}"
+                   response="{{response}}"
+                   method="PUT"
+                   on-core-error="{{handleError}}"
+                   on-core-response="{{handleSaveResponse}}">
+        </core-ajax>
+
+        <core-ajax id="service_delete" url="/s/{{index}}/{{entityid}}" handleAs="json"
+                   contentType="application/json"
+                   response="{{response}}"
+                   method="DELETE"
+                   on-core-error="{{handleError}}"
+                   on-core-response="{{handleDeleteResponse}}">
         </core-ajax>
 
 
@@ -23,20 +48,65 @@
     <script>
         'use strict';
         Polymer('tt-ajax-edit', {
-            optionstring : '',
-            entitySearch: function () {
-                // Search Query
-                if (!this.options.hasOwnProperty("q") && !this.options.hasOwnProperty("body")) {
-                    this.options.body = ejs.Request().query(ejs.MatchAllQuery());
-                }
-                this.optionstring =  JSON.stringify(this.options);
-                this.$.service.go();
+            datastring : '',
+            entityGet: function () {
+                this.$.service_get.go();
             },
-          
-            handleResponse: function (resp) {
-                this.fire("response", {
-                    response: resp,
-                    status: resp.status
+            save: function () {
+                if (this.isModeCreate()) {
+                    this.entityCreate();
+                } else {
+                    this.entityUpdate();
+                }
+            },
+
+            isModeCreate : function () {
+                return !this.entityid;
+            },
+
+            entityCreate: function () {
+                var opt = {
+                    version : this.data._version,
+                    body : {
+                        doc: this.data._source
+                    }
+                };
+                this.datastring =  JSON.stringify(opt);
+                this.$.service_create.go();
+            },
+            entityUpdate: function () {
+                var opt = {
+                    version : this.data._version,
+                    body : {
+                        doc: this.data._source
+                    }
+                };
+                this.datastring =  JSON.stringify(opt);
+                console.log("Request Save of ", opt);
+                this.$.service_update.go();
+            },
+            entityDelete : function () {
+                this.$.service_delete.go();
+            },
+            handleGetResponse: function (resp) {
+                var detail = resp.detail;
+                this.fire("get", {
+                    response: detail.response,
+                    status: detail.xhr.status
+                });
+            },
+            handleSaveResponse: function (resp) {
+                var detail = resp.detail;
+                this.fire("save", {
+                    response: detail.response,
+                    status: detail.xhr.status
+                });
+            },
+            handleDeleteResponse: function (resp) {
+                var detail = resp.detail;
+                this.fire("delete", {
+                    response: detail.response,
+                    status: detail.xhr.status
                 });
             },
             handleError: function (resp) {
@@ -64,6 +134,7 @@
                 }
                 return dest;
             }
+
 
 
 

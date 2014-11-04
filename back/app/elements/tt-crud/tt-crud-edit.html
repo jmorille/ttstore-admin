@@ -61,12 +61,14 @@ Polymer('tt-crud-edit', {
 
     //
     ready: function () {
+        // Create Binding listener for Blur and Focus
         this.blurListener = this.inputFieldBlur.bind(this);
         this.focusListener = this.inputFieldFocus.bind(this);
         this.addInputWatcher();
     },
 
     detached: function () {
+        // Remove Binding listener for Blur and Focus
         this.removeInputWatcher();
     },
 
@@ -124,8 +126,8 @@ Polymer('tt-crud-edit', {
         console.log("### onSave Button");
         var toastCallback = this.notifValidityErrors.bind(this);
         var validationCallback = function (errorNodes) {
-            console.log("On Save Button Error ", errorNodes.length);
-            if (errorNodes.length > 0) {
+            if (errorNodes && errorNodes.length > 0) {
+                console.log("On Save Button Error ", errorNodes.length);
                 errorNodes[0].focus();
             }
             toastCallback(errorNodes);
@@ -144,17 +146,15 @@ Polymer('tt-crud-edit', {
 //            cb =   this.notifValidityErrors.bind(this);
 //        }
         validationCallback = validationCallback || this.notifValidityErrors.bind(this);
-        console.log("### onSave", validationCallback, " type ", typeof validationCallback);
+
         if (this.isValid(validationCallback)) {
             // Compute Diff
             if (this.isDiff(this.notifNotDiff.bind(this))) {
                 // Save Or Create
                 if (this.isModeCreate()) {
-                    console.log("---- Create entity :", this.data);
-                    this.$.service.entityCreate(this.data);
+                    this.$.service.entityCreate();
                 } else {
-                    console.log("---- Update entity :", this.data);
-                    this.$.service.entityUpdate(this.data);
+                    this.$.service.entityUpdate();
                 }
             }
         } else {

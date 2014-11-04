@@ -64,7 +64,7 @@ server {
         # proxy_buffering off;
      }
 
-     location /es/ {
+     location /s/ {
 
         proxy_pass http://lb-ttserver; # Load balance the URL location "/" to the upstream lb-subprint
         proxy_http_version 1.1;

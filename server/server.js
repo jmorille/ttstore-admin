@@ -53,7 +53,8 @@ var jsonParser = bodyParser.json();
 // create application/x-www-form-urlencoded parser
 
 
-app.route('/es/users/*').all(jsonParser, users(client));
+users(app, client);
+
 
 app.route('/esx/*')
     .all(function (request, response, next) {

@@ -85,20 +85,17 @@ function configEs {
   sed -i'' 's/#path.data: \/path\/to\/data$/path.data: \/data/' $ES_HOME/config/elasticsearch.yml
   sed -i'' 's/#path.logs: \/path\/to\/logs/path.logs: \/logs/' $ES_HOME/config/elasticsearch.yml
   sed -i'' 's/#path.work: \/path\/to\/work/path.work: \/work/' $ES_HOME/config/elasticsearch.yml
-   # Add Specifics Conf
-  echo "" >> $ES_HOME/config/elasticsearch.yml
-  echo "#################################### Http ####################################" >> $ES_HOME/config/elasticsearch.yml
-  echo "" >> $ES_HOME/config/elasticsearch.yml
-  echo "http.compression : true" >> $ES_HOME/config/elasticsearch.yml
-  echo "http.cors.enabled : false" >> $ES_HOME/config/elasticsearch.yml
-
   # Config ulimits
+  echo ""   >> /etc/security/limits.conf
   echo "*         soft    nofile          1048576"   >> /etc/security/limits.conf
   echo "*         hard    nofile          1048576"   >> /etc/security/limits.conf
   echo "*         -       memlock         unlimited" >> /etc/security/limits.conf
   echo "root      soft    nofile          1048576"   >> /etc/security/limits.conf
   echo "root      hard    nofile          1048576"   >> /etc/security/limits.conf
   echo "root      -       memlock         unlimited" >> /etc/security/limits.conf
+  # Config pam_limit
+  echo "" >> /etc/pam.d/common-session
+  echo "session required pam_limits.so" >> /etc/pam.d/common-session
 
   printEs
 }
@@ -127,7 +124,8 @@ function cleanBuildInstall {
 function setupJdk7 {
   installTools || exit 1
   installAddAptRepositor || exit 1
-  installJDK7 || exit 1
+  # installJDK7 || exit 1
+  installJDK8 || exit 1
 }
 
 
