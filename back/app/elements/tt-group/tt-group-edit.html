@@ -37,15 +37,15 @@
                       on-saved="{{crudSaveHandler}}"
                       on-deleted="{{crudDeleteHandler}}">
 
-                      </tt-ajax-edit>
+        </tt-ajax-edit>
 
         <section id="editForm" vertical layout>
-            <paper-input alacon floatingLabel label="First name" inputValue="{{ data._source.firstname}}"></paper-input>
-            <paper-input alacon floatingLabel label="Last name" inputValue="{{ data._source.lastname}}"></paper-input>
-            <paper-input alacon floatingLabel label="Email" type="email" inputValue="{{data._source.email}}"
+            <paper-input alacon floatingLabel label="First name" value="{{ data._source.firstname}}"></paper-input>
+            <paper-input alacon floatingLabel label="Last name" value="{{ data._source.lastname}}"></paper-input>
+            <paper-input alacon floatingLabel label="Email" type="email" value="{{data._source.email}}"
                          id="email_comp"
                          error="Input is not an email!"></paper-input>
-            <paper-input floatingLabel label="Email" type="email" inputValue="{{data._source.email2}}"
+            <paper-input floatingLabel label="Email" type="email" value="{{data._source.email2}}"
                          id="email_comp2"
                          error="Input is not an email!"></paper-input>
 
@@ -69,9 +69,10 @@
         Polymer('tt-group-edit', {
             radioSelected: 'medium',
             singleSelected: true,
+            data : undefined,
             ready: function () {
                 this.super();
-            },
+            }, 
             radioSelectedChanged: function () {
                 console.log("radioSelected", this.radioSelected);
             },
