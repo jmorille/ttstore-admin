@@ -1,6 +1,6 @@
-#jmorille/elasticsearch
+#jmorille/kibana
 
-FROM ubuntu:14.04
+FROM jmorille/elasticsearch
 
 # Set correct environment variables.
 ENV HOME /root
@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Config proxy env
 # #######################
-ENV http_proxy http://webcache.groupe.generali.fr:3128
+ENV http_proxy http://172.30.3.11:3128
 ENV https_proxy $http_proxy
 ENV no_proxy *.groupe.generali.fr
 

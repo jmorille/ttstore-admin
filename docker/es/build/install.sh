@@ -2,7 +2,7 @@
 
 ES_HOME=/opt/elasticsearch
 
-INSTALL_ES_VERSION=elasticsearch-1.4.0
+INSTALL_ES_VERSION=elasticsearch-1.4.1
 
 function installTools {
   echo ""
@@ -121,7 +121,7 @@ function cleanBuildInstall {
    rm -rf /build
 }
 
-function setupJdk7 {
+function setupJdk8 {
   installTools || exit 1
   installAddAptRepositor || exit 1
   # installJDK7 || exit 1
@@ -140,7 +140,7 @@ function setup {
   # Script Start
   chmod +x /build/*.sh
   # Install Jdk
-  setupJdk7 || exit 1
+  setupJdk8 || exit 1
   # Install Es
   setupEs || exit 1
   # Clean
@@ -151,8 +151,8 @@ case "$1" in
   setup)
     setup
     ;;
-  jdk7)
-    setupJdk7 || exit 1
+  jdk8)
+    setupJdk8 || exit 1
     ;;
   es)
     setupEs || exit 1
