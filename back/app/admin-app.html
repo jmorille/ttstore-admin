@@ -11,6 +11,8 @@
 <link rel="import" href="components/core-media-query/core-media-query.html">
 <link rel="import" href="components/paper-button/paper-button.html">
 
+
+
 <link rel="import" href="components/paper-shadow/paper-shadow.html">
 <link rel="import" href="components/core-icon/core-icon.html">
 
@@ -23,6 +25,12 @@
 <link rel="import" href="user-admin/user-admin.html">
 
 <link rel="import" href="elements/tt-group/tt-group.html">
+
+
+<link rel="import" href="components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="components/paper-dropdown/paper-dropdown.html">
+<link rel="import" href="components/core-menu/core-menu.html">
+<link rel="import" href="components/paper-item/paper-item.html">
 
 
 <polymer-element name="admin-app" vertical layout>
@@ -62,8 +70,6 @@
             }
 
 
-
-
             .big {
                 height: 60px;
                 width: 60px;
@@ -76,6 +82,7 @@
         <core-drawer-panel id="main_menu">
             <core-header-panel drawer>
                 <core-toolbar>
+
                     <div>Menu</div>
                 </core-toolbar>
                 <admin-menu selected="{{selected}}"></admin-menu>
@@ -114,6 +121,18 @@
         Polymer('admin-app', {
             selected: 'users',
             responsiveWidth: '900px',
+
+            pastries : [
+                'Apple fritter',
+                'Croissant',
+                'Donut',
+                'Financier',
+                'Jello',
+                'Madeleine',
+                'Pound cake',
+                'Pretzel',
+                'Sfogliatelle'
+            ],
 
             ready: function () {
             },
