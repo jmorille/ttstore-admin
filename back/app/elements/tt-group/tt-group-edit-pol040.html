@@ -18,38 +18,36 @@
 <link rel="import" href="../tt-crud/tt-crud-edit.html">
 <link rel="import" href="../tt-es/tt-es-crud.html">
 
-<link rel="import" href="../../components/ajax-form/ajax-form.html">
 
-<link rel="import" href="../../components/paper-input/paper-input.html">
-<link rel="import" href="../../components/core-input/core-input.html">
-<link rel="import" href="../../components/paper-input/paper-input-decoration.html">
+<polymer-element name="tt-group-edit" extends="tt-crud-edit-pol040" attributes="entityid data">
 
-<polymer-element name="tt-group-edit"  attributes="entityid data">
-
-    <script src="../../components/alertifyjs/dist/js/alertify.js"></script>
 
     <template>
-        <link rel="stylesheet" href="../../components/alertifyjs/dist/css/aertyfy-bootstrap-3.css" />
 
-
+        <shadow></shadow>
         <div>Entity Id : {{entityid}}</div>
 
-        <tt-crud-edit data="{{data}}" entityid="{{entityid}}" index="users">
-            <paper-input-decorator floatingLabel label="First name" >
-                <input is="core-input" value="{{ data._source.firstname}}" required>
-            </paper-input-decorator>
+        <!--<tt-es-crud id="service" index="users" type="user"-->
+        <!--on-error="{{crudErrorHandler}}"-->
+        <!--on-saved="{{crudSaveHandler}}" on-deleted="{{crudDeleteHandler}}"-->
+        <!--entity="{{data}}"></tt-es-crud>-->
 
-            <paper-input-decorator floatingLabel label="Last name">
-                <input is="core-input" value="{{ data._source.lastname}}" required>
-            </paper-input-decorator>
+        <tt-ajax-edit id="service" index="users" type="user" data="{{data}}" entityid="{{entityid}}"
+                      on-error="{{crudErrorHandler}}"
+                      on-saved="{{crudSaveHandler}}"
+                      on-deleted="{{crudDeleteHandler}}">
 
-            <paper-input-decorator floatingLabel label="Email" >
-                <input is="core-input" id="input2" value="{{ data._source.email}}" type="email"  >
-            </paper-input-decorator>
+        </tt-ajax-edit>
 
-            <paper-input-decorator floatingLabel label="Email 2">
-                <input is="core-input" name="inputEmail2" value="{{ data._source.email2}}" type="email"  >
-            </paper-input-decorator>
+        <section id="editForm" vertical layout>
+            <paper-input alacon floatingLabel label="First name" value="{{ data._source.firstname}}"></paper-input>
+            <paper-input alacon floatingLabel label="Last name" value="{{ data._source.lastname}}"></paper-input>
+            <paper-input alacon floatingLabel label="Email" type="email" value="{{data._source.email}}"
+                         id="email_comp"
+                         error="Input is not an email!"></paper-input>
+            <paper-input floatingLabel label="Email" type="email" value="{{data._source.email2}}"
+                         id="email_comp2"
+                         error="Input is not an email!"></paper-input>
 
 
             <paper-radio-group selected="{{radioSelected}}">
@@ -62,12 +60,7 @@
                 <div>Actif</div>
                 <paper-toggle-button checked="{{singleSelected}}" label="Actif"></paper-toggle-button>
             </div>
-
-            <input type="submit">
-
-        </tt-crud-edit>
-
-
+        </section>
 
 
     </template>
@@ -78,17 +71,8 @@
             singleSelected: true,
             data : undefined,
             ready: function () {
-
+                this.super();
             },
-            onFormInvalid : function (e) {
-                e.detail.forEach(function(badEl) {
-                    // handle invalid element
-                    console.log("invalid element",  badEl);
-                });
-            },
-
-
-
             radioSelectedChanged: function () {
                 console.log("radioSelected", this.radioSelected);
             },
