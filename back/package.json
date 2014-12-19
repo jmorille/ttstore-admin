@@ -4,7 +4,21 @@
   "description": "ttstore Back app",
   "private": true,
   "main": "Gruntfile.js",
-  "dependencies": {},
+  "dependencies": {
+    "grunt-contrib-copy": "^0.5.0",
+    "connect-livereload": "^0.4.1",
+    "grunt-contrib-clean": "^0.5.0",
+    "jshint-stylish": "^0.4.0",
+    "time-grunt": "^0.4.0",
+    "grunt-usemin": "^2.6.2",
+    "load-grunt-tasks": "^0.6.0",
+    "grunt-minify-html": "^0.1.0",
+    "grunt-contrib-connect": "^0.8.0",
+    "grunt-contrib-uglify": "^0.5.1",
+    "grunt-vulcanize": "^0.3.0",
+    "grunt-autoprefixer": "^1.0.1",
+    "grunt-contrib-imagemin": "^0.7.2"
+  },
   "devDependencies": {
     "connect-livereload": "^0.4.0",
     "grunt": "~0.4.1",
