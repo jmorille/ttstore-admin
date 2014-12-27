@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta name="Cache-Control" content="private, must-revalidate" />
+
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent" >
+    <meta name="format-detection" content="telephone=no">
+
+
+    <meta name="application-name" content="Admin App">
+    <title>Admin Login</title>
+
+    <script src="components/webcomponentsjs/webcomponents.js"></script>
+
+    <link rel="stylesheet" href="styles/main.css" shim-shadowdom>
+    <link rel="import" href="components/google-apis/google-apis.html">
+    <link rel="import" href="components/google-signin/google-signin.html">
+    <link rel="import" href="components/google-calendar/google-calendar.html">
+
+   <link rel="import" href="elements/tt-login/tt-login.html">
+
+</head>
+<body unresolved fullbleed vertical layout>
+
+    <!--<template is="auto-binding">-->
+    <tt-login clientId="584480502162-tujkhqf3lfr3adqidnnr5g7qnqshodqg.apps.googleusercontent.com"
+              scopes="https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/calendar">
+    </tt-login>
+
+
+
+</body>
+</html>

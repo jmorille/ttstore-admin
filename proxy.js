@@ -6,7 +6,12 @@ var express = require("express"),
     port = parseInt(process.env.PORT, 10) || 8000;
 
 
-
+// Https
+var https = require('https');
+var fs = require('fs');
+var privateKey  = fs.readFileSync('docker/nginx-spdy/build/ssl/server.key', 'utf8');
+var certificate = fs.readFileSync('docker/nginx-spdy/build/ssl/server.crt', 'utf8');
+var credentials = {key: privateKey, cert: certificate};
 
 // https://github.com/senchalabs/connect#middleware
 var compression = require('compression');
@@ -19,7 +24,7 @@ var http = require('http');
 
 // Model
 var users = require('./server/models/users');
-
+var oauth2 = require('./server/models/oauth2');
 
 var oneDay = 86400000;
 var favicon = require('serve-favicon');
@@ -67,6 +72,7 @@ var jsonParser = bodyParser.json({ type: 'text/plain' });
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
+oauth2(app, client);
 users(app, client);
 
 
@@ -134,6 +140,9 @@ app.use(favicon(__dirname + '/back/app/favicon.ico'));
 
 app.use(serveStatic(__dirname + '/back', {  'index': ['index.html', 'index.htm']}))
 
+var httpsServer = https.createServer(credentials, app);
+httpsServer.listen(443);
+console.log("Simple static server listening at https://localhost:" + port);
 
 app.listen(port);
 console.log("Simple static server listening at http://localhost:" + port);

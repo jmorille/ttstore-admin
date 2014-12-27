@@ -23,7 +23,7 @@ var url = require('url');
 var http = require('http');
 
 var users = require('./models/users');
-
+var oauth2 = require('./models/oauth2');
 
 var oneDay = 86400000;
 
@@ -52,7 +52,7 @@ var client = new elasticsearch.Client({
 var jsonParser = bodyParser.json();
 // create application/x-www-form-urlencoded parser
 
-
+oauth2(app, client);
 users(app, client);
 
 
