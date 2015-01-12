@@ -8,6 +8,15 @@
 
     <template>
         <!--application/json-->
+      <core-ajax id="service_create" url="/s/{{index}}" handleAs="json"
+                 contentType="application/json"
+                 body="{{datastring}}"
+                 response="{{response}}"
+                 method="POST"
+                 on-core-error="{{handleError}}"
+                 on-core-response="{{handleSaveResponse}}">
+      </core-ajax>
+
         <core-ajax id="service_get" url="/s/{{index}}/{{entityid}}" handleAs="json"
                    contentType="application/json"
                    response="{{data}}"
@@ -16,14 +25,7 @@
                    on-core-response="{{handleGetResponse}}">
         </core-ajax>
 
-        <core-ajax id="service_create" url="/s/{{index}}" handleAs="json"
-                   contentType="application/json"
-                   body="{{datastring}}"
-                   response="{{response}}"
-                   method="POST"
-                   on-core-error="{{handleError}}"
-                   on-core-response="{{handleSaveResponse}}">
-        </core-ajax>
+
 
         <core-ajax id="service_update" url="/s/{{index}}/{{entityid}}" handleAs="json"
                    contentType="application/json"
