@@ -1,4 +1,3 @@
-
 <link rel="import" href="../../components/core-style/core-style.html">
 
 
@@ -10,14 +9,14 @@
 
 
 <core-style id="tt-group-edit">
-    .toast-error {
-       background-color: {{g.paperInput.invalidColor}};
-    }
+  .toast-error {
+  background-color: {{g.paperInput.invalidColor}};
+  }
 
 </core-style>
 
-<polymer-element name="tt-crud-edit"    attributes="entityid data index">
-<template>
+<polymer-element name="tt-crud-edit" attributes="entityid data index">
+  <template>
 
     <core-ajax id="service_get" url="/s/{{index}}/{{entityid}}" handleAs="json"
                contentType="application/json"
@@ -28,7 +27,6 @@
     </core-ajax>
 
 
-
     <core-style ref="tt-group-edit"></core-style>
 
 
@@ -37,130 +35,143 @@
 
     </tt-crud-menu>
 
-    <section  vertical layout>
+    <section vertical layout>
 
-        <content id="content"></content>
+      <content id="content"></content>
 
     </section>
 
 
-</template>
+  </template>
 
-<script>
-Polymer('tt-crud-edit', {
-    // Config
-    autosave: '',
-    autocreate: '',
-    validateautofocus : '',
-    // On Save : Reload the Data
-    reloadOnSave: false,
-    // Model
-    entityid: '',
-    data: data = undefined,
-    dataOri: undefined,
-    // Crud Menu Status
-    isSaveEnabled: true,
+  <script>
+    Polymer('tt-crud-edit', {
+      // Config
+      autosave: '',
+      autocreate: '',
+      validateautofocus: '',
+      // On Save : Reload the Data
+      reloadOnSave: false,
+      // Model
+      entityid: '',
+      data: data = undefined,
+      dataOri: undefined,
+      // Crud Menu Status
+      isSaveEnabled: true,
 
-    //
-    ready: function () {
-    },
+      //
+      ready: function () {
+      },
 
-    detached: function () {
-    },
+      detached: function () {
+      },
 
-    observe: {
+      observe: {
         'data._version': 'dataChanged'
-    },
-    onSaveButton: function () {
+      },
+
+      onClose: function () {
+//        var diff = this.diffProperties(this.dataOri._source, this.data._source);
+//        if (diff) {
+//            // TODO Show Popup
+//            //  this.$.toast_save_not_need.show();
+//            console.log("Diff detected, close refused !!!!")
+//        } else {
+        this.fire('cancel', this.entity);
+//        }
+      },
+
+      onSaveButton: function () {
         console.log("----------- Click on save");
-      this.save();
-    },
-    save : function () {
-        var isValid =  this.checkValidity();
+        this.save();
+      },
+      save: function () {
+        var isValid = this.checkValidity();
         console.log("----------- check Validity ", isValid);
-    },
-    checkValidity: function () {
+      },
+      checkValidity: function () {
         var childNodes = this.getFornInputField();
         var errorNodes = Array.prototype.filter.call(childNodes, function (childNode) {
-            if (typeof childNode['checkValidity'] === 'function') {
-                return  !childNode['checkValidity']();
-            }
-            return false;
+          if (typeof childNode['checkValidity'] === 'function') {
+            return !childNode['checkValidity']();
+          }
+          return false;
         });
         return true;
-    },
-    getFornInputField: function () {
+      },
+      getFornInputField: function () {
         console.dir(this.$.content);
         var childNodes = this.$.content.shadowRoot.querySelectorAll('*');
         var inputFieldNodes = Array.prototype.filter.call(childNodes, function (childNode) {
-            if (typeof childNode['checkValidity'] === 'function') {
-                console.log("childNode", childNode);
-                return true;
-            };
-            return false;
+          if (typeof childNode['checkValidity'] === 'function') {
+            console.log("childNode", childNode);
+            return true;
+          }
+          ;
+          return false;
         });
         return inputFieldNodes;
-    },
+      },
 
 
-    createEmptyEntity: function () {
+      createEmptyEntity: function () {
         return {
-            _id: undefined,
-            _version: undefined,
-            _source: {}
+          _id: undefined,
+          _version: undefined,
+          _source: {}
         };
-    },
+      },
 
-    entityidChanged: function (oldValue, newValue, args) {
+      entityidChanged: function (oldValue, newValue, args) {
         //console.log("entityidChanged for ", this.entityid);
         if (this.entityid === '' || this.entityid === null) {
-            // Blank case, no model to create
+          // Blank case, no model to create
         } else if (this.entityid === undefined) {
-            // Create Mode
-            this.data = this.createEmptyEntity();
-            //  console.log("entityidChanged create empty data ", this.data);
+          // Create Mode
+          this.data = this.createEmptyEntity();
+          //  console.log("entityidChanged create empty data ", this.data);
         } else if (!this.data || !this.data._id || this.data._id !== this.entityid) {
-            // Update Mode
-            this.entityGet();
-            //  console.log("entityidChanged load data ", this.entityid);
+          // Update Mode
+          this.entityGet();
+          //  console.log("entityidChanged load data ", this.entityid);
         }
-    },
-    dataChanged: function (oldValue, newValue, args) {
+      },
+      dataChanged: function (oldValue, newValue, args) {
 
 
-    },
+      },
 
-    entityGet: function () {
+      entityGet: function () {
         this.$.service_get.go();
-    },
+      },
 
 
-    onFormInvalid : function (e) {
-        e.detail.forEach(function(badEl) {
-            // handle invalid element
-            console.log("invalid element",  badEl);
+      onFormInvalid: function (e) {
+        e.detail.forEach(function (badEl) {
+          // handle invalid element
+          console.log("invalid element", badEl);
         });
 
 
-    },
+      },
 
 
-    handleError: function (resp) {
+      handleError: function (resp) {
         this.fire("error", {
-            error: resp,
-            status: resp.status
+          error: resp,
+          status: resp.status
         });
-    },
-    handleGetResponse: function (resp) {
+      },
+      handleGetResponse: function (resp) {
         var detail = resp.detail;
         this.fire("entity-get", {
-            response: detail.response,
-            status: detail.xhr.status
+          response: detail.response,
+          status: detail.xhr.status
         })
-    }
+      }
 
 
-});
+    });
 
-</script>
+  </script>
 </polymer-element>

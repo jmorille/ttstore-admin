@@ -4,6 +4,7 @@ var express = require("express"),
     errorHandler = require('errorhandler'),
     methodOverride = require('method-override'),
     port = parseInt(process.env.PORT, 10) || 8000;
+    portHttps = parseInt(process.env.PORT_HTTPS, 10) || 8443;
 
 
 // Https
@@ -57,9 +58,10 @@ app.route('/components/*')
 
 var elasticsearch = require('elasticsearch');
 //host: '192.168.1.100:9200',
+//host: '127.0.0.1:9200',
 var client = new elasticsearch.Client({
-    host: '127.0.0.1:9200',
-    log: 'info'
+  host: '192.168.1.100:9200',
+  log: 'info'
 });
 
 
@@ -141,8 +143,10 @@ app.use(favicon(__dirname + '/back/app/favicon.ico'));
 app.use(serveStatic(__dirname + '/back', {  'index': ['index.html', 'index.htm']}))
 
 var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(443);
-console.log("Simple static server listening at https://localhost:" + port);
+httpsServer.listen(portHttps);
+console.log("Simple static server listening at https://localhost:" + portHttps);
 
-app.listen(port);
+var httpServer = http.createServer(app);
+httpServer.listen(port);
+
 console.log("Simple static server listening at http://localhost:" + port);
