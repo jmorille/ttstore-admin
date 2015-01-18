@@ -25,6 +25,13 @@
                on-core-error="{{handleError}}"
                on-core-response="{{handleGetResponse}}">
     </core-ajax>
+    <core-ajax id="service_save" url="/s/{{index}}/{{entityid}}" handleAs="json"
+               contentType="application/json"
+               body="{{dataToSaveString}}"
+               method="PUT"
+               on-core-error="{{handleError}}"
+               on-core-response="{{handleSaveResponse}}">
+    </core-ajax>
 
 
     <core-style ref="tt-group-edit"></core-style>
@@ -51,11 +58,12 @@
       autocreate: '',
       validateautofocus: '',
       // On Save : Reload the Data
-      reloadOnSave: false,
+      reloadOnSave: true,
       // Model
       entityid: '',
       data: data = undefined,
       dataOri: undefined,
+      dataToSaveString: undefined,
       // Crud Menu Status
       isSaveEnabled: true,
 
@@ -86,11 +94,27 @@
         this.save();
       },
       save: function () {
-        var isValid = this.checkValidity();
-        console.log("----------- check Validity ", isValid);
+      //  var isValid = this.checkValidity();
+     //   console.log("----------- check Validity ", isValid);
+        this.entityUpdate();
       },
+
+      entityUpdate: function () {
+        var opt = {
+          version: this.data._version,
+          body: {
+            doc: this.data._source
+          }
+        };
+        this.dataToSaveString = JSON.stringify(opt);
+        console.log("Request Save of ", opt);
+        this.$.service_save.go();
+      },
+
+
       checkValidity: function () {
         var childNodes = this.getFornInputField();
+        console.log("checkValidity Nodes of ", childNodes);
         var errorNodes = Array.prototype.filter.call(childNodes, function (childNode) {
           if (typeof childNode['checkValidity'] === 'function') {
             return !childNode['checkValidity']();
@@ -101,13 +125,22 @@
       },
       getFornInputField: function () {
         console.dir(this.$.content);
-        var childNodes = this.$.content.shadowRoot.querySelectorAll('*');
+        // Bug ? https://github.com/Polymer/polymer/issues/414
+       // var childNodes = this.$.content.querySelectorAll('*');
+        // https://github.com/Polymer/paper-input/commit/255980d5400ef5aada1af87f1771d77c436f469e
+        var childNodes = this.$.content.getDistributedNodes();
+        console.log("getFornInputField Nodes of ", childNodes);
         var inputFieldNodes = Array.prototype.filter.call(childNodes, function (childNode) {
+          console.log("Test Validity Nodes of ", childNode.tagName);
+          var childTagName = childNode.tagName;
           if (typeof childNode['checkValidity'] === 'function') {
+            console.log("childNode", childNode);
+            return true;validate
+          } else    if (typeof childNode['validate'] === 'function') {
             console.log("childNode", childNode);
             return true;
           }
-          ;
+
           return false;
         });
         return inputFieldNodes;
@@ -168,6 +201,33 @@
           response: detail.response,
           status: detail.xhr.status
         })
+      },
+      handleSaveResponse: function (resp) {
+        var detail = resp.detail;
+        var status = detail.xhr.status;
+        var saveResult = detail.response;
+        console.log("Save response", status, ":", resp);
+        console.log("Save response detail", saveResult);
+        if (status === 200) {
+          // Check Existing id
+          if (!this.data._id) {
+            this.data._id = resp._id;
+          }
+          if (!this.entityid) {
+            this.entityid = resp._id;
+          }
+          // Increment version or reload data ?
+          if (this.reloadOnSave === '' || this.reloadOnSave === true) {
+            console.log("Reload on save");
+            this.entityGet();
+          } else {
+            // Update version
+            console.log("Increment Version to ", resp._version, " for data", this.data);
+            this.data._version = resp._version;
+            // Clone the version by wathcing  change on data._version
+          }
+          // Show Notification
+        }
       }
 
 

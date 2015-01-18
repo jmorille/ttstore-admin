@@ -22,7 +22,7 @@
 
 <link rel="import" href="../../components/paper-input/paper-input.html">
 <link rel="import" href="../../components/core-input/core-input.html">
-<link rel="import" href="../../components/paper-input/paper-input-decoration.html">
+<link rel="import" href="../../components/paper-input/paper-input-decorator.html">
 
 <polymer-element name="tt-group-edit"  attributes="entityid data">
 
@@ -35,19 +35,19 @@
         <div>Entity Id : {{entityid}}</div>
 
         <tt-crud-edit data="{{data}}" entityid="{{entityid}}" index="users">
-            <paper-input-decorator floatingLabel label="First name" >
+            <paper-input-decorator floatingLabel label="First name" autoValidate>
                 <input is="core-input" value="{{ data._source.firstname}}" required>
             </paper-input-decorator>
 
-            <paper-input-decorator floatingLabel label="Last name">
+            <paper-input-decorator floatingLabel label="Last name" autoValidate>
                 <input is="core-input" value="{{ data._source.lastname}}" required>
             </paper-input-decorator>
 
-            <paper-input-decorator floatingLabel label="Email" >
+            <paper-input-decorator floatingLabel label="Email" autoValidate>
                 <input is="core-input" id="input2" value="{{ data._source.email}}" type="email"  >
             </paper-input-decorator>
 
-            <paper-input-decorator floatingLabel label="Email 2">
+            <paper-input-decorator floatingLabel label="Email 2" autoValidate>
                 <input is="core-input" name="inputEmail2" value="{{ data._source.email2}}" type="email"  >
             </paper-input-decorator>
 
@@ -63,7 +63,7 @@
                 <paper-toggle-button checked="{{singleSelected}}" label="Actif"></paper-toggle-button>
             </div>
 
-            <input type="submit">
+
 
         </tt-crud-edit>
 
