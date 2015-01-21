@@ -23,11 +23,12 @@ function esapi(client, registerIndex) {
             console.log("request payload ", JSON.stringify(payload, null, 4));
 
             // Create Elasticsearch requests
-            client.search(payload, function (err, resp) {
+            client.search(payload, function (err, resp, status) {
                 if (err) {
                     console.error("Elasticsearch Error", err);
                 }
                 //    response.writeHead(resp.statusCode, resp.headers);
+               response.status(status);
                 response.send(resp);
             });
         },
@@ -36,11 +37,12 @@ function esapi(client, registerIndex) {
             var opt = registerIndexPrimary({
                 id: entityId
             });
-            client.get(opt, function (err, resp) {
+            client.get(opt, function (err, resp, status) {
                 if (err) {
                     console.error("Elasticsearch Error", err);
                 }
                 //  res.statusCode = 404;
+                response.status(status);
                 response.send(resp);
             });
         },
@@ -50,29 +52,35 @@ function esapi(client, registerIndex) {
             var entityId = request.params.id;
             opt.id = entityId;
             console.info("Elasticsearch Request Update ", opt);
-            client.update(opt, function (err, resp) {
-                if (err) {
+            client.update(opt, function (err, resp, status) {
+                 if (err) {
+                    console.error("-------------------------------------");
                     console.error("Elasticsearch Error", err, " for option ", opt);
-                }
-                console.info("Elasticsearch Response", resp);
+                   console.error("-------");
+                    console.error("Elasticsearch Response", resp  );
+                    console.error("-------------------------------------");
+                 }
+                response.status(status);
                 response.send(resp);
             });
         },
         create: function (request, response) {
             var opt = registerIndexPrimary(request.body, true);
-            client.create(opt, function (err, resp) {
+            client.create(opt, function (err, resp, status) {
                 if (err) {
                     console.error("Elasticsearch Error", err);
                 }
+              response.status(status);
                 response.send(resp);
             });
         },
         delete: function (request, response) {
             var opt = registerIndexPrimary(request.body, true);
-            client.delete(opt, function (err, resp) {
+            client.delete(opt, function (err, resp, status) {
                 if (err) {
                     console.error("Elasticsearch Error", err);
                 }
+               response.status(status);
                 response.send(resp);
             });
         }

@@ -6,13 +6,14 @@
     <template>
         <style>
             .filter-value {
-                text-transform: capitalize;
+              text-transform: capitalize;
+              text-decoration: underline;
+              cursor: pointer;
             }
 
         </style>
 
         <div>
-
 
             <template repeat="{{filterName in aggs| enumerate}}">
                 <h2>{{filterName.name| filterLabelMapper}}</h2>
@@ -70,7 +71,7 @@
             },
             filterHandler: function (e, data, sender) {
                 var filter = this.getLineFilterId(e, data, sender);
-                this.fire('filter', filter);
+                this.fire('facet-select', filter);
             }
 
 

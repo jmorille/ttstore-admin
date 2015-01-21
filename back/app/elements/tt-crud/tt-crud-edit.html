@@ -2,7 +2,7 @@
 
 
 <link rel="import" href="../../components/core-ajax/core-ajax.html">
-<link rel="import" href="../../components/ajax-form/ajax-form.html">
+<link rel="import" href="../../components/core-icon/core-icon.html">
 
 
 <link rel="import" href="tt-crud-menu.html">
@@ -10,7 +10,7 @@
 
 <core-style id="tt-group-edit">
   .toast-error {
-  background-color: {{g.paperInput.invalidColor}};
+     background-color: {{g.paperInput.invalidColor}};
   }
 
 </core-style>
@@ -28,8 +28,8 @@
     <core-ajax id="service_save" url="/s/{{index}}/{{entityid}}" handleAs="json"
                contentType="application/json"
                body="{{dataToSaveString}}"
-               method="PUT"
-               on-core-error="{{handleError}}"
+               method="{{serviceSaveVerb}}"
+               on-core-error="{{handleSaveError}}"
                on-core-response="{{handleSaveResponse}}">
     </core-ajax>
 
@@ -49,6 +49,14 @@
     </section>
 
 
+
+    <paper-toast id="toast_save_success" class="capsule" text="Entity Saved.">
+       <core-icon icon="done"></core-icon>
+    </paper-toast>
+    <paper-toast id="toast_save_error" class="capsule toast-error"  text="{{toastSaveErrorMessage}}">
+      <core-icon icon="error"></core-icon>
+    </paper-toast>
+
   </template>
 
   <script>
@@ -61,22 +69,62 @@
       reloadOnSave: true,
       // Model
       entityid: '',
-      data: data = undefined,
+      data:  undefined,
       dataOri: undefined,
       dataToSaveString: undefined,
+
+      // Service
+      serviceSaveVerb : undefined,
+
       // Crud Menu Status
       isSaveEnabled: true,
 
+      // Toast Message
+      toastSaveErrorMessage : undefined,
       //
       ready: function () {
       },
 
       detached: function () {
       },
-
+      attributeChanged: function(attrName, oldVal, newVal) {
+        //var newVal = this.getAttribute(attrName);
+        console.log(attrName, 'old: ' + oldVal, 'new:', newVal);
+      },
       observe: {
         'data._version': 'dataChanged'
       },
+
+      dataChanged: function (oldValue, newValue) {
+        console.log("***************************");
+        console.log(" Data Changed to : ",this.data);
+        this.dataOri = JSON.parse(JSON.stringify(this.data));
+        var é = 'rrr';
+        console.log("***************************");
+      },
+      entityidChanged: function (oldValue, newValue) {
+        //console.log("entityidChanged for ", this.entityid);
+        if (this.entityid === '' || this.entityid === null) {
+          // Blank case, no model to create
+        } else if (this.entityid === undefined) {
+          // Create Mode
+          this.data = this.createEmptyEntity();
+          //  console.log("entityidChanged create empty data ", this.data);
+        } else if (!this.data || !this.data._id || this.data._id !== this.entityid) {
+          // Update Mode
+          this.entityGet();
+          //  console.log("entityidChanged load data ", this.entityid);
+        }
+      },
+
+      createEmptyEntity: function () {
+        return {
+          _id: undefined,
+          _version: undefined,
+          _source: {}
+        };
+      },
+
 
       onClose: function () {
 //        var diff = this.diffProperties(this.dataOri._source, this.data._source);
@@ -93,10 +141,39 @@
         console.log("----------- Click on save");
         this.save();
       },
+
+
+
+
+      entityGet: function () {
+        this.$.service_get.go();
+      },
+
       save: function () {
-      //  var isValid = this.checkValidity();
-     //   console.log("----------- check Validity ", isValid);
-        this.entityUpdate();
+        //  var isValid = this.checkValidity();
+        //   console.log("----------- check Validity ", isValid);
+        if (this.isModeCreate()) {
+          this.entityCreate();
+        } else {
+          this.entityUpdate();
+        }
+      },
+
+      isModeCreate : function () {
+        return !this.data._id;
+      },
+
+      entityCreate: function () {
+        var opt = {
+          version : this.data._version,
+          body : {
+            doc: this.data._source
+          }
+        };
+        this.datastring =  JSON.stringify(opt);
+        console.log("Request Create of ", opt);
+        this.serviceSaveVerb = 'POST';
+        this.$.service_save.go();
       },
 
       entityUpdate: function () {
@@ -108,6 +185,7 @@
         };
         this.dataToSaveString = JSON.stringify(opt);
         console.log("Request Save of ", opt);
+        this.serviceSaveVerb = 'PUT';
         this.$.service_save.go();
       },
 
@@ -147,36 +225,6 @@
       },
 
 
-      createEmptyEntity: function () {
-        return {
-          _id: undefined,
-          _version: undefined,
-          _source: {}
-        };
-      },
-
-      entityidChanged: function (oldValue, newValue, args) {
-        //console.log("entityidChanged for ", this.entityid);
-        if (this.entityid === '' || this.entityid === null) {
-          // Blank case, no model to create
-        } else if (this.entityid === undefined) {
-          // Create Mode
-          this.data = this.createEmptyEntity();
-          //  console.log("entityidChanged create empty data ", this.data);
-        } else if (!this.data || !this.data._id || this.data._id !== this.entityid) {
-          // Update Mode
-          this.entityGet();
-          //  console.log("entityidChanged load data ", this.entityid);
-        }
-      },
-      dataChanged: function (oldValue, newValue, args) {
-
-
-      },
-
-      entityGet: function () {
-        this.$.service_get.go();
-      },
 
 
       onFormInvalid: function (e) {
@@ -219,7 +267,7 @@
           // Increment version or reload data ?
           if (this.reloadOnSave === '' || this.reloadOnSave === true) {
             console.log("Reload on save");
-            this.entityGet();
+           // this.entityGet();
           } else {
             // Update version
             console.log("Increment Version to ", resp._version, " for data", this.data);
@@ -227,6 +275,36 @@
             // Clone the version by wathcing  change on data._version
           }
           // Show Notification
+          this.$.toast_save_success.show();
+        }
+      },
+      handleSaveError: function (event, detail, target) {
+        // BUG ? detail.response as Text with status:JsonObj ? ==> Read from xhr
+        console.log("Bug handleSaveError detail.response (Not JSON) : ", detail.response);
+        var resp = JSON.parse( detail.xhr.response);
+        var status = detail.xhr.status;
+        if (status === 404) {
+          // 404 Not Found
+          this.toastSaveErrorMessage = 'Entity Save Error : Entity Not Found';
+          this.$.toast_save_error.show();
+          //this.entityNotFoundResolution(event, detail, target);
+        } else if (status === 409) {
+          // 409 : Conflict
+          console.error("Entity Save Conflict", resp, detail.xhr);
+          this.toastSaveErrorMessage = 'Entity Save Conflict';
+          this.$.toast_save_error.show();
+          // conflict resolution with reload data
+          //this.onGet(this.conflictResolution(this, this.dataOri, this.data));
+        } else {
+          // Other Error
+          console.error("handleSaveError", resp, detail.xhr);
+          this.toastSaveErrorMessage = 'Entity Save Error ' + status + ' : ' + detail.xhr.statusText;
+          this.$.toast_save_error.show();
+          // Fire Event
+          this.fire("error", {
+            error: resp,
+            status: status
+          });
         }
       }
 

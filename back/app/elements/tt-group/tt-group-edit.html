@@ -24,7 +24,7 @@
 <link rel="import" href="../../components/core-input/core-input.html">
 <link rel="import" href="../../components/paper-input/paper-input-decorator.html">
 
-<polymer-element name="tt-group-edit"  attributes="entityid data">
+<polymer-element name="tt-group-edit"  attributes="entityid">
 
     <script src="../../components/alertifyjs/dist/js/alertify.js"></script>
 
@@ -80,13 +80,13 @@
             ready: function () {
 
             },
+
             onFormInvalid : function (e) {
                 e.detail.forEach(function(badEl) {
                     // handle invalid element
                     console.log("invalid element",  badEl);
                 });
             },
-
 
 
             radioSelectedChanged: function () {

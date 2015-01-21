@@ -2,7 +2,7 @@
 
 ES_HOME=/opt/elasticsearch
 
-INSTALL_ES_VERSION=elasticsearch-1.4.1
+INSTALL_ES_VERSION=elasticsearch-1.4.2
 
 function installTools {
   echo ""

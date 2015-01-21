@@ -115,7 +115,7 @@
 
     <template id="result_filter">
         <h2>Filter</h2>
-        <tt-group-aggs aggs="{{data.aggregations}}"></tt-group-aggs>
+        <tt-group-aggs aggs="{{data.aggregations}}" on-facet-select="{{handleAggAdd}}"></tt-group-aggs>
     </template>
 
     <core-drawer-panel rightDrawer id="filter_panel" responsiveWidth="1024px"
@@ -145,7 +145,9 @@
         data: undefined,
         searchOpt: undefined,
 
+
         searchText: undefined,
+        searchOptAggs: undefined,
         rangesize: 10,
 
         created: function () {
@@ -160,15 +162,14 @@
                 "_source": ["firstname", "lastname", "email" ],
                 "sort": [  "lastname.raw:asc", "firstname.raw:asc" ]
             };
+          this.searchOptAggs = [];
 
         },
         ready: function () {
 
         },
-        dataChanged: function () {
-            console.log("***************************");
-            console.dir(this.data);
-            console.log("***************************");
+        dataChanged: function (oldValue, newValue) {
+            console.log("Search Result Changed to : ",this.data);
         },
         toggleFilter: function () {
             this.$.filter_panel.togglePanel();
@@ -177,37 +178,92 @@
             console.log("°°°°°°°°°°°°°°°°°°°°°°°°° : ", ev.detail);
         },
 
+      handleAggAdd: function (e, detail, sender) {
+        console.log("----- Agg Add", detail);
+        this.searchOptAggs.push(detail);
+        this.handleSearch();
+      },
+
+      handleAggDelete: function (e, detail, sender) {
+        console.log("Delete Tag", detail);
+        var filter = this.getLineFilterId(e, detail, sender);
+        this.searchOptAggs = this.searchOptAggs.filter(function (elt) {
+          console.log("test delete", elt, " ==? ", filter, "==> ", (elt == filter));
+          if ((elt.name === filter.name) && (elt.value === filter.value)) {
+            return false;
+          }
+          return true;
+        });
+        this.handleSearch();
+      },
+      getLineFilterId: function (e, data, sender) {
+        console.dir(sender);
+        var filterName = sender.attributes['filter-name'].value;
+        var filterValue = sender.attributes['filter-value'].value;
+        var filter = {
+          name: filterName,
+          value: filterValue
+        };
+        return filter;
+      },
         searchQueryBody: function () {
-            var body = undefined;
-            // Query
-            if (this.searchText) {
-                body = ejs.Request()
-                        .query(ejs.MatchQuery('firstname', this.searchText)).toJSON();
-            } else {
-                body = ejs.Request().query(ejs.MatchAllQuery()).toJSON();
+          var query = undefined;
+          var body = undefined;
+          // Query : http://docs.fullscale.co/elasticjs/
+          // ----------------
+          if (this.searchText) {
+            query = ejs.QueryStringQuery(this.searchText).defaultOperator('and');
+          } else {
+            query = ejs.MatchAllQuery();
+          }
+
+          // Facets Filter
+          // ----------------
+          var facetFilter = this.searchOptAggs.reduce(function (previous, current, index, array) {
+            var facetFilter = ejs.TermFilter(current.name + '.raw', current.value);
+            console.log("facetFilter : ", facetFilter.toJSON());
+            if (!previous) {
+              previous = ejs.BoolFilter();
             }
-            // Facets
-            // Add Facets
-            if (true) {
-                body.aggs = {
-                    "firstname": {
-                        "terms": {
-                            "order": { "_count": "desc" },
-                            "field": "firstname"
-                        }
-                    },
-                    "lastname": {
-                        "terms": {
-                            "order": { "_count": "desc" },
-                            "field": "lastname"
-                        }
-                    }
-                };
-            }
-            return body;
+            return previous.must(facetFilter);
+          }, undefined);
+
+          if (facetFilter) {
+            console.log("boolFilter : ", facetFilter.toJSON());
+            query = ejs.FilteredQuery(query, facetFilter);
+          }
+
+
+          // Create Es Request
+          // ----------------
+          body = ejs.Request().query(query).from(this.searchOpt.from).size(this.searchOpt.size);
+
+
+          // Agg Aggregations
+          // ----------------
+          var expectedAggs = [
+            {
+              name: 'firstname',
+              aggregation: ejs.TermsAggregation('firstname').field('firstname.raw').order('_count', 'desc')
+            },
+            {name: 'lastname', aggregation: ejs.TermsAggregation('lastname').field('lastname.raw').order('_count', 'desc')}
+          ];
+          // Filter Aggs
+          var that = this;
+          expectedAggs = expectedAggs.filter(function (elt) {
+            return !that.searchOptAggs.some(function (optAgg) {
+              return elt.name === optAgg.name;
+            });
+          });
+          // Register Aggs
+          expectedAggs.forEach(function (elt) {
+            body.aggregation(elt.aggregation);
+          });
+
+
+          return body.toJSON();
         },
         search: function (optToSave) {
-            console.log("------------- search Groups");
             var that = this;
             // Save Options
             if (optToSave) {
