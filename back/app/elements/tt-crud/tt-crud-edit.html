@@ -81,12 +81,17 @@
 
       // Toast Message
       toastSaveErrorMessage : undefined,
-      //
+
+      // --- Life Cycle
+      // --- ---------------
       ready: function () {
       },
 
       detached: function () {
       },
+
+      // --- Data Observer
+      // --- ---------------------
       attributeChanged: function(attrName, oldVal, newVal) {
         //var newVal = this.getAttribute(attrName);
         console.log(attrName, 'old: ' + oldVal, 'new:', newVal);
@@ -99,10 +104,10 @@
         console.log("***************************");
         console.log(" Data Changed to : ",this.data);
         this.dataOri = JSON.parse(JSON.stringify(this.data));
-        var é = 'rrr';
-        console.log("***************************");
+         console.log("***************************");
       },
       entityidChanged: function (oldValue, newValue) {
+        console.log("**//**//**//**//**//** entityidChanged : ", this.entityid);
         //console.log("entityidChanged for ", this.entityid);
         if (this.entityid === '' || this.entityid === null) {
           // Blank case, no model to create
@@ -117,15 +122,8 @@
         }
       },
 
-      createEmptyEntity: function () {
-        return {
-          _id: undefined,
-          _version: undefined,
-          _source: {}
-        };
-      },
-
-
+      // --- Actions
+      // --- ---------------------
       onClose: function () {
 //        var diff = this.diffProperties(this.dataOri._source, this.data._source);
 //        if (diff) {
@@ -143,11 +141,30 @@
       },
 
 
-
+      // --- Entity GET
+      // --- ---------------------
 
       entityGet: function () {
         this.$.service_get.go();
       },
+
+      handleError: function (resp) {
+        this.fire("error", {
+          error: resp,
+          status: resp.status
+        });
+      },
+
+      handleGetResponse: function (resp) {
+        var detail = resp.detail;
+        this.fire("entity-get", {
+          response: detail.response,
+          status: detail.xhr.status
+        })
+      },
+
+      // --- Entity Save
+      // --- ---------------------
 
       save: function () {
         //  var isValid = this.checkValidity();
@@ -163,18 +180,94 @@
         return !this.data._id;
       },
 
+
+      handleSaveResponse: function (resp) {
+        var detail = resp.detail;
+        var status = detail.xhr.status;
+        var saveResult = detail.response;
+        console.log("Save response", status, ":", resp);
+        console.log("Save response detail", saveResult);
+        if (status === 200) {
+          // Check Existing id
+          if (!this.data._id) {
+            this.data._id = resp._id;
+          }
+          if (!this.entityid) {
+            this.entityid = resp._id;
+          }
+          // Increment version or reload data ?
+          if (this.reloadOnSave === '' || this.reloadOnSave === true) {
+            console.log("Reload on save");
+            // this.entityGet();
+          } else {
+            // Update version
+            console.log("Increment Version to ", resp._version, " for data", this.data);
+            this.data._version = resp._version;
+            // Clone the version by wathcing  change on data._version
+          }
+          // Show Notification
+          this.$.toast_save_success.show();
+        }
+      },
+
+      handleSaveError: function (event, detail, target) {
+        // BUG ? detail.response as Text with status:JsonObj ? ==> Read from xhr
+        console.log("Bug handleSaveError detail.response (Not JSON) : ", detail.response);
+        var resp = JSON.parse( detail.xhr.response);
+        var status = detail.xhr.status;
+        if (status === 404) {
+          // 404 Not Found
+          this.toastSaveErrorMessage = 'Entity Save Error : Entity Not Found';
+          this.$.toast_save_error.show();
+          //this.entityNotFoundResolution(event, detail, target);
+        } else if (status === 409) {
+          // 409 : Conflict
+          console.error("Entity Save Conflict", resp, detail.xhr);
+          this.toastSaveErrorMessage = 'Entity Save Conflict';
+          this.$.toast_save_error.show();
+          // conflict resolution with reload data
+          //this.onGet(this.conflictResolution(this, this.dataOri, this.data));
+        } else {
+          // Other Error
+          console.error("handleSaveError", resp, detail.xhr);
+          this.toastSaveErrorMessage = 'Entity Save Error ' + status + ' : ' + detail.xhr.statusText;
+          this.$.toast_save_error.show();
+          // Fire Event
+          this.fire("error", {
+            error: resp,
+            status: status
+          });
+        }
+      },
+
+
+      // --- Entity Create
+      // --- ---------------------
+
+      createEmptyEntity: function () {
+        return {
+          _id: undefined,
+          _version: undefined,
+          _source: {}
+        };
+      },
+
+
       entityCreate: function () {
         var opt = {
-          version : this.data._version,
-          body : {
-            doc: this.data._source
-          }
+             body :   this.data._source
         };
-        this.datastring =  JSON.stringify(opt);
+        this.dataToSaveString =  JSON.stringify(opt);
+        console.log("************ entityCreate", this.data);
+        console.log("************ entityCreate datastring", this.dataToSaveString);
         console.log("Request Create of ", opt);
         this.serviceSaveVerb = 'POST';
         this.$.service_save.go();
       },
+
+      // --- Entity Update
+      // --- ---------------------
+
 
       entityUpdate: function () {
         var opt = {
@@ -189,6 +282,9 @@
         this.$.service_save.go();
       },
 
+
+      // --- Entity Validate
+      // --- ---------------------
 
       checkValidity: function () {
         var childNodes = this.getFornInputField();
@@ -225,88 +321,23 @@
       },
 
 
-
-
       onFormInvalid: function (e) {
         e.detail.forEach(function (badEl) {
           // handle invalid element
           console.log("invalid element", badEl);
         });
-
-
       },
 
+      // --- Tools
+      // --- ---------------------
 
-      handleError: function (resp) {
-        this.fire("error", {
-          error: resp,
-          status: resp.status
-        });
-      },
-      handleGetResponse: function (resp) {
-        var detail = resp.detail;
-        this.fire("entity-get", {
-          response: detail.response,
-          status: detail.xhr.status
-        })
-      },
-      handleSaveResponse: function (resp) {
-        var detail = resp.detail;
-        var status = detail.xhr.status;
-        var saveResult = detail.response;
-        console.log("Save response", status, ":", resp);
-        console.log("Save response detail", saveResult);
-        if (status === 200) {
-          // Check Existing id
-          if (!this.data._id) {
-            this.data._id = resp._id;
-          }
-          if (!this.entityid) {
-            this.entityid = resp._id;
-          }
-          // Increment version or reload data ?
-          if (this.reloadOnSave === '' || this.reloadOnSave === true) {
-            console.log("Reload on save");
-           // this.entityGet();
-          } else {
-            // Update version
-            console.log("Increment Version to ", resp._version, " for data", this.data);
-            this.data._version = resp._version;
-            // Clone the version by wathcing  change on data._version
-          }
-          // Show Notification
-          this.$.toast_save_success.show();
-        }
-      },
-      handleSaveError: function (event, detail, target) {
-        // BUG ? detail.response as Text with status:JsonObj ? ==> Read from xhr
-        console.log("Bug handleSaveError detail.response (Not JSON) : ", detail.response);
-        var resp = JSON.parse( detail.xhr.response);
-        var status = detail.xhr.status;
-        if (status === 404) {
-          // 404 Not Found
-          this.toastSaveErrorMessage = 'Entity Save Error : Entity Not Found';
-          this.$.toast_save_error.show();
-          //this.entityNotFoundResolution(event, detail, target);
-        } else if (status === 409) {
-          // 409 : Conflict
-          console.error("Entity Save Conflict", resp, detail.xhr);
-          this.toastSaveErrorMessage = 'Entity Save Conflict';
-          this.$.toast_save_error.show();
-          // conflict resolution with reload data
-          //this.onGet(this.conflictResolution(this, this.dataOri, this.data));
-        } else {
-          // Other Error
-          console.error("handleSaveError", resp, detail.xhr);
-          this.toastSaveErrorMessage = 'Entity Save Error ' + status + ' : ' + detail.xhr.statusText;
-          this.$.toast_save_error.show();
-          // Fire Event
-          this.fire("error", {
-            error: resp,
-            status: status
-          });
-        }
+      isEmptyObj: function (obj) {
+        return (Object.getOwnPropertyNames(obj).length === 0);
       }
+
+
+      // --- Others
+      // --- ---------------------
 
 
     });
