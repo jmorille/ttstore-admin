@@ -10,7 +10,7 @@
 
 <core-style id="tt-group-edit">
   .toast-error {
-     background-color: {{g.paperInput.invalidColor}};
+  background-color: {{g.paperInput.invalidColor}};
   }
 
 </core-style>
@@ -43,17 +43,14 @@
     </tt-crud-menu>
 
     <section vertical layout>
-
       <content id="content"></content>
-
     </section>
 
 
-
     <paper-toast id="toast_save_success" class="capsule" text="Entity Saved.">
-       <core-icon icon="done"></core-icon>
+      <core-icon icon="done"></core-icon>
     </paper-toast>
-    <paper-toast id="toast_save_error" class="capsule toast-error"  text="{{toastSaveErrorMessage}}">
+    <paper-toast id="toast_save_error" class="capsule toast-error" text="{{toastSaveErrorMessage}}">
       <core-icon icon="error"></core-icon>
     </paper-toast>
 
@@ -69,18 +66,18 @@
       reloadOnSave: true,
       // Model
       entityid: '',
-      data:  undefined,
+      data: undefined,
       dataOri: undefined,
       dataToSaveString: undefined,
 
       // Service
-      serviceSaveVerb : undefined,
+      serviceSaveVerb: undefined,
 
       // Crud Menu Status
       isSaveEnabled: true,
 
       // Toast Message
-      toastSaveErrorMessage : undefined,
+      toastSaveErrorMessage: undefined,
 
       // --- Life Cycle
       // --- ---------------
@@ -92,7 +89,7 @@
 
       // --- Data Observer
       // --- ---------------------
-      attributeChanged: function(attrName, oldVal, newVal) {
+      attributeChanged: function (attrName, oldVal, newVal) {
         //var newVal = this.getAttribute(attrName);
         console.log(attrName, 'old: ' + oldVal, 'new:', newVal);
       },
@@ -102,9 +99,9 @@
 
       dataChanged: function (oldValue, newValue) {
         console.log("***************************");
-        console.log(" Data Changed to : ",this.data);
+        console.log(" Data Changed to : ", this.data);
         this.dataOri = JSON.parse(JSON.stringify(this.data));
-         console.log("***************************");
+        console.log("***************************");
       },
       entityidChanged: function (oldValue, newValue) {
         console.log("**//**//**//**//**//** entityidChanged : ", this.entityid);
@@ -169,14 +166,20 @@
       save: function () {
         //  var isValid = this.checkValidity();
         //   console.log("----------- check Validity ", isValid);
+        // Dirty Check
+        if (!this.isDiff(this.notifNotDiff.bind(this))) {
+          return;
+        }
+        // Diff, need to save
         if (this.isModeCreate()) {
           this.entityCreate();
         } else {
           this.entityUpdate();
         }
+
       },
 
-      isModeCreate : function () {
+      isModeCreate: function () {
         return !this.data._id;
       },
 
@@ -198,7 +201,7 @@
           // Increment version or reload data ?
           if (this.reloadOnSave === '' || this.reloadOnSave === true) {
             console.log("Reload on save");
-            // this.entityGet();
+            this.entityGet();
           } else {
             // Update version
             console.log("Increment Version to ", resp._version, " for data", this.data);
@@ -213,25 +216,22 @@
       handleSaveError: function (event, detail, target) {
         // BUG ? detail.response as Text with status:JsonObj ? ==> Read from xhr
         console.log("Bug handleSaveError detail.response (Not JSON) : ", detail.response);
-        var resp = JSON.parse( detail.xhr.response);
+        var resp = JSON.parse(detail.xhr.response);
         var status = detail.xhr.status;
         if (status === 404) {
           // 404 Not Found
-          this.toastSaveErrorMessage = 'Entity Save Error : Entity Not Found';
-          this.$.toast_save_error.show();
+          this.showSaveErrorMessage('Entity Save Error : Entity Not Found');
           //this.entityNotFoundResolution(event, detail, target);
         } else if (status === 409) {
           // 409 : Conflict
           console.error("Entity Save Conflict", resp, detail.xhr);
-          this.toastSaveErrorMessage = 'Entity Save Conflict';
-          this.$.toast_save_error.show();
+          this.showSaveErrorMessage('Entity Save Conflict');
           // conflict resolution with reload data
           //this.onGet(this.conflictResolution(this, this.dataOri, this.data));
         } else {
           // Other Error
           console.error("handleSaveError", resp, detail.xhr);
-          this.toastSaveErrorMessage = 'Entity Save Error ' + status + ' : ' + detail.xhr.statusText;
-          this.$.toast_save_error.show();
+          this.showSaveErrorMessage('Entity Save Error ' + status + ' : ' + detail.xhr.statusText);
           // Fire Event
           this.fire("error", {
             error: resp,
@@ -255,9 +255,9 @@
 
       entityCreate: function () {
         var opt = {
-             body :   this.data._source
+          body: this.data._source
         };
-        this.dataToSaveString =  JSON.stringify(opt);
+        this.dataToSaveString = JSON.stringify(opt);
         console.log("************ entityCreate", this.data);
         console.log("************ entityCreate datastring", this.dataToSaveString);
         console.log("Request Create of ", opt);
@@ -300,7 +300,7 @@
       getFornInputField: function () {
         console.dir(this.$.content);
         // Bug ? https://github.com/Polymer/polymer/issues/414
-       // var childNodes = this.$.content.querySelectorAll('*');
+        // var childNodes = this.$.content.querySelectorAll('*');
         // https://github.com/Polymer/paper-input/commit/255980d5400ef5aada1af87f1771d77c436f469e
         var childNodes = this.$.content.getDistributedNodes();
         console.log("getFornInputField Nodes of ", childNodes);
@@ -309,8 +309,9 @@
           var childTagName = childNode.tagName;
           if (typeof childNode['checkValidity'] === 'function') {
             console.log("childNode", childNode);
-            return true;validate
-          } else    if (typeof childNode['validate'] === 'function') {
+            return true;
+            validate
+          } else if (typeof childNode['validate'] === 'function') {
             console.log("childNode", childNode);
             return true;
           }
@@ -328,11 +329,53 @@
         });
       },
 
-      // --- Tools
+      // --- Data Differential
       // --- ---------------------
 
       isEmptyObj: function (obj) {
         return (Object.getOwnPropertyNames(obj).length === 0);
+      },
+
+      diffProperties: function (first, second, diffs) {
+        diffs = diffs || {};
+        // Compare ref to Object
+        for (var attr in second) {
+          if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
+            if (first[attr] !== second[attr]) {
+              diffs[attr] = second[attr];
+            }
+          } else if (typeof first[attr] == 'object' && typeof second[attr] == 'object') {
+            // Check recursif
+            var subDiffs = this.diffProperties(first[attr], second[attr], {});
+            if (subDiffs) {
+              diffs[attr] = subDiffs;
+            }
+          } else if (first[attr] !== second[attr]) {
+            diffs[attr] = second[attr];
+          }
+        }
+        return this.isEmptyObj(diffs) ? undefined : diffs;
+      },
+
+      isDiff: function (notDiffCallback) {
+        var diff = this.diffProperties(this.dataOri._source, this.data._source);
+        if (notDiffCallback) {
+          notDiffCallback(diff);
+        }
+        return diff;
+      },
+
+      notifNotDiff: function (diff) {
+        if (!diff) {
+          this.showSaveErrorMessage("Saved not needed.");
+        }
+      },
+
+      // --- Toasts
+      // --- ---------------------
+      showSaveErrorMessage: function (msg) {
+        this.toastSaveErrorMessage = msg;
+        this.$.toast_save_error.show();
       }
 
 
