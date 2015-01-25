@@ -5,6 +5,7 @@
 <link rel="import" href="../../components/core-icon/core-icon.html">
 
 
+<link rel="import" href="tt-crud-server.html">
 <link rel="import" href="tt-crud-menu.html">
 
 
@@ -17,12 +18,17 @@
 
 <polymer-element name="tt-crud-edit" attributes="entityid data index">
   <template>
+    <tt-crud-server id="server"
+                    on-get-response="{{handleGetResponse}}" on-get-error="{{handleGetError}}"
+                    on-save-response="{{handleSaveResponse}}" on-save-error="{{handleSaveError}}"
+                    entityid="{{entityid}}" data="{{data}}" index="{{index}}">
+    </tt-crud-server>
 
     <core-ajax id="service_get" url="/s/{{index}}/{{entityid}}" handleAs="json"
                contentType="application/json"
                response="{{data}}"
                method="GET"
-               on-core-error="{{handleError}}"
+               on-core-error="{{handleGetError}}"
                on-core-response="{{handleGetResponse}}">
     </core-ajax>
     <core-ajax id="service_save" url="/s/{{index}}/{{entityid}}" handleAs="json"
@@ -145,7 +151,7 @@
         this.$.service_get.go();
       },
 
-      handleError: function (resp) {
+      handleGetError: function (resp) {
         this.fire("error", {
           error: resp,
           status: resp.status
