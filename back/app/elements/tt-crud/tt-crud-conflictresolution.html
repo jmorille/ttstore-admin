@@ -33,6 +33,15 @@
       // --- ---------------------
 
       computeConflict: function () {
+        var userDiff = this.computeUserDiff();
+        // Merge Not Conflict
+        if (userDiff.userDiffMergeable) {
+          this.copyObjectAttributes(userDiff.userDiffMergeable,  this.data._source, true);
+        }
+        if (userDiff.userDiffConflict) {
+          // TODO Unmergeable Conflict
+        }
+        console.log("---------- Conflict resolution END");
 
       },
       /**
@@ -41,41 +50,58 @@
        *
        * Call markToConflictToBeResolve before to save states.
        */
-      conflictResolution: function () {
+      computeUserDiff: function () {
         // Field that the user want to update (compare version n and n+2)
-        var diffUser = that.diffProperties(this.dataOrigin._source, this.dataUser._source);
+        var diffUser = this.diffProperties(this.dataOrigin._source, this.dataUser._source);
         // Fields modify in server side between the the edit form time. (compare version n and n+1)
-        var difServer = that.diffProperties(this.dataOrigin._source, this.data);
+        var diffServer = this.diffProperties(this.dataOrigin._source, this.data);
         // Compute conflict
-        var difConflict = that.existProperties(difServer, diffUser);
-        var difMergeable = that.notExistProperties(difServer, diffUser);
-        console.log("---------- Conflict resolution");
-        console.log("Diff User", diffUser);
-        console.log("Diff Server", difServer);
-        console.log("---------- ");
-        console.log("Conflict User-Server", difConflict);
-        console.log("Mergeable User", difMergeable);
-        console.log("---------- ");
-        // Merge Not Conflict
-        if (difMergeable) {
-          for (var attr in difMergeable) {
-            that.data._source[attr] = difMergeable[attr];
-          }
-        }
-        if (difConflict) {
-          // TODO Conflict
-        }
-        console.log("---------- Conflict resolution END");
-
+        var userDiffMergeable = this.userDiffNotInServerProperties(diffServer, diffUser);
+        var userDiffConflict = this.userDiffInServerProperties(diffServer, diffUser);
+        // Result
+        var result = {
+          modifByUser: diffUser,
+          modifByServer: diffServer,
+          userDiffMergeable: userDiffMergeable,
+          userDiffConflict: userDiffConflict
+        };
+        console.log("Diff User", result);
+        return result;
       },
 
-      // --- Tools
+
+
+      // --- Differential
       // --- ---------------------
-      existProperties: function (server, client, conflict) {
+
+
+      diffProperties: function (first, second, diffs) {
+        diffs = diffs || {};
+        // Compare ref to Object
+        for (var attr in second) {
+          if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
+            if (first[attr] !== second[attr]) {
+              diffs[attr] = second[attr];
+            }
+          } else if (typeof first[attr] == 'object' && typeof second[attr] == 'object') {
+            // Check recursif
+            var subDiffs = this.diffProperties(first[attr], second[attr], {});
+            if (subDiffs) {
+              diffs[attr] = subDiffs;
+            }
+          } else if (first[attr] !== second[attr]) {
+            diffs[attr] = second[attr];
+          }
+        }
+        return this.isEmptyObj(diffs) ? undefined : diffs;
+      },
+
+      // Intersect
+      userDiffInServerProperties: function (server, client, conflict) {
         conflict = conflict || {};
         console.log("existProperties", "server", server, " // client", client);
-        if (client) {
-          for (var attr in server) {
+        if (client && server) {
+          for (var attr in client) {
             if (server.hasOwnProperty(attr) && client.hasOwnProperty(attr)) {
               conflict[attr] = client[attr];
             }
@@ -83,7 +109,8 @@
         }
         return this.isEmptyObj(conflict) ? undefined : conflict;
       },
-      notExistProperties: function (server, client, conflict) {
+
+      userDiffNotInServerProperties: function (server, client, conflict) {
         conflict = conflict || {};
         if (client) {
           for (var attr in client) {
@@ -95,7 +122,31 @@
         return this.isEmptyObj(conflict) ? undefined : conflict;
       },
 
+      // --- Tools
+      // --- ---------------------
 
+
+      copyObjectAttributes: function (src, dest, override) {
+        dest = dest || {};
+        if (!src) {
+          return dest;
+        }
+        for (var attr in src) {
+          if (typeof src[attr] == 'object' && !Array.isArray(src[attr])) {
+            // console.log("copyProperties type : ", attr, " --> ", typeof src[attr], " / is Array "  , Array.isArray(src[attr]) );
+            if (override || !dest.hasOwnProperty(attr)) {
+              var subDest = this.copyProperties(src[attr], dest[attr], override);
+              // console.log("sub dest", subDest);
+              dest[attr] = subDest;
+            }
+          } else  if (src.hasOwnProperty(attr)) {
+            if (override || !dest.hasOwnProperty(attr)) {
+              dest[attr] = src[attr];
+            }
+          }
+        }
+        return dest;
+      }
       // --- Other
       // --- ---------------------
 
