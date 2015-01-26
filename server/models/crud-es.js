@@ -52,6 +52,7 @@ function esapi(client, registerIndex) {
             var entityId = request.params.id;
             opt.id = entityId;
             console.info("Elasticsearch Request Update ", opt);
+           // TODO Check field version, if not throw exception (security rules for force concurency pb)
             client.update(opt, function (err, resp, status) {
                  if (err) {
                     console.error("-------------------------------------");

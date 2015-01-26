@@ -9,7 +9,7 @@
 
 <core-style id="tt-group-edit">
     .toast-error {
-    background-color: {{g.paperInput.invalidColor}};
+      background-color: {{g.paperInput.invalidColor}};
     }
 
 
@@ -232,7 +232,7 @@ Polymer('tt-crud-edit', {
             if (!err) {
                 var diffUser = that.diffProperties(dataOri._source, data._source);
                 var difServer = that.diffProperties(dataOri._source, resp._source);
-                // Compute confliect
+                // Compute conflict
                 var difConflict = that.existProperties(difServer, diffUser);
                 var difMergeable = that.notExistProperties(difServer, diffUser);
                 console.log("---------- Conflict resolution");

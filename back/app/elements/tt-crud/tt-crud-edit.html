@@ -7,7 +7,7 @@
 
 <link rel="import" href="tt-crud-server.html">
 <link rel="import" href="tt-crud-menu.html">
-
+<link rel="import" href="tt-crud-conflictresolution.html">
 
 <core-style id="tt-group-edit">
   .toast-error {
@@ -18,12 +18,13 @@
 
 <polymer-element name="tt-crud-edit" attributes="entityid data index">
   <template>
-    <tt-crud-server id="server"
+    <tt-crud-server id="server" role="database"
                     on-get-response="{{handleGetResponse}}" on-get-error="{{handleGetError}}"
                     on-save-response="{{handleSaveResponse}}" on-save-error="{{handleSaveError}}"
                     entityid="{{entityid}}" data="{{data}}" index="{{index}}">
     </tt-crud-server>
 
+    <tt-crud-conflictresolution id="conflict_resolution"></tt-crud-conflictresolution>
 
     <core-style ref="tt-group-edit"></core-style>
 
@@ -223,7 +224,7 @@
           this.showSaveErrorMessage('Entity Save Error ' + status + ' : ' + detail.statusText);
           // Fire Event
           this.fire("entity-save-error", {
-            error: resp,
+            response: resp,
             status: status
           });
         }
@@ -232,15 +233,6 @@
 
       // --- Entity Create
       // --- ---------------------
-
-      createEmptyEntity: function () {
-        return {
-          _id: undefined,
-          _version: undefined,
-          _source: {}
-        };
-      },
-
 
       entityCreate: function () {
         this.$.server.entityCreate();

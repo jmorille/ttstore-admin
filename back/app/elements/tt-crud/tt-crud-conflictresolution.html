@@ -1,0 +1,106 @@
+<link rel="import" href="../../components/polymer/polymer.html">
+
+
+<polymer-element name="tt-crud-conflictresolution" hidden attributes="data dataOri">
+  <template>
+
+
+  </template>
+
+  <script>
+    Polymer('tt-crud-conflictresolution', {
+
+
+      // Version N+2
+      dataUser: undefined,
+      // Version N
+      dataOrigin: undefined,
+
+      // --- Api
+      // --- ---------------------
+
+      markToConflictToBeResolve: function () {
+        this.dataUser = JSON.parse(JSON.stringify(this.data));
+        this.dataOrigin = JSON.parse(JSON.stringify(this.dataOri));
+      },
+
+      reset: function () {
+        this.dataUser = undefined;
+        this.dataOrigin = undefined;
+      },
+
+      // --- Conflict Resolution
+      // --- ---------------------
+
+      computeConflict: function () {
+
+      },
+      /**
+       * Call after server get (witch change this.data),
+       * and compare with the data backup in (this.dataUser, this.dataOrigin).
+       *
+       * Call markToConflictToBeResolve before to save states.
+       */
+      conflictResolution: function () {
+        // Field that the user want to update (compare version n and n+2)
+        var diffUser = that.diffProperties(this.dataOrigin._source, this.dataUser._source);
+        // Fields modify in server side between the the edit form time. (compare version n and n+1)
+        var difServer = that.diffProperties(this.dataOrigin._source, this.data);
+        // Compute conflict
+        var difConflict = that.existProperties(difServer, diffUser);
+        var difMergeable = that.notExistProperties(difServer, diffUser);
+        console.log("---------- Conflict resolution");
+        console.log("Diff User", diffUser);
+        console.log("Diff Server", difServer);
+        console.log("---------- ");
+        console.log("Conflict User-Server", difConflict);
+        console.log("Mergeable User", difMergeable);
+        console.log("---------- ");
+        // Merge Not Conflict
+        if (difMergeable) {
+          for (var attr in difMergeable) {
+            that.data._source[attr] = difMergeable[attr];
+          }
+        }
+        if (difConflict) {
+          // TODO Conflict
+        }
+        console.log("---------- Conflict resolution END");
+
+      },
+
+      // --- Tools
+      // --- ---------------------
+      existProperties: function (server, client, conflict) {
+        conflict = conflict || {};
+        console.log("existProperties", "server", server, " // client", client);
+        if (client) {
+          for (var attr in server) {
+            if (server.hasOwnProperty(attr) && client.hasOwnProperty(attr)) {
+              conflict[attr] = client[attr];
+            }
+          }
+        }
+        return this.isEmptyObj(conflict) ? undefined : conflict;
+      },
+      notExistProperties: function (server, client, conflict) {
+        conflict = conflict || {};
+        if (client) {
+          for (var attr in client) {
+            if (client.hasOwnProperty(attr) && !server.hasOwnProperty(attr)) {
+              conflict[attr] = client[attr];
+            }
+          }
+        }
+        return this.isEmptyObj(conflict) ? undefined : conflict;
+      },
+
+
+      // --- Other
+      // --- ---------------------
+
+
+    });
+
+  </script>
+</polymer-element>
