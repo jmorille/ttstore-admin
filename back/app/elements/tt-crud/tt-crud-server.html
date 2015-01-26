@@ -30,6 +30,14 @@
       serviceSaveVerb: undefined,
 
 
+      // --- Entity GET
+      // --- ---------------------
+
+      entityGet: function () {
+        this.$.service_get.go();
+      },
+
+
       // --- Entity Create
       // --- ---------------------
 
@@ -75,13 +83,12 @@
       // --- Get Event
       // --- ---------------------
 
-      handleGetResponse: function (resp) {
-        var detail = resp.detail;
+      handleGetResponse: function (event, detail, target) {
         var status = detail.xhr.status;
         var statusText = detail.xhr.statusText;
         // Fire Event
         this.fire("get-response", {
-          response: resp,
+          response: detail.response,
           status: status,
           statusText: statusText
         });
@@ -95,7 +102,7 @@
         var statusText = detail.xhr.statusText;
         // Fire Event
         this.fire("get-error", {
-          error: resp,
+          response: resp,
           status: status,
           statusText: statusText
         });
@@ -104,16 +111,13 @@
       // --- Save Event
       // --- ---------------------
 
-      handleSaveResponse: function (resp) {
-        var detail = resp.detail;
+      handleSaveResponse: function (event, detail, target)  {
         var status = detail.xhr.status;
         var statusText = detail.xhr.statusText;
-        var saveResult = detail.response;
-        console.log("Save response", status, ":", resp);
-        console.log("Save response detail", saveResult);
+        console.log("Save response", status, ":",  detail.response);
         // Fire Event
         this.fire("save-response", {
-          response: resp,
+          response:  detail.response,
           status: status,
           statusText: statusText
         });
@@ -126,7 +130,7 @@
         var statusText = detail.xhr.statusText;
         // Fire Event
         this.fire("save-error", {
-          error: resp,
+          response: resp,
           status: status,
           statusText: statusText
         });

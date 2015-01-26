@@ -24,21 +24,6 @@
                     entityid="{{entityid}}" data="{{data}}" index="{{index}}">
     </tt-crud-server>
 
-    <core-ajax id="service_get" url="/s/{{index}}/{{entityid}}" handleAs="json"
-               contentType="application/json"
-               response="{{data}}"
-               method="GET"
-               on-core-error="{{handleGetError}}"
-               on-core-response="{{handleGetResponse}}">
-    </core-ajax>
-    <core-ajax id="service_save" url="/s/{{index}}/{{entityid}}" handleAs="json"
-               contentType="application/json"
-               body="{{dataToSaveString}}"
-               method="{{serviceSaveVerb}}"
-               on-core-error="{{handleSaveError}}"
-               on-core-response="{{handleSaveResponse}}">
-    </core-ajax>
-
 
     <core-style ref="tt-group-edit"></core-style>
 
@@ -69,15 +54,11 @@
       autocreate: '',
       validateautofocus: '',
       // On Save : Reload the Data
-      reloadOnSave: true,
+      reloadOnSave: false,
       // Model
       entityid: '',
       data: undefined,
       dataOri: undefined,
-      dataToSaveString: undefined,
-
-      // Service
-      serviceSaveVerb: undefined,
 
       // Crud Menu Status
       isSaveEnabled: true,
@@ -116,7 +97,7 @@
           // Blank case, no model to create
         } else if (this.entityid === undefined) {
           // Create Mode
-          this.data = this.createEmptyEntity();
+          this.data = this.$.server.createEmptyEntity();
           //  console.log("entityidChanged create empty data ", this.data);
         } else if (!this.data || !this.data._id || this.data._id !== this.entityid) {
           // Update Mode
@@ -148,23 +129,28 @@
       // --- ---------------------
 
       entityGet: function () {
-        this.$.service_get.go();
+        this.$.server.entityGet();
       },
 
-      handleGetError: function (resp) {
-        this.fire("error", {
-          error: resp,
-          status: resp.status
+      handleGetResponse: function (event, detail, target) {
+        console.log("handleGetResponse : ", detail);
+        this.fire("entity-get", {
+          response: detail.response,
+          status: detail.status,
+          statusText: detail.statusText
         });
       },
 
-      handleGetResponse: function (resp) {
-        var detail = resp.detail;
-        this.fire("entity-get", {
+      handleGetError: function (event, detail, target)  {
+        console.log("handleGetError : ", detail);
+        this.fire("entity-get-error", {
           response: detail.response,
-          status: detail.xhr.status
-        })
+          status: detail.status,
+          statusText: detail.statusText
+        });
       },
+
+
 
       // --- Entity Save
       // --- ---------------------
@@ -190,12 +176,10 @@
       },
 
 
-      handleSaveResponse: function (resp) {
-        var detail = resp.detail;
-        var status = detail.xhr.status;
+      handleSaveResponse:function (event, detail, target) {
+        var status = detail.status;
         var saveResult = detail.response;
-        console.log("Save response", status, ":", resp);
-        console.log("Save response detail", saveResult);
+        console.log("Save response", status, ":", saveResult);
         if (status === 200) {
           // Check Existing id
           if (!this.data._id) {
@@ -210,8 +194,8 @@
             this.entityGet();
           } else {
             // Update version
-            console.log("Increment Version to ", resp._version, " for data", this.data);
-            this.data._version = resp._version;
+            console.log("Increment Version to ", saveResult._version, " for data", this.data);
+            this.data._version = saveResult._version;
             // Clone the version by wathcing  change on data._version
           }
           // Show Notification
@@ -222,24 +206,23 @@
       handleSaveError: function (event, detail, target) {
         // BUG ? detail.response as Text with status:JsonObj ? ==> Read from xhr
         console.log("Bug handleSaveError detail.response (Not JSON) : ", detail.response);
-        var resp = JSON.parse(detail.xhr.response);
-        var status = detail.xhr.status;
+        var resp = detail.response;
+        var status = detail.status;
+        console.error('Entity Save Error ' + status + ' : ' + detail.statusText);
         if (status === 404) {
           // 404 Not Found
           this.showSaveErrorMessage('Entity Save Error : Entity Not Found');
           //this.entityNotFoundResolution(event, detail, target);
         } else if (status === 409) {
           // 409 : Conflict
-          console.error("Entity Save Conflict", resp, detail.xhr);
           this.showSaveErrorMessage('Entity Save Conflict');
           // conflict resolution with reload data
           //this.onGet(this.conflictResolution(this, this.dataOri, this.data));
         } else {
           // Other Error
-          console.error("handleSaveError", resp, detail.xhr);
-          this.showSaveErrorMessage('Entity Save Error ' + status + ' : ' + detail.xhr.statusText);
+          this.showSaveErrorMessage('Entity Save Error ' + status + ' : ' + detail.statusText);
           // Fire Event
-          this.fire("error", {
+          this.fire("entity-save-error", {
             error: resp,
             status: status
           });
@@ -260,15 +243,7 @@
 
 
       entityCreate: function () {
-        var opt = {
-          body: this.data._source
-        };
-        this.dataToSaveString = JSON.stringify(opt);
-        console.log("************ entityCreate", this.data);
-        console.log("************ entityCreate datastring", this.dataToSaveString);
-        console.log("Request Create of ", opt);
-        this.serviceSaveVerb = 'POST';
-        this.$.service_save.go();
+        this.$.server.entityCreate();
       },
 
       // --- Entity Update
@@ -276,16 +251,7 @@
 
 
       entityUpdate: function () {
-        var opt = {
-          version: this.data._version,
-          body: {
-            doc: this.data._source
-          }
-        };
-        this.dataToSaveString = JSON.stringify(opt);
-        console.log("Request Save of ", opt);
-        this.serviceSaveVerb = 'PUT';
-        this.$.service_save.go();
+        this.$.server.entityUpdate();
       },
 
 
