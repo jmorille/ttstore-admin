@@ -31,7 +31,17 @@ var oneDay = 86400000;
 var favicon = require('serve-favicon');
 
 // https://github.com/strongloop/express/tree/master/examples
-
+// security : https://www.npmjs.com/package/helmet
+var helmet = require('helmet');
+app.use(helmet.frameguard('deny'));
+app.use(helmet.contentSecurityPolicy({
+  defaultSrc: ["'self'"],
+  reportUri: '/report-violation',
+  reportOnly: false // set to true if you only want to report errors
+}));
+app.use(helmet.xssFilter({ setOnOldIE: true }));
+app.disable('x-powered-by');
+// logger
 app.use(logger('dev'));
 
 app.use(methodOverride());
