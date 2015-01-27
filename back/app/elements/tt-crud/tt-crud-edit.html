@@ -296,12 +296,13 @@
         return errorNodes.length < 1;
       },
 
-      getFornInputField: function () {
+      getFornInputField: function (childNodes) {
+        childNodes = childNodes || this.$.content.getDistributedNodes();
         console.dir(this.$.content);
         // Bug ? https://github.com/Polymer/polymer/issues/414
         // var childNodes = this.$.content.querySelectorAll('*');
         // https://github.com/Polymer/paper-input/commit/255980d5400ef5aada1af87f1771d77c436f469e
-        var childNodes = this.$.content.getDistributedNodes();
+
         console.log("getFornInputField Nodes of ", childNodes);
         var inputFieldNodes = Array.prototype.filter.call(childNodes, function (childNode) {
           console.log("Test Validity Nodes of ", childNode.tagName, childNode);
