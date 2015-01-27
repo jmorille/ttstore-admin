@@ -176,7 +176,7 @@
           return;
         }
         // Validation
-        if ( !this.checkValidity(this.notifValidityErrors.bind(this))) {
+        if (!this.checkValidity(this.notifValidityErrors.bind(this))) {
           return;
         }
 
@@ -293,7 +293,7 @@
           errorCallback(errorNodes);
         }
         // Return
-        return errorNodes.length<1;
+        return errorNodes.length < 1;
       },
 
       getFornInputField: function () {
@@ -304,7 +304,7 @@
         var childNodes = this.$.content.getDistributedNodes();
         console.log("getFornInputField Nodes of ", childNodes);
         var inputFieldNodes = Array.prototype.filter.call(childNodes, function (childNode) {
-          console.log("Test Validity Nodes of ", childNode.tagName);
+          console.log("Test Validity Nodes of ", childNode.tagName, childNode);
           var childTagName = childNode.tagName;
           if (typeof childNode['checkValidity'] === 'function') {
             console.log("childNode", childNode);
@@ -312,6 +312,9 @@
           } else if (typeof childNode['validate'] === 'function') {
             console.log("childNode", childNode);
             return true;
+          } else if ((childNode.childNodes !== undefined) && (childNode.childNodes.length > 0)) {
+            console.log("Compute getDistributedNodes", childNode.childNodes);
+            // TODO recursive
           }
 
           return false;
@@ -328,9 +331,9 @@
       },
 
       notifValidityErrors: function (errorNodes) {
-        if (errorNodes && errorNodes.length >0 ) {
+        if (errorNodes && errorNodes.length > 0) {
           if (this.validateautofocus === '' || this.validateautofocus === true) {
-            console.log("request focus on ",  errorNodes[0]);
+            console.log("request focus on ", errorNodes[0]);
             errorNodes[0].focus();
           }
           this.showSaveErrorMessage("Error in validate Entity");

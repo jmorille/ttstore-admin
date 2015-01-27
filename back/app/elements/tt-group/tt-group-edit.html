@@ -24,82 +24,80 @@
 <link rel="import" href="../../components/core-input/core-input.html">
 <link rel="import" href="../../components/paper-input/paper-input-decorator.html">
 
-<polymer-element name="tt-group-edit"  attributes="entityid">
+<polymer-element name="tt-group-edit" attributes="entityid">
 
-    <script src="../../components/alertifyjs/dist/js/alertify.js"></script>
+  <script src="../../components/alertifyjs/dist/js/alertify.js"></script>
 
-    <template>
-        <link rel="stylesheet" href="../../components/alertifyjs/dist/css/aertyfy-bootstrap-3.css" />
-
-
-        <div>Entity Id : {{entityid}}</div>
-
-        <tt-crud-edit data="{{data}}" entityid="{{entityid}}" index="users">
-            <paper-input-decorator floatingLabel label="First name" autoValidate>
-                <input is="core-input" value="{{ data._source.firstname}}" required>
-            </paper-input-decorator>
-
-            <paper-input-decorator floatingLabel label="Last name" autoValidate>
-                <input is="core-input" value="{{ data._source.lastname}}" required>
-            </paper-input-decorator>
-
-            <paper-input-decorator floatingLabel label="Email" autoValidate >
-                <input is="core-input" id="input2" value="{{ data._source.email}}" type="email"  >
-            </paper-input-decorator>
-
-            <paper-input-decorator floatingLabel label="Email 2" autoValidate>
-                <input is="core-input" name="inputEmail2" value="{{ data._source.email2}}" type="email"  >
-            </paper-input-decorator>
+  <template>
+    <link rel="stylesheet" href="../../components/alertifyjs/dist/css/aertyfy-bootstrap-3.css"/>
 
 
-            <paper-radio-group selected="{{radioSelected}}">
-                <paper-radio-button name="small" label="Small"></paper-radio-button>
-                <paper-radio-button name="medium" label="Medium"></paper-radio-button>
-                <paper-radio-button name="large" label="Large"></paper-radio-button>
-            </paper-radio-group>
+    <div>Entity Id : {{entityid}}</div>
 
-            <div center horizontal layout>
-                <div>Actif</div>
-                <paper-toggle-button checked="{{singleSelected}}" label="Actif"></paper-toggle-button>
-            </div>
+    <tt-crud-edit data="{{data}}" entityid="{{entityid}}" index="users">
+      <section>
+        <paper-input-decorator floatingLabel label="First name" autoValidate>
+          <input is="core-input" value="{{ data._source.firstname}}" required>
+        </paper-input-decorator>
 
+        <paper-input-decorator floatingLabel label="Last name" autoValidate>
+          <input is="core-input" value="{{ data._source.lastname}}" required>
+        </paper-input-decorator>
 
+        <paper-input-decorator floatingLabel label="Email" autoValidate>
+          <input is="core-input" id="input2" value="{{ data._source.email}}" type="email">
+        </paper-input-decorator>
 
-        </tt-crud-edit>
+        <paper-input-decorator floatingLabel label="Email 2" autoValidate>
+          <input is="core-input" name="inputEmail2" value="{{ data._source.email2}}" type="email">
+        </paper-input-decorator>
+      </section>
 
+      <paper-radio-group selected="{{radioSelected}}">
+        <paper-radio-button name="small" label="Small"></paper-radio-button>
+        <paper-radio-button name="medium" label="Medium"></paper-radio-button>
+        <paper-radio-button name="large" label="Large"></paper-radio-button>
+      </paper-radio-group>
 
-
-
-    </template>
-
-    <script>
-        Polymer('tt-group-edit', {
-            radioSelected: 'medium',
-            singleSelected: true,
-            data : undefined,
-            ready: function () {
-
-            },
-
-            onFormInvalid : function (e) {
-                e.detail.forEach(function(badEl) {
-                    // handle invalid element
-                    console.log("invalid element",  badEl);
-                });
-            },
+      <div center horizontal layout>
+        <div>Actif</div>
+        <paper-toggle-button checked="{{singleSelected}}" label="Actif"></paper-toggle-button>
+      </div>
 
 
-            radioSelectedChanged: function () {
-                console.log("radioSelected", this.radioSelected);
-            },
-            singleSelectedChanged: function () {
-                console.log("singleSelected", this.singleSelected);
-            },
+    </tt-crud-edit>
 
-            scroll: function (e) {
-                console.log("################################");
-            }
 
+  </template>
+
+  <script>
+    Polymer('tt-group-edit', {
+      radioSelected: 'medium',
+      singleSelected: true,
+      data: undefined,
+      ready: function () {
+
+      },
+
+      onFormInvalid: function (e) {
+        e.detail.forEach(function (badEl) {
+          // handle invalid element
+          console.log("invalid element", badEl);
         });
-    </script>
+      },
+
+
+      radioSelectedChanged: function () {
+        console.log("radioSelected", this.radioSelected);
+      },
+      singleSelectedChanged: function () {
+        console.log("singleSelected", this.singleSelected);
+      },
+
+      scroll: function (e) {
+        console.log("################################");
+      }
+
+    });
+  </script>
 </polymer-element>
