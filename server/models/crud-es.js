@@ -48,7 +48,15 @@ function esapi(client, registerIndex) {
         },
         // http://blog.kevinblanco.io/creating-a-simple-crud-with-node-js-express-mongodb-and-angularjs-part-1/
         update: function (request, response, next) {
+          // Compplete the request
             var opt = registerIndexPrimary(request.body, true);
+          // Validation
+           if (!opt.version) {
+             response.status(428);
+             response.send({ error: "Document Version is required for update", status: 428 });
+             return;
+           }
+           // Process Undate
             var entityId = request.params.id;
             opt.id = entityId;
             console.info("Elasticsearch Request Update ", opt);

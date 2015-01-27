@@ -24,7 +24,8 @@
                     entityid="{{entityid}}" data="{{data}}" index="{{index}}">
     </tt-crud-server>
 
-    <tt-crud-conflictresolution id="conflict_resolution"></tt-crud-conflictresolution>
+    <tt-crud-conflictresolution id="conflict_resolution" data="{{data}}"
+                                dataOri="{{dataOri}}"></tt-crud-conflictresolution>
 
     <core-style ref="tt-group-edit"></core-style>
 
@@ -55,7 +56,7 @@
       autocreate: '',
       validateautofocus: '',
       // On Save : Reload the Data
-      reloadOnSave: false,
+      reloadOnSave: true,
       // Model
       entityid: '',
       data: undefined,
@@ -77,20 +78,24 @@
 
       // --- Data Observer
       // --- ---------------------
-      attributeChanged: function (attrName, oldVal, newVal) {
-        //var newVal = this.getAttribute(attrName);
-        console.log(attrName, 'old: ' + oldVal, 'new:', newVal);
-      },
-      observe: {
-        'data._version': 'dataChanged'
-      },
 
-      dataChanged: function (oldValue, newValue) {
-        console.log("***************************");
-        console.log(" Data Changed to : ", this.data);
+//      observe: {
+//        'data._version': 'dataChanged'
+//      },
+//
+//      dataChanged: function (oldValue, newValue) {
+//        console.log("***************************");
+//        console.log(" Data Changed to : ", this.data);
+//        this.dataOri = JSON.parse(JSON.stringify(this.data));
+//        console.log("***************************");
+//      },
+      dataSnapshot: function () {
+         console.log("***************************");
+         console.log(" Data Changed to : ", this.data);
         this.dataOri = JSON.parse(JSON.stringify(this.data));
         console.log("***************************");
       },
+
       entityidChanged: function (oldValue, newValue) {
         console.log("**//**//**//**//**//** entityidChanged : ", this.entityid);
         //console.log("entityidChanged for ", this.entityid);
@@ -135,6 +140,16 @@
 
       handleGetResponse: function (event, detail, target) {
         console.log("handleGetResponse : ", detail);
+        // Data Snapshot
+        this.dataSnapshot();
+        // Resolve conflict is Needed
+        if (this.$.conflict_resolution && this.$.conflict_resolution.isCurrentConflict()) {
+          var userDiff = this.$.conflict_resolution.mergeConflict();
+          if (userDiff.userDiffConflict) {
+            // TODO Real Conflict without resolution ??
+          }
+        }
+        // Fire Event
         this.fire("entity-get", {
           response: detail.response,
           status: detail.status,
@@ -142,7 +157,7 @@
         });
       },
 
-      handleGetError: function (event, detail, target)  {
+      handleGetError: function (event, detail, target) {
         console.log("handleGetError : ", detail);
         this.fire("entity-get-error", {
           response: detail.response,
@@ -150,7 +165,6 @@
           statusText: detail.statusText
         });
       },
-
 
 
       // --- Entity Save
@@ -177,7 +191,7 @@
       },
 
 
-      handleSaveResponse:function (event, detail, target) {
+      handleSaveResponse: function (event, detail, target) {
         var status = detail.status;
         var saveResult = detail.response;
         console.log("Save response", status, ":", saveResult);
@@ -198,6 +212,8 @@
             console.log("Increment Version to ", saveResult._version, " for data", this.data);
             this.data._version = saveResult._version;
             // Clone the version by wathcing  change on data._version
+            // Data Snapshot
+            this.dataSnapshot();
           }
           // Show Notification
           this.$.toast_save_success.show();
@@ -209,7 +225,7 @@
         console.log("Bug handleSaveError detail.response (Not JSON) : ", detail.response);
         var resp = detail.response;
         var status = detail.status;
-        console.error('Entity Save Error ' + status + ' : ' + detail.statusText);
+        console.log('Entity Save Error', status, ':', detail.statusText, ',', resp);
         if (status === 404) {
           // 404 Not Found
           this.showSaveErrorMessage('Entity Save Error : Entity Not Found');
@@ -218,7 +234,7 @@
           // 409 : Conflict
           this.showSaveErrorMessage('Entity Save Conflict');
           // conflict resolution with reload data
-          //this.onGet(this.conflictResolution(this, this.dataOri, this.data));
+          this.resolveConflict();
         } else {
           // Other Error
           this.showSaveErrorMessage('Entity Save Error ' + status + ' : ' + detail.statusText);
@@ -230,6 +246,14 @@
         }
       },
 
+      // --- Conflict Resolution
+      // --- ---------------------
+      resolveConflict: function () {
+        if (this.$.conflict_resolution) {
+          this.$.conflict_resolution.markToConflictToBeResolve();
+        }
+        this.entityGet();
+      },
 
       // --- Entity Create
       // --- ---------------------
@@ -274,7 +298,6 @@
           if (typeof childNode['checkValidity'] === 'function') {
             console.log("childNode", childNode);
             return true;
-            validate
           } else if (typeof childNode['validate'] === 'function') {
             console.log("childNode", childNode);
             return true;
