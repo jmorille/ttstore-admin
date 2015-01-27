@@ -21,7 +21,9 @@
     "lodash": "~2.4.1"
   },
   "devDependencies": {
-    "polymer-test-tools": "Polymer/polymer-test-tools#^0.5.2"
+    "polymer-test-tools": "Polymer/polymer-test-tools#^0.5.2",
+      "mocha": "*",
+      "chai": "*"
   },
   "resolutions": {
     "webcomponentsjs": "^0.5.2",

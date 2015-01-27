@@ -74,16 +74,18 @@
       // --- Differential
       // --- ---------------------
 
-
+      // Buggy function
+      //
       diffProperties: function (first, second, diffs) {
         diffs = diffs || {};
         // Compare ref to Object
         for (var attr in second) {
           if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
+            // Bug in Array Comparaison
             if (first[attr] !== second[attr]) {
               diffs[attr] = second[attr];
             }
-          } else if (typeof first[attr] == 'object' && typeof second[attr] == 'object') {
+          } else if (typeof first[attr] == 'object' && typeof second[attr] == 'object') { // Bug if property disapear
             // Check recursif
             var subDiffs = this.diffProperties(first[attr], second[attr], {});
             if (subDiffs) {
