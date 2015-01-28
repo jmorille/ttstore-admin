@@ -47,17 +47,18 @@
       <core-icon icon="error"></core-icon>
     </paper-toast>
 
-    <div center horizontal layout>
-      <div>auto save {{autosave}}</div>
-      <paper-toggle-button checked="{{autosave}}" label="autosave"></paper-toggle-button>
-    </div>
+ 
   </template>
 
   <script>
     Polymer('tt-crud-edit', {
+      publish: {
+        autosave: {value: false, reflect: true},
+        autocreate: {value: false, reflect: true}
+      },
       // Config
-      autosave: false,
-      autocreate: '',
+      // autocreate: '',
+      // autosave: undefined,
       validateautofocus: '',
       // On Save : Reload the Data
       reloadOnSave: true,
@@ -76,8 +77,9 @@
       // --- ---------------
       domReady: function () {
         // Create Binding listener for Blur and Focus
-        if (autosave) {
-           this.addInputWatcher();
+        console.log("aaaauuuu", (typeof autosave))
+        if (this.autosave) {
+          this.addInputWatcher();
         }
       },
 
@@ -422,13 +424,13 @@
         childNodes.forEach(function (elt) {
           var focusable = elt;
           if ('PAPER-INPUT-DECORATOR' === elt.tagName) {
-           // focusable = elt.input;
+            // focusable = elt.input;
           }
           // Delegate focus/blur events
           Polymer.addEventListener(focusable, 'input', that.focusListener, true);
-          Polymer.addEventListener(focusable, 'blur',  that.blurListener, true);
-      //    focusable.addEventListener( 'input', that.focusListener, true);
-      //    focusable.addEventListener( 'blur', that.blurListener, true);
+          Polymer.addEventListener(focusable, 'blur', that.blurListener, true);
+          //    focusable.addEventListener( 'input', that.focusListener, true);
+          //    focusable.addEventListener( 'blur', that.blurListener, true);
           console.log('---- addEventListener', focusable);
         });
       },
@@ -457,7 +459,7 @@
         }
       },
       autoSaveInputFieldFocus: function (event) {
-        console.log("*** Focus " , event);
+        console.log("*** Focus ", event);
         this.isSaveEnabled = true;
       },
 
