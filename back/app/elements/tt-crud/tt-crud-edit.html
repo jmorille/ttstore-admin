@@ -398,14 +398,14 @@
         var childNodes = this.getFornInputField();
         var that = this;
         console.log("---------- addInputWatcher", childNodes);
-        childNodes.forEach(function(elt) {
-            var focusable =elt;
-            if ('PAPER-INPUT-DECORATOR' === elt.tagName) {
-              focusable = elt.input;
-            }
-            // Delegate focus/blur events
-            Polymer.addEventListener(focusable, 'input', this.focusAction.bind(this), true);
-            Polymer.addEventListener(focusable, 'blur', this.blurAction.bind(this), true);
+        childNodes.forEach(function (elt) {
+          var focusable = elt;
+          if ('PAPER-INPUT-DECORATOR' === elt.tagName) {
+            focusable = elt.input;
+          }
+          // Delegate focus/blur events
+          Polymer.addEventListener(focusable, 'input', this.focusAction.bind(this), true);
+          Polymer.addEventListener(focusable, 'blur', this.blurAction.bind(this), true);
         });
         for (var i = 0; i < childNodes.length; i++) {
           var childNode = childNodes[i];
@@ -413,6 +413,23 @@
           childNode.addEventListener('blur', this.blurListener);
           childNode.addEventListener('input', this.focusListener);
         }
+
+      },
+
+
+      inputFieldBlur: function (event) {
+        console.log("*** Blur ", event);
+        var autosave = this.isModeCreate() ? (this.autocreate === '' || this.autocreate === true) : ( this.autosave === '' || this.autosave === true );
+        // Auto save
+        if (autosave) {
+          this.job('save', function () {
+            this.onSave();
+          }, 200);
+        }
+      },
+      inputFieldFocus: function (event) {
+        //  console.log("*** Focus " , event);
+        this.isSaveEnabled = true;
 
       },
 
