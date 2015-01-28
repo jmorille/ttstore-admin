@@ -47,12 +47,16 @@
       <core-icon icon="error"></core-icon>
     </paper-toast>
 
+    <div center horizontal layout>
+      <div>auto save {{autosave}}</div>
+      <paper-toggle-button checked="{{autosave}}" label="autosave"></paper-toggle-button>
+    </div>
   </template>
 
   <script>
     Polymer('tt-crud-edit', {
       // Config
-      autosave: '',
+      autosave: false,
       autocreate: '',
       validateautofocus: '',
       // On Save : Reload the Data
@@ -70,11 +74,18 @@
 
       // --- Life Cycle
       // --- ---------------
-      ready: function () {
+      domReady: function () {
+        // Create Binding listener for Blur and Focus
+        if (autosave) {
+           this.addInputWatcher();
+        }
       },
 
       detached: function () {
+        // Remove Binding listener for Blur and Focus
+        this.removeInputWatcher();
       },
+
 
       // --- Data Observer
       // --- ---------------------
@@ -109,6 +120,14 @@
           // Update Mode
           this.entityGet();
           //  console.log("entityidChanged load data ", this.entityid);
+        }
+      },
+
+      autosaveChanged: function (oldValue, newValue) {
+        if (newValue) {
+          this.addInputWatcher();
+        } else {
+          this.removeInputWatcher();
         }
       },
 
@@ -398,39 +417,48 @@
         var childNodes = this.getFornInputField();
         var that = this;
         console.log("---------- addInputWatcher", childNodes);
+        this.focusListener = this.focusListener || this.autoSaveInputFieldFocus.bind(this);
+        this.blurListener = this.blurAction || this.autoSaveInputFieldBlur.bind(this);
         childNodes.forEach(function (elt) {
           var focusable = elt;
           if ('PAPER-INPUT-DECORATOR' === elt.tagName) {
-            focusable = elt.input;
+           // focusable = elt.input;
           }
           // Delegate focus/blur events
-          Polymer.addEventListener(focusable, 'input', this.focusAction.bind(this), true);
-          Polymer.addEventListener(focusable, 'blur', this.blurAction.bind(this), true);
+          Polymer.addEventListener(focusable, 'input', that.focusListener, true);
+          Polymer.addEventListener(focusable, 'blur',  that.blurListener, true);
+      //    focusable.addEventListener( 'input', that.focusListener, true);
+      //    focusable.addEventListener( 'blur', that.blurListener, true);
+          console.log('---- addEventListener', focusable);
         });
-        for (var i = 0; i < childNodes.length; i++) {
-          var childNode = childNodes[i];
-          console.log("---------- addInputWatcher", childNode);
-          childNode.addEventListener('blur', this.blurListener);
-          childNode.addEventListener('input', this.focusListener);
-        }
-
+      },
+      removeInputWatcher: function () {
+        var childNodes = this.getFornInputField();
+        //  console.log("---------- removeInputWatcher", childNodes);
+        var that = this;
+        childNodes.forEach(function (childNode) {
+          Polymer.removeEventListener(childNode, 'blur', that.blurListener, true);
+          Polymer.removeEventListener(childNode, 'input', that.focusListener, true);
+          console.log("---------- removeInputWatcher", childNode);
+        });
+        this.focusListener = undefined;
+        this.blurListener = undefined;
       },
 
-
-      inputFieldBlur: function (event) {
+      autoSaveInputFieldBlur: function (event) {
         console.log("*** Blur ", event);
         var autosave = this.isModeCreate() ? (this.autocreate === '' || this.autocreate === true) : ( this.autosave === '' || this.autosave === true );
         // Auto save
-        if (autosave) {
+        console.log('---- autoSaveInputFieldBlur', this.data);
+        if (autosave && this.isDiff()) {
           this.job('save', function () {
-            this.onSave();
+            this.save();
           }, 200);
         }
       },
-      inputFieldFocus: function (event) {
-        //  console.log("*** Focus " , event);
+      autoSaveInputFieldFocus: function (event) {
+        console.log("*** Focus " , event);
         this.isSaveEnabled = true;
-
       },
 
       // --- Toasts
