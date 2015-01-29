@@ -1,3 +1,5 @@
+<link rel="import" href="../../components/polymer/polymer.html">
+
 <link rel="import" href="../../components/core-style/core-style.html">
 
 
@@ -30,7 +32,7 @@
     <core-style ref="tt-group-edit"></core-style>
 
 
-    <tt-crud-menu save="{{isSaveEnabled}}"
+    <tt-crud-menu save="{{isSaveEnabled}}" isDelete="{{isDeleteEnabled}}"
                   on-tap-delete="{{onDelete}}" on-tap-save="{{onSaveButton}}" on-tap-close="{{onClose}}">
 
     </tt-crud-menu>
@@ -48,6 +50,8 @@
     </paper-toast>
 
 
+    <div on-tap="{{test}}">Bouton Test</div>
+
   </template>
 
   <script>
@@ -56,25 +60,46 @@
         autosave: {value: false, reflect: true},
         autocreate: {value: false, reflect: true}
       },
+
       // Config
       // autocreate: '',
       // autosave: undefined,
       validateautofocus: '',
       // On Save : Reload the Data
-      reloadOnSave: true,
+      reloadOnSave: false,
       // Model
       entityid: '',
       data: undefined,
       dataOri: undefined,
 
       // Crud Menu Status
-      isSaveEnabled: true,
+      isSaveEnabled: false,
+      isDeleteEnabled: false,
 
       // Toast Message
       toastSaveErrorMessage: undefined,
 
+      test: function () {
+        var path = '_source.firstname';
+        var model = this.data;
+        // var result= Path.get(path).getValueFrom(model);
+        var result = Path.get(path);
+        var observer = new PathObserver(model, path);
+        observer.open(function (newValue, oldValue) {
+          // respond to obj.foo.bar having changed value.
+          console.log("------------------------------------------", oldValue, "---->", newValue);
+        });
+        console.log("------------------------------------------");
+        console.dir(observer);
+        console.dir(PathObserver.allObservers);
+        console.dir(result);
+
+        console.log("------------------------------------------");
+      },
+
       // --- Life Cycle
       // --- ---------------
+
       domReady: function () {
         // Create Binding listener for Blur and Focus
         console.log("aaaauuuu", (typeof autosave))
@@ -115,8 +140,8 @@
         if (this.entityid === '' || this.entityid === null) {
           // Blank case, no model to create
         } else if (this.entityid === undefined) {
-          // Create Mode
-          this.data = this.$.server.createEmptyEntity();
+          // Create Model
+          this.createEmptyEntity();
           //  console.log("entityidChanged create empty data ", this.data);
         } else if (!this.data || !this.data._id || this.data._id !== this.entityid) {
           // Update Mode
@@ -163,6 +188,13 @@
         console.log("handleGetResponse : ", detail);
         // Data Snapshot
         this.dataSnapshot();
+        // Enable menu
+        this.isDeleteEnabled = true;
+        console.log('--------------- this.isDeleteEnabled ', this.isDeleteEnabled);
+        if (this.autosave) {
+          this.isSaveEnabled = false;
+        }
+
         // Resolve conflict is Needed
         if (this.$.conflict_resolution && this.$.conflict_resolution.isCurrentConflict()) {
           var userDiff = this.$.conflict_resolution.mergeConflict();
@@ -180,6 +212,7 @@
 
       handleGetError: function (event, detail, target) {
         console.log("handleGetError : ", detail);
+
         this.fire("entity-get-error", {
           response: detail.response,
           status: detail.status,
@@ -190,6 +223,11 @@
 
       // --- Entity Save
       // --- ---------------------
+      createEmptyEntity: function () {
+        // Create Model
+        this.data = this.$.server.createEmptyEntity();
+      },
+
 
       save: function () {
         // Dirty Check
@@ -218,29 +256,34 @@
         var status = detail.status;
         var saveResult = detail.response;
         console.log("Save response", status, ":", saveResult);
-        if (status === 200) {
-          // Check Existing id
-          if (!this.data._id) {
-            this.data._id = resp._id;
-          }
-          if (!this.entityid) {
-            this.entityid = resp._id;
-          }
-          // Increment version or reload data ?
-          if (this.reloadOnSave === '' || this.reloadOnSave === true) {
-            console.log("Reload on save");
-            this.entityGet();
-          } else {
-            // Update version
-            console.log("Increment Version to ", saveResult._version, " for data", this.data);
-            this.data._version = saveResult._version;
-            // Clone the version by wathcing  change on data._version
-            // Data Snapshot
-            this.dataSnapshot();
-          }
-          // Show Notification
-          this.$.toast_save_success.show();
+
+
+        // Check Existing id
+        if (!this.data._id) {
+          this.data._id = resp._id;
         }
+        if (!this.entityid) {
+          this.entityid = resp._id;
+        }
+        // Increment version or reload data ?
+        if (this.reloadOnSave === '' || this.reloadOnSave === true) {
+          console.log("Reload on save");
+          this.entityGet();
+        } else {
+          // Update version
+          console.log("Increment Version to ", saveResult._version, " for data", this.data);
+          this.data._version = saveResult._version;
+          // Clone the version by wathcing  change on data._version
+          // Data Snapshot
+          this.dataSnapshot();
+        }
+        // Manage Menu
+        if (this.autosave) {
+          this.isSaveEnabled = false;
+        }
+        // Show Notification
+        this.$.toast_save_success.show();
+
       },
 
       handleSaveError: function (event, detail, target) {
@@ -425,6 +468,7 @@
           var focusable = elt;
           if ('PAPER-INPUT-DECORATOR' === elt.tagName) {
             // focusable = elt.input;
+
           }
           // Delegate focus/blur events
           Polymer.addEventListener(focusable, 'input', that.focusListener, true);
@@ -460,7 +504,9 @@
       },
       autoSaveInputFieldFocus: function (event) {
         console.log("*** Focus ", event);
-        this.isSaveEnabled = true;
+        if (this.autosave) {
+          this.isSaveEnabled = true;
+        }
       },
 
       // --- Toasts
@@ -469,6 +515,7 @@
       showSaveErrorMessage: function (msg) {
         this.toastSaveErrorMessage = msg;
         this.$.toast_save_error.show();
+
       }
 
 
