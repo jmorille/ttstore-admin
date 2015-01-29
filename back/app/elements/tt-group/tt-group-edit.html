@@ -34,7 +34,7 @@
 
     <div>Entity Id : {{entityid}}</div>
 
-    <tt-crud-edit data="{{data}}" entityid="{{entityid}}" index="users">
+    <tt-crud-edit data="{{data}}" entityid="{{entityid}}" index="users" autosave>
       <section>
         <paper-input-decorator floatingLabel label="First name" autoValidate>
           <input is="core-input" value="{{ data._source.firstname}}" required>
