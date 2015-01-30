@@ -25,14 +25,12 @@
 
 <polymer-element name="tt-group-edit" attributes="entityid">
 
-  <script src="../../components/alertifyjs/dist/js/alertify.js"></script>
-
   <template>
 
 
     <div>Entity Id : {{entityid}}</div>
 
-    <tt-crud-edit data="{{data}}" entityid="{{entityid}}" index="users" autoCreate >
+    <tt-crud-edit data="{{data}}" entityid="{{entityid}}" index="users" autosave >
       <section>
         <paper-input-decorator floatingLabel label="First name" autoValidate>
           <input is="core-input" value="{{ data._source.firstname}}" required>
