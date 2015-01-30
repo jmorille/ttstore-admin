@@ -11,17 +11,17 @@
 <link rel="import" href="tt-crud-menu.html">
 <link rel="import" href="tt-crud-conflictresolution.html">
 
-<link  rel="import" href="tt-crud-utils.html">
+<link rel="import" href="tt-crud-utils.html">
 
 
 <core-style id="tt-group-edit">
   .toast-error {
-    background-color: {{g.paperInput.invalidColor}};
+  background-color: {{g.paperInput.invalidColor}};
   }
 
 </core-style>
 
-<polymer-element name="tt-crud-edit" attributes="entityid data index">
+<polymer-element name="tt-crud-edit" attributes="entityid data index  autosave autocreate autoupdate">
   <template>
     <tt-crud-server id="server" role="database"
                     on-get-response="{{handleGetResponse}}" on-get-error="{{handleGetError}}"
@@ -54,16 +54,46 @@
 
 
     <div on-tap="{{test}}">Bouton Test</div>
+    <div>
+      autosave: {{autosave}} + autocreate : {{autocreate}} + autoupdate: {{autoupdate}} == {{isAutosave}}
+    </div>
+    <div center horizontal layout>
+      <div center horizontal layout>
+        <div>autosave</div>
+        <paper-toggle-button checked="{{autosave}}" label="autosave"></paper-toggle-button>
+      </div>
+      +
+      <div center horizontal layout>
+        <div>autocreate</div>
+        <paper-toggle-button checked="{{autocreate}}" label="autocreate"></paper-toggle-button>
+      </div>
+      +
+      <div center horizontal layout>
+        <div>autoupdate</div>
+        <paper-toggle-button checked="{{autoupdate}}" label="autoupdate"></paper-toggle-button>
+      </div>
+      +
+      <div center horizontal layout>
+        <div>isCreate</div>
+        <paper-toggle-button checked="{{isCreate}}" label="isCreate"></paper-toggle-button>
+      </div>
+    </div>
+
 
   </template>
 
   <script>
     Polymer('tt-crud-edit', Polymer.mixin({
-      publish: {
-        autosave: {value: false, reflect: true},
-        autocreate: {value: false, reflect: true}
+//      publish: {
+      autosave: false,
+      autocreate: false,
+      autoupdate: false,
+      isCreate : false,
+//      },
+      computed: {
+        isModeCreate : 'data && !data._id',
+        isAutosave: 'autosave ? autosave : (isModeCreate ? autocreate : autoupdate)'
       },
-
       // Config
       // autocreate: '',
       // autosave: undefined,
@@ -99,6 +129,8 @@
 //
         console.log("------------------------------------------");
         console.log("----- isEmptyObj", this.isEmptyObj({}), ' -- / --- ', this.isEmptyObj({toto: 'eee'}));
+        console.log("------------------------------------------");
+        this.checkValidity();
       },
 
       // --- Life Cycle
@@ -106,10 +138,10 @@
 
       domReady: function () {
         // Create Binding listener for Blur and Focus
-        console.log("aaaauuuu", (typeof autosave))
-        if (this.autosave) {
-          this.addInputWatcher();
-        }
+        //console.log("aaaauuuu", (typeof isAutosave))
+//        if (this.isAutosave) {
+//          this.addInputWatcher();
+//        }
       },
 
       detached: function () {
@@ -136,6 +168,11 @@
         console.log(" Data Changed to : ", this.data);
         this.dataOri = JSON.parse(JSON.stringify(this.data));
         console.log("***************************");
+        // FIXME : To Delete after resolved Issue https://github.com/Polymer/paper-input/issues/148
+        this.job('save', function () {
+          this.checkValidity();
+        }, 60);
+
       },
 
       entityidChanged: function (oldValue, newValue) {
@@ -154,7 +191,7 @@
         }
       },
 
-      autosaveChanged: function (oldValue, newValue) {
+      isAutosaveChanged: function (oldValue, newValue) {
         if (newValue) {
           this.addInputWatcher();
         } else {
@@ -195,7 +232,7 @@
         // Enable menu
         this.isDeleteEnabled = true;
         console.log('--------------- this.isDeleteEnabled ', this.isDeleteEnabled);
-        if (this.autosave) {
+        if (this.isAutosave) {
           this.isSaveEnabled = false;
         }
 
@@ -230,6 +267,8 @@
       createEmptyEntity: function () {
         // Create Model
         this.data = this.$.server.createEmptyEntity();
+        // Snapshot
+        this.dataSnapshot();
       },
 
 
@@ -244,22 +283,20 @@
         }
 
         // Diff, need to save
-        if (this.isModeCreate()) {
+        if (this.isModeCreate) {
           this.entityCreate();
         } else {
           this.entityUpdate();
         }
       },
 
-      isModeCreate: function () {
-        return !this.data._id;
-      },
+
 
 
       handleSaveResponse: function (event, detail, target) {
         var status = detail.status;
-        var saveResult = detail.response;
-        console.log("Save response", status, ":", saveResult);
+        var resp = detail.response;
+        console.log("Save response", status, ":", resp);
 
 
         // Check Existing id
@@ -275,14 +312,14 @@
           this.entityGet();
         } else {
           // Update version
-          console.log("Increment Version to ", saveResult._version, " for data", this.data);
-          this.data._version = saveResult._version;
+          console.log("Increment Version to ", resp._version, " for data", this.data);
+          this.data._version = resp._version;
           // Clone the version by wathcing  change on data._version
           // Data Snapshot
           this.dataSnapshot();
         }
         // Manage Menu
-        if (this.autosave) {
+        if (this.isAutosave) {
           this.isSaveEnabled = false;
         }
         // Show Notification
@@ -375,7 +412,7 @@
         var inputFieldNodes = Array.prototype.reduce.call(childNodes, function (acc, childNode) {
           var childTagName = childNode.tagName;
           if (typeof childNode['checkValidity'] === 'function') {
-            console.log("childNode", childNode);
+            // console.log("childNode", childNode);
             acc.push(childNode);
           } else if (typeof childNode['validate'] === 'function') {
             console.log("childNode", childNode);
@@ -392,13 +429,13 @@
         return inputFieldNodes;
       },
 
-
-      onFormInvalid: function (e) {
-        e.detail.forEach(function (badEl) {
-          // handle invalid element
-          console.log("invalid element", badEl);
-        });
-      },
+//
+//      onFormInvalid: function (e) {
+//        e.detail.forEach(function (badEl) {
+//          // handle invalid element
+//          console.log("invalid element", badEl);
+//        });
+//      },
 
       notifValidityErrors: function (errorNodes) {
         if (errorNodes && errorNodes.length > 0) {
@@ -447,7 +484,7 @@
         childNodes.forEach(function (elt) {
           var focusable = elt;
 //          if ('PAPER-INPUT-DECORATOR' === elt.tagName) {
-            // focusable = elt.input;
+          // focusable = elt.input;
 //          }
           // Delegate focus/blur events
           Polymer.addEventListener(focusable, 'input', that.focusListener, true);
@@ -459,7 +496,7 @@
       },
       removeInputWatcher: function () {
         var childNodes = this.getFornInputField();
-        //  console.log("---------- removeInputWatcher", childNodes);
+         console.log("---------- removeInputWatcher", childNodes);
         var that = this;
         childNodes.forEach(function (childNode) {
           Polymer.removeEventListener(childNode, 'blur', that.blurListener, true);
@@ -471,19 +508,19 @@
       },
 
       autoSaveInputFieldBlur: function (event) {
-        console.log("*** Blur ", event);
-        var autosave = this.isModeCreate() ? (this.autocreate === '' || this.autocreate === true) : ( this.autosave === '' || this.autosave === true );
+//        console.log("*** Blur ", event);
+//        var autosave = this.isModeCreate ? (this.autocreate === '' || this.autocreate === true) : ( this.autosave === '' || this.autosave === true );
         // Auto save
 //        console.log('---- autoSaveInputFieldBlur', this.data);
-        if (autosave && this.isDiff()) {
+        if (this.isAutosave && this.isDiff()) {
           this.job('save', function () {
             this.save();
           }, 200);
         }
       },
       autoSaveInputFieldFocus: function (event) {
-        console.log("*** Focus ", event);
-        if (this.autosave) {
+//        console.log("*** Focus ", event);
+        if (this.isAutosave) {
           this.isSaveEnabled = true;
         }
       },
@@ -503,7 +540,7 @@
       // --- ---------------------
 
 
-    }, crudUtilsMixin));
+    }, crudUtilsMixin ));
 
   </script>
 </polymer-element>
