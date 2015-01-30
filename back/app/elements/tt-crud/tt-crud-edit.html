@@ -54,30 +54,6 @@
 
 
     <div on-tap="{{test}}">Bouton Test</div>
-    <div>
-      autosave: {{autosave}} + autocreate : {{autocreate}} + autoupdate: {{autoupdate}} == {{isAutosave}}
-    </div>
-    <div center horizontal layout>
-      <div center horizontal layout>
-        <div>autosave</div>
-        <paper-toggle-button checked="{{autosave}}" label="autosave"></paper-toggle-button>
-      </div>
-      +
-      <div center horizontal layout>
-        <div>autocreate</div>
-        <paper-toggle-button checked="{{autocreate}}" label="autocreate"></paper-toggle-button>
-      </div>
-      +
-      <div center horizontal layout>
-        <div>autoupdate</div>
-        <paper-toggle-button checked="{{autoupdate}}" label="autoupdate"></paper-toggle-button>
-      </div>
-      +
-      <div center horizontal layout>
-        <div>isCreate</div>
-        <paper-toggle-button checked="{{isCreate}}" label="isCreate"></paper-toggle-button>
-      </div>
-    </div>
 
 
   </template>
@@ -112,37 +88,10 @@
       // Toast Message
       toastSaveErrorMessage: undefined,
 
-      test: function () {
-//        var path = '_source.firstname';
-//        var model = this.data;
-//        // var result= Path.get(path).getValueFrom(model);
-//        var result = Path.get(path);
-//        var observer = new PathObserver(model, path);
-//        observer.open(function (newValue, oldValue) {
-//          // respond to obj.foo.bar having changed value.
-//          console.log("------------------------------------------", oldValue, "---->", newValue);
-//        });
-//        console.log("------------------------------------------");
-//        console.dir(observer);
-//        console.dir(PathObserver.allObservers);
-//        console.dir(result);
-//
-        console.log("------------------------------------------");
-        console.log("----- isEmptyObj", this.isEmptyObj({}), ' -- / --- ', this.isEmptyObj({toto: 'eee'}));
-        console.log("------------------------------------------");
-        this.checkValidity();
-      },
+
 
       // --- Life Cycle
       // --- ---------------
-
-      domReady: function () {
-        // Create Binding listener for Blur and Focus
-        //console.log("aaaauuuu", (typeof isAutosave))
-//        if (this.isAutosave) {
-//          this.addInputWatcher();
-//        }
-      },
 
       detached: function () {
         // Remove Binding listener for Blur and Focus
@@ -153,30 +102,23 @@
       // --- Data Observer
       // --- ---------------------
 
-//      observe: {
-//        'data._version': 'dataChanged'
-//      },
-//
-//      dataChanged: function (oldValue, newValue) {
+      dataSnapshot: function () {
 //        console.log("***************************");
 //        console.log(" Data Changed to : ", this.data);
-//        this.dataOri = JSON.parse(JSON.stringify(this.data));
-//        console.log("***************************");
-//      },
-      dataSnapshot: function () {
-        console.log("***************************");
-        console.log(" Data Changed to : ", this.data);
         this.dataOri = JSON.parse(JSON.stringify(this.data));
-        console.log("***************************");
+//        console.log("***************************");
+        // ------------------------------------------------------------------
         // FIXME : To Delete after resolved Issue https://github.com/Polymer/paper-input/issues/148
+        // ------------------------------------------------------------------
         this.job('save', function () {
           this.checkValidity();
-        }, 60);
+        }, 20);
+        // ------------------------------------------------------------------
 
       },
 
       entityidChanged: function (oldValue, newValue) {
-        console.log("**//**//**//**//**//** entityidChanged : ", this.entityid);
+//        console.log("entityidChanged : ", this.entityid);
         //console.log("entityidChanged for ", this.entityid);
         if (this.entityid === '' || this.entityid === null) {
           // Blank case, no model to create
@@ -231,7 +173,7 @@
         this.dataSnapshot();
         // Enable menu
         this.isDeleteEnabled = true;
-        console.log('--------------- this.isDeleteEnabled ', this.isDeleteEnabled);
+//        console.log('--------------- this.isDeleteEnabled ', this.isDeleteEnabled);
         if (this.isAutosave) {
           this.isSaveEnabled = false;
         }
@@ -415,7 +357,7 @@
             // console.log("childNode", childNode);
             acc.push(childNode);
           } else if (typeof childNode['validate'] === 'function') {
-            console.log("childNode", childNode);
+//            console.log("childNode", childNode);
             acc.push(childNode);
           } else if ((childNode.childNodes !== undefined) && (childNode.childNodes.length > 0)) {
             var subNodes = that.getFornInputField(childNode.childNodes);
@@ -429,13 +371,6 @@
         return inputFieldNodes;
       },
 
-//
-//      onFormInvalid: function (e) {
-//        e.detail.forEach(function (badEl) {
-//          // handle invalid element
-//          console.log("invalid element", badEl);
-//        });
-//      },
 
       notifValidityErrors: function (errorNodes) {
         if (errorNodes && errorNodes.length > 0) {
@@ -489,8 +424,6 @@
           // Delegate focus/blur events
           Polymer.addEventListener(focusable, 'input', that.focusListener, true);
           Polymer.addEventListener(focusable, 'blur', that.blurListener, true);
-          //    focusable.addEventListener( 'input', that.focusListener, true);
-          //    focusable.addEventListener( 'blur', that.blurListener, true);
 //          console.log('---- addEventListener', focusable);
         });
       },
