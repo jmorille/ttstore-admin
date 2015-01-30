@@ -11,9 +11,12 @@
 <link rel="import" href="tt-crud-menu.html">
 <link rel="import" href="tt-crud-conflictresolution.html">
 
+<link  rel="import" href="tt-crud-utils.html">
+
+
 <core-style id="tt-group-edit">
   .toast-error {
-  background-color: {{g.paperInput.invalidColor}};
+    background-color: {{g.paperInput.invalidColor}};
   }
 
 </core-style>
@@ -55,7 +58,7 @@
   </template>
 
   <script>
-    Polymer('tt-crud-edit', {
+    Polymer('tt-crud-edit', Polymer.mixin({
       publish: {
         autosave: {value: false, reflect: true},
         autocreate: {value: false, reflect: true}
@@ -80,21 +83,22 @@
       toastSaveErrorMessage: undefined,
 
       test: function () {
-        var path = '_source.firstname';
-        var model = this.data;
-        // var result= Path.get(path).getValueFrom(model);
-        var result = Path.get(path);
-        var observer = new PathObserver(model, path);
-        observer.open(function (newValue, oldValue) {
-          // respond to obj.foo.bar having changed value.
-          console.log("------------------------------------------", oldValue, "---->", newValue);
-        });
+//        var path = '_source.firstname';
+//        var model = this.data;
+//        // var result= Path.get(path).getValueFrom(model);
+//        var result = Path.get(path);
+//        var observer = new PathObserver(model, path);
+//        observer.open(function (newValue, oldValue) {
+//          // respond to obj.foo.bar having changed value.
+//          console.log("------------------------------------------", oldValue, "---->", newValue);
+//        });
+//        console.log("------------------------------------------");
+//        console.dir(observer);
+//        console.dir(PathObserver.allObservers);
+//        console.dir(result);
+//
         console.log("------------------------------------------");
-        console.dir(observer);
-        console.dir(PathObserver.allObservers);
-        console.dir(result);
-
-        console.log("------------------------------------------");
+        console.log("----- isEmptyObj", this.isEmptyObj({}), ' -- / --- ', this.isEmptyObj({toto: 'eee'}));
       },
 
       // --- Life Cycle
@@ -417,30 +421,6 @@
       // --- Data Differential
       // --- ---------------------
 
-      isEmptyObj: function (obj) {
-        return (Object.getOwnPropertyNames(obj).length === 0);
-      },
-
-      diffProperties: function (first, second, diffs) {
-        diffs = diffs || {};
-        // Compare ref to Object
-        for (var attr in second) {
-          if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
-            if (first[attr] !== second[attr]) {
-              diffs[attr] = second[attr];
-            }
-          } else if (typeof first[attr] == 'object' && typeof second[attr] == 'object') {
-            // Check recursif
-            var subDiffs = this.diffProperties(first[attr], second[attr], {});
-            if (subDiffs) {
-              diffs[attr] = subDiffs;
-            }
-          } else if (first[attr] !== second[attr]) {
-            diffs[attr] = second[attr];
-          }
-        }
-        return this.isEmptyObj(diffs) ? undefined : diffs;
-      },
 
       isDiff: function (notDiffCallback) {
         var diff = this.diffProperties(this.dataOri._source, this.data._source);
@@ -466,16 +446,15 @@
         this.blurListener = this.blurAction || this.autoSaveInputFieldBlur.bind(this);
         childNodes.forEach(function (elt) {
           var focusable = elt;
-          if ('PAPER-INPUT-DECORATOR' === elt.tagName) {
+//          if ('PAPER-INPUT-DECORATOR' === elt.tagName) {
             // focusable = elt.input;
-
-          }
+//          }
           // Delegate focus/blur events
           Polymer.addEventListener(focusable, 'input', that.focusListener, true);
           Polymer.addEventListener(focusable, 'blur', that.blurListener, true);
           //    focusable.addEventListener( 'input', that.focusListener, true);
           //    focusable.addEventListener( 'blur', that.blurListener, true);
-          console.log('---- addEventListener', focusable);
+//          console.log('---- addEventListener', focusable);
         });
       },
       removeInputWatcher: function () {
@@ -485,7 +464,7 @@
         childNodes.forEach(function (childNode) {
           Polymer.removeEventListener(childNode, 'blur', that.blurListener, true);
           Polymer.removeEventListener(childNode, 'input', that.focusListener, true);
-          console.log("---------- removeInputWatcher", childNode);
+//          console.log("---------- removeInputWatcher", childNode);
         });
         this.focusListener = undefined;
         this.blurListener = undefined;
@@ -495,7 +474,7 @@
         console.log("*** Blur ", event);
         var autosave = this.isModeCreate() ? (this.autocreate === '' || this.autocreate === true) : ( this.autosave === '' || this.autosave === true );
         // Auto save
-        console.log('---- autoSaveInputFieldBlur', this.data);
+//        console.log('---- autoSaveInputFieldBlur', this.data);
         if (autosave && this.isDiff()) {
           this.job('save', function () {
             this.save();
@@ -524,7 +503,7 @@
       // --- ---------------------
 
 
-    });
+    }, crudUtilsMixin));
 
   </script>
 </polymer-element>

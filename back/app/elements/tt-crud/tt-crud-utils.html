@@ -1,0 +1,42 @@
+<script>
+  var crudUtilsMixin = {
+    isEmptyObj: function (obj) {
+      return (Object.getOwnPropertyNames(obj).length === 0);
+    },
+
+    diffProperties: function (first, second, diffs) {
+      diffs = diffs || {};
+      // Compare ref to Object
+      for (var attr in second) {
+        if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
+          // Bug in Array Comparaison
+          // if (first[attr] !== second[attr]) {
+          if (!this.isArrayEquals(irst[attr], second[attr])) {
+            diffs[attr] = second[attr];
+          }
+        } else if (typeof first[attr] == 'object' && typeof second[attr] == 'object') { // Bug if property disapear
+          // Check recursif
+          var subDiffs = this.diffProperties(first[attr], second[attr], {});
+          if (subDiffs) {
+            diffs[attr] = subDiffs;
+          }
+        } else if (first[attr] !== second[attr]) {
+          diffs[attr] = second[attr];
+        }
+      }
+      return this.isEmptyObj(diffs) ? undefined : diffs;
+    },
+    isArrayEquals: function (a, b) {
+      if (a.length() !== b.length()) {
+        return false;
+      }
+      if (a === b) {
+        return true;
+      }
+      var diff = a.filter(function (element, index, array) {
+        return a[index] !== b[index];
+      });
+      return diff.length() < 1;
+    }
+  }
+</script>
