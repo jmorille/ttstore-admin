@@ -3,8 +3,11 @@
 <link rel="import" href="../../components/core-style/core-style.html">
 
 
-<link rel="import" href="../../components/core-ajax/core-ajax.html">
 <link rel="import" href="../../components/core-icon/core-icon.html">
+
+ <link rel="import" href="../../components/paper-toast/paper-toast.html">
+
+<link rel="import" href="../../components/paper-button/paper-button.html">
 
 
 <link rel="import" href="tt-crud-server.html">
@@ -14,13 +17,15 @@
 <link rel="import" href="tt-crud-utils.html">
 
 
+<link rel="import" href="tt-crud-delete-confirm.html">
+<link rel="import" href="tt-crud-delete-undo.html">
+
+
 <core-style id="tt-group-edit">
   .toast-error {
      background-color: {{g.paperInput.invalidColor}};
   }
-  .toast-undo {
-      color: #eeff41;
-  }
+
 
 </core-style>
 
@@ -56,14 +61,11 @@
       <core-icon icon="error"></core-icon>
     </paper-toast>
 
-    <paper-toast id="toast_delete_undo" class="capsule" text="Delete entity"
-        on-core-overlay-close-completed="{{handleDeleteUndoNone}}">
-         <div class="toast-undo" on-tap="{{handleDeleteUndo}}">   <core-icon icon="undo"></core-icon> Undo</div>
-    </paper-toast>
 
-    <paper-dialog id="dialog_delete_confirm" heading="Delete">
-      <p>Some content</p>
-    </paper-dialog>
+    <tt-crud-delete-confirm  id="dialog_delete_confirm" on-delete-confirm="{{entityDelete}}">
+    </tt-crud-delete-confirm>
+    <!-- tt-crud-delete-undo  id="dialog_delete_confirm" on-delete-confirm="{{entityDelete}}">
+    </tt-crud-delete-undo -->
 
 
     <div on-tap="{{test}}">Bouton Test</div>
@@ -182,7 +184,8 @@
       onDeleteButton: function () {
         console.log("----------- Click on save");
         //this.entityDelete();
-        this.$.toast_delete_undo.show();
+        this.$.dialog_delete_confirm.show();
+//        this.$.toast_delete_undo.show();
       },
       // --- Entity GET
       // --- ---------------------
@@ -331,13 +334,7 @@
 
       },
 
-      handleDeleteUndoNone: function () {
-        console.log("------------------------------------- Undo NONE")
-      },
-      handleDeleteUndo: function () {
-        console.log("------------------------------------- Undo DONE")
-        this.$.toast_delete_undo.dismiss();
-      },
+
 
       // --- Conflict Resolution
       // --- ---------------------

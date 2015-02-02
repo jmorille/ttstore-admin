@@ -1,0 +1,35 @@
+<link rel="import" href="../../components/polymer/polymer.html">
+
+<link rel="import" href="../../components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../components/paper-button/paper-button.html">
+
+
+<polymer-element name="tt-crud-delete-confirm" attributes="">
+
+  <template>
+    <paper-dialog id="dialog_delete_confirm" heading="Delete">
+      <p>Confirm deletion of entity</p>
+      <paper-button on-tap="{{handeDeleteCancel}}" dismissive>Cancel</paper-button>
+      <paper-button on-tap="{{handeDeleteConfirm}}" affirmative default>OK</paper-button>
+    </paper-dialog>
+  </template>
+
+
+  <script>
+    Polymer('tt-crud-delete-confirm', {
+
+      show: function () {
+        this.$.dialog_delete_confirm.toggle();
+      },
+      handeDeleteCancel: function () {
+        this.$.dialog_delete_confirm.toggle();
+        this.fire('delete-cancel');
+      },
+      handeDeleteConfirm: function () {
+        this.$.dialog_delete_confirm.toggle();
+        this.fire('delete-confirm');
+      }
+
+    });
+  </script>
+</polymer-element>

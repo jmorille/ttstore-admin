@@ -24,13 +24,19 @@ function esapi(client, registerIndex) {
 
       // Create Elasticsearch requests
       client.search(payload, function (err, resp, status) {
-        response.status(status);
+
         if (err) {
           console.error("Elasticsearch Error", err, resp);
+          if (status) {
+            response.status(status);
+          } else {
+            response.status(500);
+          }
           response.send(err);
           return;
         }
         //    response.writeHead(resp.statusCode, resp.headers);
+        response.status(status);
         response.send(resp);
       });
     },
