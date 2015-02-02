@@ -36,7 +36,7 @@
 
 
     <tt-crud-menu save="{{isSaveEnabled}}" isDelete="{{isDeleteEnabled}}"
-                  on-tap-delete="{{onDelete}}" on-tap-save="{{onSaveButton}}" on-tap-close="{{onClose}}">
+                  on-tap-delete="{{onDeleteButton}}" on-tap-save="{{onSaveButton}}" on-tap-close="{{onClose}}">
 
     </tt-crud-menu>
 
@@ -110,9 +110,9 @@
         // ------------------------------------------------------------------
         // FIXME : To Delete after resolved Issue https://github.com/Polymer/paper-input/issues/148
         // ------------------------------------------------------------------
-        this.job('save', function () {
+        this.async( function () {
           this.checkValidity();
-        }, 20);
+        }, 0);
         // ------------------------------------------------------------------
 
       },
@@ -159,7 +159,10 @@
         this.save();
       },
 
-
+      onDeleteButton: function () {
+        console.log("----------- Click on save");
+        this.save();
+      },
       // --- Entity GET
       // --- ---------------------
 
@@ -314,9 +317,14 @@
       // --- Entity Update
       // --- ---------------------
 
-
       entityUpdate: function () {
         this.$.server.entityUpdate();
+      },
+
+      // --- Entity Delete
+      // --- ---------------------
+      entityDelete: function () {
+        this.$.server.entityDelete();
       },
 
 
@@ -328,6 +336,7 @@
         console.log("checkValidity Nodes of ", childNodes);
 
         var errorNodes = Array.prototype.filter.call(childNodes, function (childNode) {
+          console.log("checkValidity childNode of ", childNode.model);
           if (typeof childNode['checkValidity'] === 'function') {
             return !childNode['checkValidity']();
           } else if (typeof childNode['validate'] === 'function') {

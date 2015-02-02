@@ -79,6 +79,17 @@
         this.$.service_save.go();
       },
 
+      // --- Entity Delete
+      // --- ---------------------
+      entityDelete: function () {
+        var opt = {
+          version: this.data._version
+        };
+        this.dataToSaveString = JSON.stringify(opt);
+        console.log("Request Delete of ", opt);
+        this.serviceSaveVerb = 'DELETE';
+        this.$.service_save.go();
+      },
 
       // --- Get Event
       // --- ---------------------
@@ -122,6 +133,7 @@
           statusText: statusText
         });
       },
+
       handleSaveError: function (event, detail, target) {
         // BUG ? detail.response as Text with status:JsonObj ? ==> Read from xhr
         console.log("Bug handleSaveError detail.response (Not JSON) : ", detail.response);
