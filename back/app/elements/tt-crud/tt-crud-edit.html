@@ -11,8 +11,10 @@
 
 
 <link rel="import" href="tt-crud-server.html">
-<link rel="import" href="tt-crud-menu.html">
+
+<link rel="import" href="tt-crud-validation.html">
 <link rel="import" href="tt-crud-conflictresolution.html">
+<link rel="import" href="tt-crud-menu.html">
 
 <link rel="import" href="tt-crud-utils.html">
 
@@ -48,6 +50,9 @@
                   on-tap-delete="{{onDeleteButton}}" on-tap-save="{{onSaveButton}}" on-tap-close="{{onClose}}">
 
     </tt-crud-menu>
+
+    <tt-crud-validation id="validator" target="{{$.content}}"></tt-crud-validation>
+
 
     <section vertical layout>
       <content id="content"></content>
@@ -369,27 +374,12 @@
       // --- Entity Validate
       // --- ---------------------
 
-      checkValidity: function (errorCallback) {
-        var childNodes = this.getFornInputField();
-        console.log("checkValidity Nodes of ", childNodes);
 
-        var errorNodes = Array.prototype.filter.call(childNodes, function (childNode) {
-          console.log("checkValidity childNode of ", childNode.model);
-          if (typeof childNode['checkValidity'] === 'function') {
-            return !childNode['checkValidity']();
-          } else if (typeof childNode['validate'] === 'function') {
-            return !childNode['validate']();
-          }
-          return false;
-        });
-        console.log("checkValidity Errors Nodes : ", errorNodes);
-        // Error Callback
-        if (errorCallback) {
-          errorCallback(errorNodes);
-        }
-        // Return
-        return errorNodes.length < 1;
-      },
+        checkValidity: function (errorCallback) {
+          this.$.validator.validateAll(errorCallback);
+        },
+
+
 
       getFornInputField: function (childNodes) {
         childNodes = childNodes || this.$.content.getDistributedNodes();
@@ -458,7 +448,7 @@
       // --- AutoSave
       // --- ---------------------
       addInputWatcher: function (focusAction, blurAction) {
-        var childNodes = this.getFornInputField();
+        var childNodes = this.getFornInputField(this.$.content.getDistributedNodes());
         var that = this;
         console.log("---------- addInputWatcher", childNodes);
         this.focusListener = this.focusListener || this.autoSaveInputFieldFocus.bind(this);
@@ -475,7 +465,7 @@
         });
       },
       removeInputWatcher: function () {
-        var childNodes = this.getFornInputField();
+        var childNodes = this.getFornInputField(this.$.content.getDistributedNodes());
          console.log("---------- removeInputWatcher", childNodes);
         var that = this;
         childNodes.forEach(function (childNode) {
