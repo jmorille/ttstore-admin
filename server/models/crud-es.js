@@ -51,7 +51,9 @@ function esapi(client, registerIndex) {
     // http://blog.kevinblanco.io/creating-a-simple-crud-with-node-js-express-mongodb-and-angularjs-part-1/
     update: function (request, response, next) {
       // Compplete the request
+      var entityId = request.params.id;
       var opt = registerIndexPrimary(request.body, true);
+      opt.id = entityId;
       // Validation
       if (!opt.version) {
         response.status(428);
@@ -59,8 +61,6 @@ function esapi(client, registerIndex) {
         return;
       }
       // Process Undate
-      var entityId = request.params.id;
-      opt.id = entityId;
       console.info("Elasticsearch Request Update ", opt);
       // TODO Check field version, if not throw exception (security rules for force concurency pb)
       client.update(opt, function (err, resp, status) {
@@ -86,10 +86,22 @@ function esapi(client, registerIndex) {
       });
     },
     delete: function (request, response) {
+      var entityId = request.params.id;
       var opt = registerIndexPrimary(request.body, true);
+      opt.id = entityId;
+      // Process Delete
+      console.log("Asked delete for ", opt );
       client.delete(opt, function (err, resp, status) {
+        console.log("Client delete response", err , resp, status);
         if (err) {
           console.error("Elasticsearch Error", err);
+          if (!status) {
+            response.status(400);
+          } else {
+            response.status(status);
+          }
+          response.send(err);
+          return;
         }
         response.status(status);
         response.send(resp);

@@ -16,7 +16,10 @@
 
 <core-style id="tt-group-edit">
   .toast-error {
-  background-color: {{g.paperInput.invalidColor}};
+     background-color: {{g.paperInput.invalidColor}};
+  }
+  .toast-undo {
+      color: #eeff41;
   }
 
 </core-style>
@@ -26,6 +29,7 @@
     <tt-crud-server id="server" role="database"
                     on-get-response="{{handleGetResponse}}" on-get-error="{{handleGetError}}"
                     on-save-response="{{handleSaveResponse}}" on-save-error="{{handleSaveError}}"
+                    on-delete-response="{{handleDeleteResponse}}" on-delete-error="{{handleSaveError}}"
                     entityid="{{entityid}}" data="{{data}}" index="{{index}}">
     </tt-crud-server>
 
@@ -51,6 +55,15 @@
     <paper-toast id="toast_save_error" class="capsule toast-error" text="{{toastSaveErrorMessage}}">
       <core-icon icon="error"></core-icon>
     </paper-toast>
+
+    <paper-toast id="toast_delete_undo" class="capsule" text="Delete entity"
+        on-core-overlay-close-completed="{{handleDeleteUndoNone}}">
+         <div class="toast-undo" on-tap="{{handleDeleteUndo}}">   <core-icon icon="undo"></core-icon> Undo</div>
+    </paper-toast>
+
+    <paper-dialog id="dialog_delete_confirm" heading="Delete">
+      <p>Some content</p>
+    </paper-dialog>
 
 
     <div on-tap="{{test}}">Bouton Test</div>
@@ -98,6 +111,11 @@
         this.removeInputWatcher();
       },
 
+      // --- Initial State
+      // --- ---------------------
+      unsetEntity: function () {
+        this.entityid === null;
+      },
 
       // --- Data Observer
       // --- ---------------------
@@ -122,6 +140,7 @@
         //console.log("entityidChanged for ", this.entityid);
         if (this.entityid === '' || this.entityid === null) {
           // Blank case, no model to create
+          this.data = undefined;
         } else if (this.entityid === undefined) {
           // Create Model
           this.createEmptyEntity();
@@ -150,6 +169,7 @@
 //            //  this.$.toast_save_not_need.show();
 //            console.log("Diff detected, close refused !!!!")
 //        } else {
+        this.unsetEntity();
         this.fire('cancel', this.entity);
 //        }
       },
@@ -161,7 +181,8 @@
 
       onDeleteButton: function () {
         console.log("----------- Click on save");
-        this.save();
+        //this.entityDelete();
+        this.$.toast_delete_undo.show();
       },
       // --- Entity GET
       // --- ---------------------
@@ -296,6 +317,26 @@
             status: status
           });
         }
+      },
+
+      // --- Entity Delete
+      // --- ---------------------
+      handleDeleteResponse: function (event, detail, target) {
+        var resp = detail.response;
+        var status = detail.status;
+        this.unsetEntity();
+        this.fire('delete', this.entity);
+      },
+      handleDeleteError: function (event, detail, target) {
+
+      },
+
+      handleDeleteUndoNone: function () {
+        console.log("------------------------------------- Undo NONE")
+      },
+      handleDeleteUndo: function () {
+        console.log("------------------------------------- Undo DONE")
+        this.$.toast_delete_undo.dismiss();
       },
 
       // --- Conflict Resolution

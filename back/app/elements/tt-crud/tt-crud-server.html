@@ -20,6 +20,13 @@
                on-core-error="{{handleSaveError}}"
                on-core-response="{{handleSaveResponse}}">
     </core-ajax>
+    <core-ajax id="service_delete" url="/s/{{index}}/{{entityid}}" handleAs="json"
+               contentType="application/json"
+               body="{{dataToDeleteString}}"
+               method="DELETE"
+               on-core-error="{{handleDeleteError}}"
+               on-core-response="{{handleDeleteResponse}}">
+    </core-ajax>
 
   </template>
 
@@ -29,6 +36,7 @@
       dataToSaveString: undefined,
       serviceSaveVerb: undefined,
 
+      dataToDeleteString: undefined,
 
       // --- Entity GET
       // --- ---------------------
@@ -85,10 +93,10 @@
         var opt = {
           version: this.data._version
         };
-        this.dataToSaveString = JSON.stringify(opt);
+        this.dataToDeleteString = JSON.stringify(opt);
         console.log("Request Delete of ", opt);
-        this.serviceSaveVerb = 'DELETE';
-        this.$.service_save.go();
+
+        this.$.service_delete.go();
       },
 
       // --- Get Event
@@ -146,7 +154,38 @@
           status: status,
           statusText: statusText
         });
+      },
+
+      // --- Delete Event
+      // --- ---------------------
+
+      handleDeleteResponse: function (event, detail, target)  {
+        var status = detail.xhr.status;
+        var statusText = detail.xhr.statusText;
+        console.log("Delete response", status, ":",  detail.response);
+        // Fire Event
+        this.fire("delete-response", {
+          response:  detail.response,
+          status: status,
+          statusText: statusText
+        });
+      },
+
+      handleDeleteError: function (event, detail, target) {
+        // BUG ? detail.response as Text with status:JsonObj ? ==> Read from xhr
+        console.log("Bug handleSaveError detail.response (Not JSON) : ", detail.response);
+        var resp = JSON.parse(detail.xhr.response);
+        var status = detail.xhr.status;
+        var statusText = detail.xhr.statusText;
+        // Fire Event
+        this.fire("delete-error", {
+          response: resp,
+          status: status,
+          statusText: statusText
+        });
       }
+
+
       // --- Others
       // --- ---------------------
 
