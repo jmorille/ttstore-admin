@@ -3,19 +3,20 @@
 <link rel="import" href="tt-crud-utils.html">
 
 
-<polymer-element name="tt-crud-validation" hidden attributes="target">
+<polymer-element name="tt-crud-validator" hidden attributes="target">
     <template>
 
     </template>
 
     <script>
-        Polymer('tt-crud-validation', Polymer.mixin({
+        Polymer('tt-crud-validator', Polymer.mixin({
           validateAll: function (errorCallback) {
             var childNodes = this.getFornInputField(this.target.getDistributedNodes());
             console.log("checkValidity Nodes of ", childNodes);
 
             var errorNodes = Array.prototype.filter.call(childNodes, function (childNode) {
-              console.log("checkValidity childNode of ", childNode.model);
+              Array.prototype.forEach.call(bindingPath, function (node, index) {
+              });
               if (typeof childNode['checkValidity'] === 'function') {
                 return !childNode['checkValidity']();
               } else if (typeof childNode['validate'] === 'function') {
@@ -23,7 +24,7 @@
               }
               return false;
             });
-            console.log("checkValidity Errors Nodes : ", errorNodes);
+            //console.log("checkValidity Errors Nodes : ", errorNodes);
             // Error Callback
             if (errorCallback) {
               errorCallback(errorNodes);
@@ -34,6 +35,6 @@
 
 
 
-        }, crudUtilsMixin ));
+        }, crudNodeWalkerMixin ));
     </script>
 </polymer-element>

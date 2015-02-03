@@ -12,7 +12,8 @@
 
 <link rel="import" href="tt-crud-server.html">
 
-<link rel="import" href="tt-crud-validation.html">
+<link rel="import" href="tt-crud-validator.html">
+<link rel="import" href="tt-crud-validation-config.html">
 <link rel="import" href="tt-crud-conflictresolution.html">
 <link rel="import" href="tt-crud-menu.html">
 
@@ -51,7 +52,8 @@
 
     </tt-crud-menu>
 
-    <tt-crud-validation id="validator" target="{{$.content}}"></tt-crud-validation>
+    <tt-crud-validator id="validator" target="{{$.content}}"></tt-crud-validator>
+    <tt-crud-validation-config id="validator" target="{{$.content}}"></tt-crud-validation-config>
 
 
     <section vertical layout>
@@ -67,10 +69,10 @@
     </paper-toast>
 
 
-    <tt-crud-delete-confirm  id="dialog_delete_confirm" on-delete-confirm="{{entityDelete}}">
-    </tt-crud-delete-confirm>
-    <!-- tt-crud-delete-undo  id="dialog_delete_confirm" on-delete-confirm="{{entityDelete}}">
-    </tt-crud-delete-undo -->
+    <!--<tt-crud-delete-confirm  id="dialog_delete_confirm" on-delete-confirm="{{entityDelete}}">-->
+    <!--</tt-crud-delete-confirm>-->
+    <tt-crud-delete-undo  id="dialog_delete_confirm" on-delete-confirm="{{entityDelete}}">
+    </tt-crud-delete-undo>
 
 
     <div on-tap="{{test}}">Bouton Test</div>
@@ -453,14 +455,15 @@
         console.log("---------- addInputWatcher", childNodes);
         this.focusListener = this.focusListener || this.autoSaveInputFieldFocus.bind(this);
         this.blurListener = this.blurAction || this.autoSaveInputFieldBlur.bind(this);
-        childNodes.forEach(function (elt) {
-          var focusable = elt;
+        childNodes.forEach(function (childNode) {
+          var focusable = childNode;
 //          if ('PAPER-INPUT-DECORATOR' === elt.tagName) {
           // focusable = elt.input;
 //          }
           // Delegate focus/blur events
           Polymer.addEventListener(focusable, 'input', that.focusListener, true);
           Polymer.addEventListener(focusable, 'blur', that.blurListener, true);
+
 //          console.log('---- addEventListener', focusable);
         });
       },
@@ -471,7 +474,7 @@
         childNodes.forEach(function (childNode) {
           Polymer.removeEventListener(childNode, 'blur', that.blurListener, true);
           Polymer.removeEventListener(childNode, 'input', that.focusListener, true);
-//          console.log("---------- removeInputWatcher", childNode);
+
         });
         this.focusListener = undefined;
         this.blurListener = undefined;
@@ -510,7 +513,7 @@
       // --- ---------------------
 
 
-    }, crudUtilsMixin ));
+    }, crudUtilsMixin, crudNodeWalkerMixin ));
 
   </script>
 </polymer-element>

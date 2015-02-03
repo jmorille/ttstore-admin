@@ -37,7 +37,10 @@
         return a[index] !== b[index];
       });
       return diff.length() < 1;
-    },
+    }
+  }
+
+  var crudNodeWalkerMixin = {
     getFornInputField: function (childNodes) {
       if (!childNodes) {
         return undefined;
