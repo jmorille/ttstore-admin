@@ -66,12 +66,10 @@
         switch (rule) {
           case 'required':
             node.setAttribute('required', true);
-            break;
-          case 'required':
-            node.setAttribute('required', true);
+            console.log('Apply Validation Rule ', rule,   'on', node);
             break;
           default :
-            console.log("No validation rule for ", rule);
+            console.log("No validation rule for ", rule,   'on', node);
         }
       }
 
