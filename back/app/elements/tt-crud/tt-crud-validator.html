@@ -16,8 +16,6 @@
             console.log("checkValidity Nodes of ", childNodes);
 
             var errorNodes = Array.prototype.filter.call(childNodes, function (childNode) {
-              Array.prototype.forEach.call(bindingPath, function (node, index) {
-              });
               if (typeof childNode['checkValidity'] === 'function') {
                 return !childNode['checkValidity']();
               } else if (typeof childNode['validate'] === 'function') {

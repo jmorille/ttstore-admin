@@ -15,7 +15,7 @@
 
 <link rel="import" href="../tt-ajax/tt-ajax-edit.html">
 
-<link rel="import" href="../tt-crud/tt-crud-edit.html">
+<link rel="import" href="../tt-crud/tt-crud.html">
 <link rel="import" href="../tt-es/tt-es-crud.html">
 
 
@@ -30,7 +30,7 @@
 
     <div>Entity Id : {{entityid}}</div>
 
-    <tt-crud-edit data="{{data}}" entityid="{{entityid}}" index="users" autosave >
+    <tt-crud data="{{data}}" entityid="{{entityid}}" index="users" autosave >
       <section>
         <paper-input-decorator floatingLabel label="First name" autoValidate>
           <input is="core-input" value="{{ data._source.firstname}}" required>
@@ -61,7 +61,7 @@
       </div>
 
 
-    </tt-crud-edit>
+    </tt-crud>
 
 
   </template>

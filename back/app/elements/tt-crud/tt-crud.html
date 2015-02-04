@@ -1,3 +1,65 @@
+<!--
+`tt-crud` provides lightweight way to implement all CRUD (Create, Retrieve, Update, Delete) Operations on an REST Api with all the expected services :
+ - Validation
+ - Conflict Resolution on 409.
+ - Auto Save Feature
+
+ Example:
+
+  <tt-crud data="{{data}}" entityid="{{entityid}}" index="users" autosave >
+      <section>
+        <paper-input-decorator floatingLabel label="First name" autoValidate>
+          <input is="core-input" value="{{ data._source.firstname}}" required>
+        </paper-input-decorator>
+      </section>
+  </tt-crud>
+
+Server Data Format
+------------------
+
+Example of Get Entity Server Format:
+
+    { _id: "AAApkZAAOAAAQYEAAJ",
+      _index: "users",
+      _source: {
+        firstname: "NICOLE",
+        lastname: "ABBO"
+      },
+      _type: "user",
+      _version: 1,
+      found: true
+    }
+
+
+Validation
+----------
+
+Conflict Resolution
+-------------------
+When Save Error 409 is raised from server
+
+
+AutoSave
+---------
+Attribute available:
+ - autosave
+ - autocreate
+ - autoupdate
+
+-->
+<!--
+Fired when the `tt-crud`'s `cancel button` is clicked.
+
+@event cancel
+-->
+<!--
+Fired when the `tt-crud`'s `get` the entity from server.
+
+@event entity-get
+-->
+
+
+
 <link rel="import" href="../../components/polymer/polymer.html">
 
 <link rel="import" href="../../components/core-style/core-style.html">
@@ -32,7 +94,7 @@
 
 </core-style>
 
-<polymer-element name="tt-crud-edit" attributes="entityid data index  autosave autocreate autoupdate">
+<polymer-element name="tt-crud" attributes="entityid data index  autosave autocreate autoupdate">
   <template>
     <tt-crud-server id="server" role="database"
                     on-get-response="{{handleGetResponse}}" on-get-error="{{handleGetError}}"
@@ -82,7 +144,7 @@
 
   <script>
     'use strict';
-    Polymer('tt-crud-edit', Polymer.mixin({
+    Polymer('tt-crud', Polymer.mixin({
 //      publish: {
       autosave: false,
       autocreate: false,
