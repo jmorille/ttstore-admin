@@ -5,6 +5,8 @@ var express = require("express"),
     methodOverride = require('method-override'),
     port = parseInt(process.env.PORT, 10) || 8000;
 
+// Security
+app.disable('x-powered-by');
 
 // https://github.com/senchalabs/connect#middleware
 var compression = require('compression');

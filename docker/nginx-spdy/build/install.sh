@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NGINX_VERSION=1.7.5
+NGINX_VERSION=1.7.9
 
 function installTools {
   echo "### Install  Base Tools"
