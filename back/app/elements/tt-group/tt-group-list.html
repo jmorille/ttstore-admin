@@ -15,13 +15,15 @@ l<!-- -->
 
 <link rel="import" href="../../components/core-a11y-keys/core-a11y-keys.html">
 
+<link rel="import" href="../../components/tt-paginator/tt-paginator.html">
+
+
 
 <link rel="import" href="../tt-es/tt-es-search.html">
 <link rel="import" href="../tt-ajax/tt-ajax-search.html">
 
 
-<link rel="import" href="../tt-table/tt-table.html">
-<link rel="import" href="../tt-table/tt-pagination.html">
+<link rel="import" href="../tt-table/tt-table.html"> 
 <link rel="import" href="../tt-table/tt-column.html">
 
 
@@ -104,11 +106,11 @@ l<!-- -->
             </tt-table>
 
 
-            <tt-pagination range="{{rangesize}}"
+            <tt-paginator range="{{rangesize}}"
                            from="{{searchOpt.from}}" size="{{searchOpt.size}}"
                            total="{{data.hits.total}}"
                            on-change="{{pagingHandler}}">
-            </tt-pagination>
+            </tt-paginator>
 
         </div>
     </template>

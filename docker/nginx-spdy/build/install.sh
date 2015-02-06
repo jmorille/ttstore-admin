@@ -1,6 +1,8 @@
 #!/bin/bash
 
 NGINX_VERSION=1.7.9
+NGINX_BUILD_DIR=/tmp/nginx-${NGINX_VERSION}
+
 
 function installTools {
   echo "### Install  Base Tools"
@@ -9,7 +11,15 @@ function installTools {
   apt-get -y install curl wget build-essential zlib1g-dev libpcre3 libpcre3-dev openssl libssl-dev libperl-dev zip ca-certificates
 
 }
-
+function secureNgnix {
+  echo "### Secure Ngnix version : $NGINX_VERSION"
+  echo "### ########################################################"
+  #sed -i'' 's/static char ngx_http_server_string[] = "Server: nginx" CRLF;/static char ngx_http_server_string[] = "Server: Ninja Web Server" CRLF;/' src/http/ngx_http_header_filter_module.c
+ #sed -i'' 's/static char ngx_http_server_full_string[] = "Server: " NGINX_VER CRLF;/static char ngx_http_server_full_string[] = "Server: Ninja Web Server" CRLF;/' src/http/ngx_http_header_filter_module.c
+  echo "### ########################################################"
+  grep 'static char ngx_http_server'  src/http/ngx_http_header_filter_module.c
+  echo "### ########################################################"
+}
 
 function setupNgnix {
   echo "### Install Ngnix version : $NGINX_VERSION"
@@ -19,6 +29,7 @@ function setupNgnix {
   mkdir -p /data && mkdir -p /var/lib
   cd /tmp && wget -q -O - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf -
   cd /tmp/nginx-${NGINX_VERSION}
+  secureNgnix
   ./configure --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx \
           --http-client-body-temp-path=/var/lib/nginx/body_temp \
           --http-proxy-temp-path=/var/lib/nginx/proxy_temp \
@@ -103,7 +114,7 @@ function setup {
   setupNgnix || exit 1
 
   # Install Jdk
-  createTlsCertificate || exit 1
+  # createTlsCertificate || exit 1
 
   # Clean
   cleanBuildInstall || exit 1
