@@ -17,3 +17,8 @@ docker run -ti -p 80:80 \
 
 == Source
 https://github.com/dod91/docker_nginx_spdy
+
+
+
+== Security Guide
+http://www.nginxtips.com/nginx-security-guide/
