@@ -13,10 +13,12 @@ var vulcanize = require('gulp-vulcanize');
 
 // Config
 var path = {
+  app: 'app',
   build: 'build',
   dist: 'dist',
   sources: ['app/elements/**/*.html', 'app/scripts/{,*/}*.js'],
-  sass: ['app/styles/{,*/}*.{scss,sass}', 'app/elements/{,*/}*.{scss,sass}' ]
+  sass: ['**/*.{scss,sass}', '!bower_components/**' ],
+  sass_not: ['**', '!**/*.{scss,sass}' ]
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,10 +48,12 @@ gulp.task('lint', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 gulp.task('sass', function () {
-  gulp.src(path.sass)
+  gulp.src(path.sass, {cwd: path.app })
     .pipe(sass())
     .pipe(gulp.dest(path.build ));
 
+  gulp.src(path.sass_not, {cwd: path.app})
+    .pipe(gulp.dest(path.build ) );
 
 });
 
@@ -57,9 +61,9 @@ gulp.task('sass', function () {
 // Vulcanize TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('vulcanize', function () {
-  var DEST_DIR = path.build;
+  var DEST_DIR = path.dist;
 
-  return gulp.src('app/index.html')
+  return gulp.src(  'index.html', {cwd: path.build })
     .pipe(vulcanize({
       dest: DEST_DIR,
       strip: false,
