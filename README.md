@@ -10,6 +10,27 @@ We've put together a [guide for ttstore-admin](http://www.polymer-project.org/do
 == Vulcanize
 Issue : https://github.com/Polymer/polymer/issues/706
 
+# Installation
+
+## Requierment
+* Docker : https://www.docker.com/
+* Fig : http://www.fig.sh/
+* Node JS http://nodejs.org/
+
+## Installation
+* npm install -g bower gulp grunt-cli
+* cd server
+** npm install
+* cd ../back/
+** npm install
+** bower install
+* cd ../docker
+** ./build.sh
+
+## Demarage server
+
+* cd docker
+** fig up
 
 ## Run Local Server
 python -m SimpleHTTPServer
