@@ -27,8 +27,7 @@ Issue : https://github.com/Polymer/polymer/issues/706
 * cd ../docker
 ** ./build.sh
 
-## Demarage server
-
+## Demarrage server
 * cd docker
 ** fig up
 
