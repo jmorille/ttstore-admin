@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Module dependencies.
@@ -20,7 +20,7 @@ function registerIndex(payload) {
 
 
 function users(app, client) {
-    console.log("Module model users ");
+    console.log('Module model users ');
     if (!app) {
         throw new TypeError('app required');
     }

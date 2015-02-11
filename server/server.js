@@ -1,4 +1,4 @@
-var express = require("express"),
+var express = require('express'),
     app = express(),
     bodyParser = require('body-parser'),
     errorHandler = require('errorhandler'),
@@ -17,7 +17,7 @@ var fs = require('fs');
 // logger
 // create a write stream (in append mode)
 var logger = require('morgan');
-var accessLogStream = fs.createWriteStream('/log/access.log', {flags: 'a'})
+var accessLogStream = fs.createWriteStream('/log/access.log', {flags: 'a'});
 app.use(logger('dev', {stream: accessLogStream})); // combined
 
 
@@ -63,16 +63,16 @@ app.route('/esx/*')
         var start = new Date();
 
         // https://gist.github.com/cmawhorter/a527a2350d5982559bb6
-        console.log('******', new Date(Date.now()).toUTCString(), "-", request.method, "-", request.url);
-        console.log("request content-type", request.headers['content-type']);
+        console.log('******', new Date(Date.now()).toUTCString(), '-', request.method, '-', request.url);
+        console.log('request content-type', request.headers['content-type']);
         // request.pause(); // Pause the request
         // Construct Redirect
         var redirectPath = request.url.slice(3);
         //console.log('****** redirect path', redirectPath);
 
-        //var options = url.parse("http://192.168.1.100:9200" + redirectPath);
-        //var options = url.parse("http://localhost:9200" + redirectPath);
-        var options = url.parse("http://" + process.env.ES_1_PORT_9200_TCP_ADDR + ":9200" + redirectPath);
+        //var options = url.parse('http://192.168.1.100:9200' + redirectPath);
+        //var options = url.parse('http://localhost:9200' + redirectPath);
+        var options = url.parse('http://' + process.env.ES_1_PORT_9200_TCP_ADDR + ':9200' + redirectPath);
 
         options.headers = request.headers;
         options.method = request.method;
@@ -85,18 +85,18 @@ app.route('/esx/*')
             response.writeHead(res.statusCode, res.headers);
             res.pipe(response, {end: true })
                 .on('error', function (e) {
-                    console.error("Error in pipe redirect", e);
+                    console.error('Error in pipe redirect', e);
                 });//tell 'response' end=true
-            console.log('    *', new Date(Date.now()).toUTCString(), "-", "statusCode", res.statusCode);
+            console.log('    *', new Date(Date.now()).toUTCString(), '-', 'statusCode', res.statusCode);
         });
         esConnector.on('error', function (e) {
-            console.error("Error in request redirect", e);
+            console.error('Error in request redirect', e);
         });
         request.pipe(esConnector, {end: true});
 
 
 //        request.on('data', function (chunk) {
-//            console.log("Received body data:");
+//            console.log('Received body data:');
 //            console.log(chunk);
         //           connector.write(chunk);
         //       });
@@ -119,6 +119,6 @@ app.use(errorHandler({
 
 app.listen(port);
 
-console.log("Simple static server listening at http://localhost:" + port);
+console.log('Simple static server listening at http://localhost:' + port);
 
-console.log("Elasticsearch server : " + process.env.ES_1_PORT_9200_TCP_ADDR);
+console.log('Elasticsearch server : ' + process.env.ES_1_PORT_9200_TCP_ADDR);

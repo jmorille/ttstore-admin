@@ -1,9 +1,31 @@
 var gulp = require('gulp');
 var path = require('path');
 
-var exec = require('gulp-exec');
+var jshint = require('gulp-jshint');
+var stylish = require('jshint-stylish');
 
 var vulcanize = require('gulp-vulcanize');
+
+var exec = require('gulp-exec');
+
+
+var paths = {
+  source
+  scripts: [ 'app/scripts/**.js' ],
+  images: 'app/**/*',
+  components: 'app/components'
+
+}
+
+gulp.task('lint', function(){
+  return gulp.src('files/*.js')
+    .pipe(cache('linting'))
+    .pipe(jshint())
+    .pipe(jshint.reporter())
+});
+
+
+
 
 gulp.task('default', ['vulcanize', 'statics']);
 

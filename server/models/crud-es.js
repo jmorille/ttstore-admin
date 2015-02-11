@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 
 function esapi(client, registerIndex) {
@@ -10,7 +10,7 @@ function esapi(client, registerIndex) {
   }
   var registerIndexPrimary = function (payload, refresh) {
     payload = registerIndex(payload);
-    payload.preference = "_primary";
+    payload.preference = '_primary';
     if (refresh) {
       payload.refresh = true;
     }
@@ -20,13 +20,13 @@ function esapi(client, registerIndex) {
   return {
     search: function (request, response) {
       var payload = registerIndex(request.body);
-      console.log("request payload ", JSON.stringify(payload, null, 4));
+      console.log('request payload ', JSON.stringify(payload, null, 4));
 
       // Create Elasticsearch requests
       client.search(payload, function (err, resp, status) {
 
         if (err) {
-          console.error("Elasticsearch Error", err, resp);
+          console.error('Elasticsearch Error', err, resp);
           if (status) {
             response.status(status);
           } else {
@@ -47,7 +47,7 @@ function esapi(client, registerIndex) {
       });
       client.get(opt, function (err, resp, status) {
         if (err) {
-          console.error("Elasticsearch Error", err);
+          console.error('Elasticsearch Error', err);
         }
         //  res.statusCode = 404;
         response.status(status);
@@ -63,19 +63,19 @@ function esapi(client, registerIndex) {
       // Validation
       if (!opt.version) {
         response.status(428);
-        response.send({error: "Document Version is required for update", status: 428});
+        response.send({error: 'Document Version is required for update', status: 428});
         return;
       }
       // Process Undate
-      console.info("Elasticsearch Request Update ", opt);
+      console.info('Elasticsearch Request Update ', opt);
       // TODO Check field version, if not throw exception (security rules for force concurency pb)
       client.update(opt, function (err, resp, status) {
         if (err) {
-          console.error("-------------------------------------");
-          console.error("Elasticsearch Error", err, " for option ", opt);
-          console.error("-------");
-          console.error("Elasticsearch Response", resp);
-          console.error("-------------------------------------");
+          console.error('-------------------------------------');
+          console.error('Elasticsearch Error', err, ' for option ', opt);
+          console.error('-------');
+          console.error('Elasticsearch Response', resp);
+          console.error('-------------------------------------');
         }
         response.status(status);
         response.send(resp);
@@ -85,7 +85,7 @@ function esapi(client, registerIndex) {
       var opt = registerIndexPrimary(request.body, true);
       client.create(opt, function (err, resp, status) {
         if (err) {
-          console.error("Elasticsearch Error", err);
+          console.error('Elasticsearch Error', err);
         }
         response.status(status);
         response.send(resp);
@@ -96,11 +96,11 @@ function esapi(client, registerIndex) {
       var opt = registerIndexPrimary(request.body, true);
       opt.id = entityId;
       // Process Delete
-      console.log("Asked delete for ", opt );
+      console.log('Asked delete for ', opt );
       client.delete(opt, function (err, resp, status) {
-        console.log("Client delete response", err , resp, status);
+        console.log('Client delete response', err , resp, status);
         if (err) {
-          console.error("Elasticsearch Error", err);
+          console.error('Elasticsearch Error', err);
           if (!status) {
             response.status(400);
           } else {

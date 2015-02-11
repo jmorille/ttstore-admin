@@ -11,7 +11,7 @@ exports.ping = function() {
 
 
 function oauth2(app, client) {
-  console.log("Module model users ");
+  console.log('Module model users ');
   if (!app) {
     throw new TypeError('app required');
   }
@@ -22,7 +22,7 @@ function oauth2(app, client) {
 
   app.get('/s/oauth2callback', function(req, resp) {
     var code = req.query.code;
-    console.log("Google oauth2callback : " , code);
+    console.log('Google oauth2callback : ' , code);
 
     var locals = {
       title: 'My sample app',
@@ -33,7 +33,7 @@ function oauth2(app, client) {
 
   app.post('/s/oauth2callback', function(req, resp) {
     var code = req.body.code;
-    console.log("POST Google oauth2callback : " , code);
+    console.log('POST Google oauth2callback : ' , code);
 
   });
 }
