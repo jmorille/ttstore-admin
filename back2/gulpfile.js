@@ -1,5 +1,5 @@
 'use strict';
-var gulp            = require('gulp');
+var gulp = require('gulp');
 
 // Lint
 var jshint = require('gulp-jshint');
@@ -17,14 +17,14 @@ var path = {
   build: 'build',
   dist: 'dist',
   sources: ['app/elements/**/*.html', 'app/scripts/{,*/}*.js'],
-  sass: ['**/*.{scss,sass}', '!bower_components/**' ],
-  sass_not: ['**', '!**/*.{scss,sass}' ]
+  sass: ['**/*.{scss,sass}', '!bower_components/**'],
+  sass_not: ['**', '!**/*.{scss,sass}']
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // DEFAULT FOR 'gulp' COMMAND
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('default', ['lint'] );
+gulp.task('default', ['lint']);
 
 gulp.task('clean', function () {
   return gulp.src([path.build, path.dist], {read: false})
@@ -48,12 +48,12 @@ gulp.task('lint', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 gulp.task('sass', function () {
-  gulp.src(path.sass, {cwd: path.app })
+  gulp.src(path.sass, {cwd: path.app})
     .pipe(sass())
-    .pipe(gulp.dest(path.build ));
+    .pipe(gulp.dest(path.build));
 
   gulp.src(path.sass_not, {cwd: path.app})
-    .pipe(gulp.dest(path.build ) );
+    .pipe(gulp.dest(path.build));
 
 });
 
@@ -63,7 +63,7 @@ gulp.task('sass', function () {
 gulp.task('vulcanize', function () {
   var DEST_DIR = path.dist;
 
-  return gulp.src(  'index.html', {cwd: path.build })
+  return gulp.src('index.html', {cwd: path.build})
     .pipe(vulcanize({
       dest: DEST_DIR,
       strip: false,
@@ -77,9 +77,9 @@ gulp.task('vulcanize', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Chrome App TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('cca-create', function(cb) {
-  gulp
-    .src('.').pipe(exec('cca create spa-mobile --link-to=spa-dist/manifest.json', function (err, stdout, stderr) {
+gulp.task('cca-create', function (cb) {
+  gulp.src('.')
+    .pipe(exec('cca create spa-mobile --link-to=spa-dist/manifest.json', function (err, stdout, stderr) {
       console.log(stdout);
       console.log(stderr);
       cb(err);

@@ -8,6 +8,23 @@ var express = require('express'),
 // Security
 app.disable('x-powered-by');
 
+// https://www.youtube.com/watch?v=aMblC9C68sE&index=16&list=PL37ZVnwpeshE_Um4wU9fSn6xB5VB_61R-&spfreload=10
+// https://github.com/strongloop/express/tree/master/examples
+// security : https://www.npmjs.com/package/helmet
+var helmet = require('helmet');
+app.use(helmet.crossdomain());
+app.use(helmet.contentSecurityPolicy({
+  defaultSrc: ["'self'"],
+  reportUri: '/report-violation',
+  reportOnly: false // set to true if you only want to report errors
+}));
+app.use(helmet.frameguard('sameorigin')); // deny
+app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }));
+app.use(helmet.hsts({ maxAge: 31536000 }));
+app.use(helmet.xssFilter({ setOnOldIE: true }));
+//app.disable('x-powered-by');
+
+
 // https://github.com/senchalabs/connect#middleware
 var compression = require('compression');
 var serveStatic = require('serve-static');
