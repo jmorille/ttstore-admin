@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Node Js Http Server",
   "private": true,
-  "main": "proxy.js",
+  "main": "server.js",
   "scripts": {
     "start": "node proxy.js"
   },
