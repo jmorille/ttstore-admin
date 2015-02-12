@@ -76,7 +76,7 @@ gulp.task('vulcanize', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Watch TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('watch', function(){
+gulp.task('watch', function () {
   gulp.watch(path.sources, ['sass', 'vulcanize']);
 });
 
