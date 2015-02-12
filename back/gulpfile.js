@@ -5,7 +5,10 @@ var exec = require('gulp-exec');
 
 var vulcanize = require('gulp-vulcanize');
 
+var  watch = require('gulp-watch');
+
 var paths = {
+
   scripts: [ 'app/scripts/**.js' ],
   images: 'app/**/*',
   components: 'app/components'
@@ -36,6 +39,7 @@ gulp.task('vulcanize', function () {
     }))
     .pipe(gulp.dest(DEST_DIR));
 });
+
 
 
 // Copy all static files.

@@ -73,6 +73,14 @@ gulp.task('vulcanize', function () {
     .pipe(gulp.dest(DEST_DIR));
 });
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Watch TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gulp.task('watch', function(){
+  gulp.watch(path.sources, ['sass', 'vulcanize']);
+});
+
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Chrome App TASKS
