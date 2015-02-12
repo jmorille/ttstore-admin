@@ -9,8 +9,8 @@ function installTools {
   echo "### ########################################################"
   apt-get update
   apt-get -y install curl wget build-essential zlib1g-dev libpcre3 libpcre3-dev openssl libssl-dev libperl-dev zip ca-certificates
-
 }
+
 function secureNgnix {
   echo "### Secure Ngnix version : $NGINX_VERSION"
   echo "### ########################################################"
@@ -29,7 +29,7 @@ function setupNgnix {
   mkdir -p /data && mkdir -p /var/lib
   cd /tmp && wget -q -O - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf -
   cd /tmp/nginx-${NGINX_VERSION}
-  secureNgnix
+  # secureNgnix
   ./configure --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx \
 	  --http-client-body-temp-path=/var/lib/nginx/body_temp \
       --http-proxy-temp-path=/var/lib/nginx/proxy_temp \
@@ -142,14 +142,20 @@ case "$1" in
   tlscertif)
     createTlsCertificate $2 || exit 1
     ;;
-  ngnix)
+  installTools)
+    installTools || exit 1
+    ;;
+  ngnixInstall)
     setupNgnix || exit 1
+    ;;
+  ngnixConfig)
+    configureNgnix || exit 1
     ;;
   clean)
     cleanBuildInstall
     ;;
   *)
-    echo "Usage: $0 setup|tlscertif|ngnix|clean" >&2
+    echo "Usage: $0 setup|tlscertif|ngnixInstall|configureNgnix|clean" >&2
     exit 1
     ;;
 esac

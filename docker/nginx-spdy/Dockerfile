@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Config proxy env
 # #######################
-ENV http_proxy http://webcache.groupe.generali.fr:3128
+#ENV http_proxy http://webcache.groupe.generali.fr:3128
 ENV https_proxy $http_proxy
 ENV no_proxy *.groupe.generali.fr
 
@@ -21,12 +21,14 @@ ENV HTTPS_PROXY $http_proxy
 ENV NO_PROXY $no_proxy
 
 
+# #######################
 # Install  NGINX
 # #######################
 ENV NGINX_VERSION 1.7.9
 
 
 # Install dependencies
+# #######################
 RUN apt-get update -qq
 RUN apt-get install -yqq build-essential zlib1g-dev libpcre3 libpcre3-dev openssl libssl-dev libperl-dev wget zip ca-certificates
 
@@ -37,10 +39,22 @@ RUN apt-get install -yqq build-essential zlib1g-dev libpcre3 libpcre3-dev openss
 # RUN cd /tmp/ngx_pagespeed-1.8.31.3-beta/ && wget -q -O - https://dl.google.com/dl/page-speed/psol/1.8.31.3.tar.gz | tar zxf -
 # In build --add-module=/tmp/ngx_pagespeed-1.8.31.3-beta
 
+
 # Download and build nginx
+# #######################
 # Modules :  http://wiki.nginx.org/Modules
 RUN mkdir -p /data && mkdir -p /var/lib
 RUN cd /tmp && wget -q -O - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf -
+
+# Secure Ngnix version
+# #######################
+RUN sed -i'' 's/static char ngx_http_server_string\[\] = "Server: nginx" CRLF;/static char ngx_http_server_string\[\] = "Server: Microsoft-IIS\/7\.5" CRLF;/' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c
+RUN  sed -i'' 's/static char ngx_http_server_full_string\[\] = "Server: " NGINX_VER CRLF;/static char ngx_http_server_full_string\[\] = "Server: Microsoft-IIS\/7\.5" CRLF;/' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c
+RUN  grep 'static char ngx_http_server'  /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c
+
+
+# Compile Ngnix
+# #######################
 RUN cd /tmp/nginx-${NGINX_VERSION} \
 	&& ./configure --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx \
 	  --http-client-body-temp-path=/var/lib/nginx/body_temp \
@@ -61,6 +75,7 @@ RUN cd /tmp/nginx-${NGINX_VERSION} \
 	&& make install
 
 # Cleanup
+# #######################
 #RUN rm -Rf /tmp/ngx_pagespeed-1.8.31.3-beta
 RUN rm -Rf /tmp/nginx-${NGINX_VERSION}
 
