@@ -24,7 +24,7 @@ ENV NO_PROXY $no_proxy
 # #######################
 # Install  NGINX
 # #######################
-ENV NGINX_VERSION 1.7.9
+ENV NGINX_VERSION 1.7.10
 
 
 # Install dependencies

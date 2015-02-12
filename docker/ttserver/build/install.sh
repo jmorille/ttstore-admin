@@ -26,7 +26,6 @@ function installNodeJs {
    # Version Download
    # ################
    mkdir -p $NODE_HOME
-   #curl -f -o /node-install.tar.gz http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-x64.tar.gz
    curl -f -o /node-install.tar.gz http://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-linux-x64.tar.gz
 
    tar -xzf /node-install.tar.gz -C  $NODE_HOME/..
@@ -60,7 +59,7 @@ function cleanBuildInstall {
 function setup {
   # Script Start
   # #######################
-  apt-get update 
+  apt-get update
   chmod +x /build/*.sh
 
   # Install Git
