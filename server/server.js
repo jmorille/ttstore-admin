@@ -19,7 +19,7 @@ app.use(helmet.contentSecurityPolicy({
   reportOnly: false // set to true if you only want to report errors
 }));
 app.use(helmet.frameguard('sameorigin')); // deny
-app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }));
+app.use(helmet.hidePoweredBy({ setTo: 'ASP.NET' }));
 app.use(helmet.hsts({ maxAge: 31536000 }));
 app.use(helmet.xssFilter({ setOnOldIE: true }));
 //app.disable('x-powered-by');

@@ -14,8 +14,8 @@ function installTools {
 function secureNgnix {
   echo "### Secure Ngnix version : $NGINX_VERSION"
   echo "### ########################################################"
-  #sed -i'' 's/static char ngx_http_server_string[] = "Server: nginx" CRLF;/static char ngx_http_server_string[] = "Server: Ninja Web Server" CRLF;/' src/http/ngx_http_header_filter_module.c
- #sed -i'' 's/static char ngx_http_server_full_string[] = "Server: " NGINX_VER CRLF;/static char ngx_http_server_full_string[] = "Server: Ninja Web Server" CRLF;/' src/http/ngx_http_header_filter_module.c
+  sed -i'' 's/static char ngx_http_server_string[] = "Server: nginx" CRLF;/static char ngx_http_server_string[] = "Server: Microsoft-IIS/7.5." CRLF;/' src/http/ngx_http_header_filter_module.c
+  sed -i'' 's/static char ngx_http_server_full_string[] = "Server: " NGINX_VER CRLF;/static char ngx_http_server_full_string[] = "Server: Microsoft-IIS/7.5." CRLF;/' src/http/ngx_http_header_filter_module.c
   echo "### ########################################################"
   grep 'static char ngx_http_server'  src/http/ngx_http_header_filter_module.c
   echo "### ########################################################"
@@ -31,24 +31,37 @@ function setupNgnix {
   cd /tmp/nginx-${NGINX_VERSION}
   secureNgnix
   ./configure --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx \
-          --http-client-body-temp-path=/var/lib/nginx/body_temp \
-          --http-proxy-temp-path=/var/lib/nginx/proxy_temp \
-          --http-fastcgi-temp-path=/var/lib/nginx/fastcgi_temp  \
-          --http-scgi-temp-path=/var/lib/nginx/scgi_temp  \
-          --http-uwsgi-temp-path=/var/lib/nginx/uwsgi_temp \
-          --user=www-data \
-          --group=www-data \
-          --with-http_ssl_module \
-          --with-http_stub_status_module \
-          --with-http_realip_module \
-          --with-http_spdy_module \
-          --with-http_gzip_static_module \
-          --with-pcre
+	  --http-client-body-temp-path=/var/lib/nginx/body_temp \
+      --http-proxy-temp-path=/var/lib/nginx/proxy_temp \
+      --http-fastcgi-temp-path=/var/lib/nginx/fastcgi_temp  \
+      --http-scgi-temp-path=/var/lib/nginx/scgi_temp  \
+      --http-uwsgi-temp-path=/var/lib/nginx/uwsgi_temp \
+      --user=www-data \
+      --group=www-data \
+      --with-http_ssl_module \
+      --with-http_stub_status_module \
+      --with-http_realip_module \
+      --with-http_spdy_module \
+      --with-http_gzip_static_module \
+      --with-http_gunzip_module \
+      --with-ipv6 \
+      --with-pcre
   make install
   # Cleanup
   rm -Rf /tmp/nginx-${NGINX_VERSION}
 }
 
+
+
+function configureNgnix {
+  # TLS Certificat
+  # #######################
+  cp -r /build/ssl /etc/nginx/ssl
+  # Configure nginx
+  # #######################
+  cp /build/nginx.conf /etc/nginx/conf/nginx.conf
+  cp /build/sites-enabled/* /etc/nginx/sites-enabled/*
+}
 
 
 function cleanBuildInstall {
@@ -57,6 +70,8 @@ function cleanBuildInstall {
    apt-get -y autoremove
    apt-get clean
    rm -rf /build
+   # Cleanup
+   rm -Rf /tmp/nginx-${NGINX_VERSION}
 }
 
 function createTlsCertificate {
@@ -113,8 +128,8 @@ function setup {
   # Install Ngnix
   setupNgnix || exit 1
 
-  # Install Jdk
   # createTlsCertificate || exit 1
+  configureNgnix || exit 1
 
   # Clean
   cleanBuildInstall || exit 1
