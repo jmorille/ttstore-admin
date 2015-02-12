@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Config proxy env
 # #######################
-#ENV http_proxy http://webcache.groupe.generali.fr:3128
+ENV http_proxy http://webcache.groupe.generali.fr:3128
 ENV https_proxy $http_proxy
 ENV no_proxy *.groupe.generali.fr
 
