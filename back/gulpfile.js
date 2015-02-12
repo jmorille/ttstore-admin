@@ -1,16 +1,11 @@
 var gulp = require('gulp');
 var path = require('path');
 
-var jshint = require('gulp-jshint');
-var stylish = require('jshint-stylish');
+var exec = require('gulp-exec');
 
 var vulcanize = require('gulp-vulcanize');
 
-var exec = require('gulp-exec');
-
-
 var paths = {
-  source
   scripts: [ 'app/scripts/**.js' ],
   images: 'app/**/*',
   components: 'app/components'

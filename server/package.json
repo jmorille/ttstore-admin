@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.0",
     "grunt-nsp-package": "0.0.5",
     "grunt-retire": "^0.3.8",
     "gulp": "^3.8.10",

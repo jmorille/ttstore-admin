@@ -1,15 +1,35 @@
+
+'use strict';
 module.exports = function (grunt) {
-  "use strict";
 
-  retire: {
-      node: ['node_module/'], /** Scan node project in directory module/. Should be ['.'] for normal projects **/
-        options: {
+  grunt.initConfig({
+    jshint: {
+      all: [
+        'Gruntfile.js',
+        'tasks/*.js'
+      ],
+      options: {
+        jshintrc: '.jshintrc'
       }
-  }
+    },
 
-  grunt.loadNpmTasks('grunt-nsp-package');
+    // Run the task to smoketest it
+    retire: {
+      node: ['server.js', 'models/**'],
+      options: {
+        verbose: true,
+        packageOnly: false
+      }
+    }
+  });
+
+  // Actually load this plugin's task(s).
   grunt.loadNpmTasks('grunt-retire');
+  grunt.loadNpmTasks('grunt-nsp-package');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
 
-  grunt.registerTask("default", 'validate-package');
-}
 
+  // By default, lint and retire.
+  grunt.registerTask('default', [ 'validate-package', 'retire', 'jshint']);
+
+};
