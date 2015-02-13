@@ -48,6 +48,7 @@ RUN cd /tmp && wget -q -O - http://nginx.org/download/nginx-${NGINX_VERSION}.tar
 
 # Secure Ngnix version
 # #######################
+# http://www.cyberciti.biz/tips/linux-unix-bsd-nginx-webserver-security.html
 RUN sed -i'' 's/static char ngx_http_server_string\[\] = "Server: nginx" CRLF;/static char ngx_http_server_string\[\] = "Server: Microsoft-IIS\/7\.5" CRLF;/' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c
 RUN  sed -i'' 's/static char ngx_http_server_full_string\[\] = "Server: " NGINX_VER CRLF;/static char ngx_http_server_full_string\[\] = "Server: Microsoft-IIS\/7\.5" CRLF;/' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c
 RUN  grep 'static char ngx_http_server' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c
@@ -74,6 +75,8 @@ RUN cd /tmp/nginx-${NGINX_VERSION} \
       --with-http_gunzip_module \
       --with-ipv6 \
       --with-pcre   \
+      --without-http_autoindex_module \
+      --without-http_ssi_module \
 	&& make install
 
 # Cleanup
