@@ -7,10 +7,12 @@ var stylish = require('jshint-stylish');
 
 // Cache
 var cache = require('gulp-cached'),
-  remember = require('gulp-remember');
+  remember = require('gulp-remember'),
+  newer = require('gulp-newer'),
+  changed = require('gulp-changed');
 
 // Build
-var clean = require('gulp-clean');
+var del = require('del');
 var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 //var prefix = require('gulp-autoprefixer');
@@ -24,10 +26,11 @@ var gutil = require('gulp-util'),
 var webserver = require('gulp-webserver');
 var opn = require('opn');
 
-// Mobile
-var exec = require('gulp-exec');
-var shell = require('gulp-shell');
+//var browserify = require('browserify');
 
+
+// Mobile
+var shell = require('gulp-shell');
 var debug = require('gulp-debug');
 
 // Config
@@ -49,21 +52,19 @@ var path = {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('default', ['lint']);
 
-gulp.task('clean', ['clean:css'], function () {
-  return gulp.src(['build', 'dist'], {read: false})
-    .pipe(clean()); // Delete dist and build to allow for nice, clean files!
+gulp.task('clean', ['clean:css'], function (cb) {
+  del(['build', 'dist'], cb); // Delete dist and build to allow for nice, clean files!
 });
 
-gulp.task('clean:css', function () {
-  return gulp.src(['app/**/*.css', '!app/bower_components/**/*.*'], {read: false}).pipe(clean());
+gulp.task('clean:css', function (cb) {
+  del(['app/**/*.css', '!app/bower_components/**/*.*'], cb);
 });
 
 
-gulp.task('build', function (callback) {
-  return runSequence('sass', 'vulcanize', callback);
+gulp.task('build', function (cb) {
+  return runSequence('sass', 'vulcanize', cb);
 });
 
-gulp.task('bb', ['sass', 'vulcanize']);
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Browsers TASKS
@@ -106,8 +107,10 @@ gulp.task('lint', function () {
 
 gulp.task('sass', function () {
   var DEST_DIR = path.app;
-  var SASS_OPTS = prod ? { outputStyle: 'compressed'} : {};
+  var SASS_OPTS = prod ? {outputStyle: 'compressed'} : {};
   return gulp.src(path.sass, {cwd: path.app})
+    //  .pipe(cache('sassing', {optimizeMemory: true}))
+    //  .pipe(changed(DEST_DIR, {extension: '.css'}))
     .pipe(sass(SASS_OPTS))
     // Pass the compiled sass through the prefixer with defined
     //.pipe(prefix(
@@ -125,6 +128,8 @@ gulp.task('sass', function () {
 gulp.task('vulcanize', function () {
   var DEST_DIR = path.build_web;
   return gulp.src('index.html', {cwd: path.app})
+//    .pipe(cache('vulcanizing', {optimizeMemory: true}))
+//    .pipe(changed(DEST_DIR))
     .pipe(vulcanize({
       dest: DEST_DIR,
       strip: prod,
@@ -145,7 +150,6 @@ gulp.task('watch', ['sass', 'vulcanize'], function (cb) {
 });
 
 
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  Chrome App TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -157,54 +161,34 @@ gulp.task('chromeapp:cp', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Chrome App Mobile TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-var consolePrinter = function (cb) {
-  return function (err, stdout, stderr) {
-    gutil.log(gutil.colors.cyan(stdout));
-    gutil.log(gutil.colors.red(stderr));
-    // console.log(stdout);
-    // console.log(stderr);
-    cb();
-  };
-};
 
+gulp.task('cca:check', function () {
+  return gulp.src('.', {read: false})
+    .pipe(shell(['cca checkenv']));
+});
 
 gulp.task('cca:create', function (cb) {
-  //var cca_action = ' --link-to=';
-  var cca_action = ' --copy-from=';
+  var cca_action = ' --link-to=';
+  //var cca_action = ' --copy-from=';
   gulp.src('.')
-    .pipe(exec('cca create ' + path.build_cca + cca_action + path.build_web + '/manifest.json', consolePrinter(cb) ));
+    .pipe(shell(['cca checkenv', 'cca create ' + path.build_cca + cca_action + path.build_web + '/manifest.json']));
 });
 
-gulp.task('cca:checkenv', function (cb) {
-  gulp.src(path.build_cca)
-    .pipe(exec('cca checkenv', consolePrinter(cb)));
-});
-
-gulp.task('cca:push', function (cb) {
-  gulp.src(path.build_cca, {cwd: path.build_cca})
-    .pipe(exec('cca push', consolePrinter(cb) ));
+gulp.task('cca:prepare', function () {
+  return gulp.src('*', {read: false, cwd: path.build_cca})
+    .pipe(shell(['cca prepare'], {cwd: path.build_cca}));
 });
 
 
-gulp.task('cca:build', function (cb) {
-  gulp.src( '*', {read: false, cwd: path.build_cca+'/'})
-    .pipe(debug({title: 'unicorn:'}))
-    .pipe(exec('cca build android', consolePrinter(cb)));
+
+gulp.task('cca:push', function () {
+  return gulp.src('*', {read: false, cwd: path.build_cca})
+    .pipe(shell(['cca push'], {cwd: path.build_cca}));
 });
 
-gulp.task('pwd', function (cb) {
-  gulp.src(path.build_cca, {cwd: path.build_cca})
-    .pipe(exec('pwd', function (err, stdout, stderr) {
-      gutil.log(stdout);
-      gutil.log(gutil.colors.red(stderr));
-      console.log('Current directory: ' + process.cwd());
-      // console.log(stdout);
-      // console.log(stderr);
-      //cb(err);
-    }));
+
+gulp.task('cca:build', function () {
+  return gulp.src('*', {read: false, cwd: path.build_cca})
+    .pipe(shell(['cca build ios'], {cwd: path.build_cca}));
 });
-gulp.task('shorthand', shell.task([
-  'pwd',
-  'ls ' + path.build_cca,
-  'pwd'
-], {cwd: path.build_cca}));
+
