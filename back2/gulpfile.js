@@ -184,8 +184,19 @@ gulp.task('cca:checkenv', function (cb) {
 });
 
 gulp.task('cca:push', function (cb) {
-  gulp.src( path.build_cca, {base: path.build_cca, cwd: path.build_cca} )
+  gulp.src( path.build_cca , {cwd: path.build_cca } )
     .pipe(exec('cca push', function (err, stdout, stderr) {
+      gutil.log(  stdout);
+      gutil.log(  gutil.colors.red(stderr));
+      // console.log(stdout);
+      // console.log(stderr);
+      cb(err);
+    }));
+});
+
+gulp.task('cca:build', function (cb) {
+  gulp.src( path.build_cca , {cwd: path.build_cca } )
+    .pipe(exec('cca build android', function (err, stdout, stderr) {
       gutil.log(  stdout);
       gutil.log(  gutil.colors.red(stderr));
       // console.log(stdout);
