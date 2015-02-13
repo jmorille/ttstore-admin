@@ -157,11 +157,13 @@ gulp.task('watch',  [ 'sass', 'vulcanize'], function () {
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Chrome App TASKS
+// Chrome App Mobile TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('cca:create', function (cb) {
+  var cca_action = ' --link-to=';
+  //var cca_action = ' --copy-from=';
   gulp.src('.')
-    .pipe(exec('cca create '+ path.build_cca + ' --link-to=' + path.build_web +  '/manifest.json', function (err, stdout, stderr) {
+    .pipe(exec('cca create '+ path.build_cca + cca_action + path.build_web +  '/manifest.json', function (err, stdout, stderr) {
       gutil.log(  gutil.colors.cyan(stdout));
       gutil.log(  gutil.colors.red(stderr));
      // console.log(stdout);
@@ -173,6 +175,17 @@ gulp.task('cca:create', function (cb) {
 gulp.task('cca:checkenv', function (cb) {
   gulp.src( path.build_cca)
     .pipe(exec('cca checkenv', function (err, stdout, stderr) {
+      gutil.log(  stdout);
+      gutil.log(  gutil.colors.red(stderr));
+      // console.log(stdout);
+      // console.log(stderr);
+      cb(err);
+    }));
+});
+
+gulp.task('cca:push', function (cb) {
+  gulp.src( path.build_cca, {base: path.build_cca, cwd: path.build_cca} )
+    .pipe(exec('cca push', function (err, stdout, stderr) {
       gutil.log(  stdout);
       gutil.log(  gutil.colors.red(stderr));
       // console.log(stdout);

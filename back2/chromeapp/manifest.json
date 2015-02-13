@@ -1,11 +1,10 @@
 {
   "manifest_version": 2,
-  "name": "Spa",
+  "name": "Back2",
   "short_name": "Spa",
   "description": "",
   "version": "0.0.1",
   "minimum_chrome_version": "38",
-  "android:versionName": "0.0.2",
   "icons": {
     "16": "assets/icon_16.png",
     "128": "assets/icon_128.png"
