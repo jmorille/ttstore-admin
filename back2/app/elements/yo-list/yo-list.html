@@ -2,10 +2,15 @@
 
 <polymer-element name="yo-list" attributes="">
   <template>
+    <style>
+      .yiyityle {
+        background-color: #0000ff; }
+
+    </style>
     <link rel="stylesheet" href="yo-list.css">
     <ul>
       <template id="greeting" repeat="{{ item in items }}">
-        <li>{{ item }} XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</li>
+        <li>{{ item }} XXXXXXXXXXXXXXXX</li>
       </template>
     </ul>
   </template>
@@ -25,7 +30,7 @@
         test: function() {
           // 'fuction' instead of 'function'
           if (typeof a === 'fuction') { // Invalid typeof value 'fuction' / ...
-            console.log('------------------- BBBBBBBBBBBBBBBBBB');
+            console.log('------------------- ');
           }
 
         }

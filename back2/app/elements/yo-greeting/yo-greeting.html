@@ -1,10 +1,16 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-field/core-field.html">
+
 
 <polymer-element name="yo-greeting" attributes="">
   <template>
     <link rel="stylesheet" href="yo-greeting.css">
     <h1>{{ greeting }}, {{ greeting }}!</h1>
     <span>Update text to change the greeting.</span>
+    <core-field>
+      <label>I'm a label!</label>
+      <input placeholder="I have a label" flex>
+    </core-field>
     <input type="text" value="{{ greeting }}">
   </template>
   <script>
