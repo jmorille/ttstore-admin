@@ -14,8 +14,9 @@ var cache = require('gulp-cached'),
 // Build
 var del = require('del');
 var runSequence = require('run-sequence');
+//var sourcemaps = require('gulp-sourcemaps');
 var sass = require('gulp-sass');
-//var prefix = require('gulp-autoprefixer');
+var autoprefixer = require('gulp-autoprefixer');
 var vulcanize = require('gulp-vulcanize');
 
 // Command line conf
@@ -33,10 +34,33 @@ var opn = require('opn');
 var shell = require('gulp-shell');
 var debug = require('gulp-debug');
 
+
+var notGlob = function (elt) {
+  if (!elt) {
+    return undefined;
+  }
+  if ('string' === typeof elt) {
+    if ('!' === elt.slice(0, 1)) {
+      return elt.slice(1);
+    } else {
+      return '!' + elt;
+    }
+  } else if (Array.isArray(elt)) {
+    return elt.reduce(function (acc, current) {
+      var notelt = notGlob(current);
+      if (notelt) {
+        acc.push(notelt);
+      }
+      return acc;
+    }, []);
+  }
+};
+
 // Config
 var path = {
   app: 'app',
   src_chromeapp: 'chromeapp',
+  build_generated: 'build/generated',
   build_web: 'build/web',
   build_chromeapp: 'build/chromeapp',
   build_cca: 'build/cca',
@@ -46,6 +70,12 @@ var path = {
   sass: ['**/*.{scss,sass}', '!bower_components/**'],
   sass_not: ['**', '!**/*.{scss,sass}']
 };
+
+var src = {
+  bower_components: 'bower_components{,/**}',
+  sass: '**/*.{scss,sass}'
+};
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // DEFAULT FOR 'gulp' COMMAND
@@ -57,7 +87,7 @@ gulp.task('clean', ['clean:css'], function (cb) {
 });
 
 gulp.task('clean:css', function (cb) {
-  del(['app/**/*.css', '!app/bower_components/**/*.*'], cb);
+  del(['app/**/*.css', '!app/bower_components'], cb);
 });
 
 
@@ -65,6 +95,50 @@ gulp.task('build', function (cb) {
   return runSequence('sass', 'vulcanize', cb);
 });
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Copy COMMAND to Generated
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+var config_cp = {
+  src_patch: ['**', notGlob(src.sass), notGlob(src.bower_components)]
+}
+
+gulp.task('cp', function (cb) {
+  var DEST_DIR = path.build_generated;
+  return gulp.src(config_cp.src_patch, {cwd: path.app, base: path.app})
+    .pipe(cache('cping', {optimizeMemory: true}))
+    .pipe(changed(DEST_DIR))
+    .pipe(debug({title: 'changed:'}))
+    .pipe(gulp.dest(DEST_DIR));
+});
+
+gulp.task('cp:watch', ['cp'], function (cb) {
+  gulp.watch(config_cp.src_patch, {cwd: path.app}, ['cp']);
+  cb();
+});
+
+
+gulp.task('sass', function () {
+  var DEST_DIR = path.build_generated;
+  var SASS_OPTS = prod ? {outputStyle: 'compressed'} : {};
+  return gulp.src(src.sass, {cwd: path.app, base: path.app})
+    .pipe(cache('sassing', {optimizeMemory: true}))
+    .pipe(changed(DEST_DIR, {extension: '.css'}))
+    .pipe(debug({title: 'changed:'}))
+    //   .pipe(sourcemaps.init())
+    .pipe(sass(SASS_OPTS))
+    // Pass the compiled sass through the prefixer with defined
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions'],
+      cascade: !prod
+    }))
+//    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(DEST_DIR));
+});
+
+gulp.task('sass:watch', ['sass'], function (cb) {
+  gulp.watch(src.sass, {cwd: path.app}, ['sass']);
+  cb();
+});
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Browsers TASKS
@@ -105,22 +179,6 @@ gulp.task('lint', function () {
 // Saas TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-gulp.task('sass', function () {
-  var DEST_DIR = path.app;
-  var SASS_OPTS = prod ? {outputStyle: 'compressed'} : {};
-  return gulp.src(path.sass, {cwd: path.app})
-    //  .pipe(cache('sassing', {optimizeMemory: true}))
-    //  .pipe(changed(DEST_DIR, {extension: '.css'}))
-    .pipe(sass(SASS_OPTS))
-    // Pass the compiled sass through the prefixer with defined
-    //.pipe(prefix(
-    //  'last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'
-    //))
-    .pipe(gulp.dest(DEST_DIR));
-  //gulp.src(path.sass_not, {cwd: path.app}).pipe(gulp.dest(DEST_DIR));
-
-
-});
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Vulcanize TASKS
@@ -178,7 +236,6 @@ gulp.task('cca:prepare', function () {
   return gulp.src('*', {read: false, cwd: path.build_cca})
     .pipe(shell(['cca prepare'], {cwd: path.build_cca}));
 });
-
 
 
 gulp.task('cca:push', function () {
