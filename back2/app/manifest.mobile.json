@@ -1,4 +1,5 @@
 {
-    "packageId": "eu.jmorille.back2",
-    "android:versionCode": 1
+  "packageId": "eu.jmorille.back2",
+  "android:versionCode": 1,
+  "CFBundleVersion": 1
 }
