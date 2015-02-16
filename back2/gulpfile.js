@@ -14,10 +14,13 @@ var cache = require('gulp-cached'),
 // Build
 var del = require('del');
 var runSequence = require('run-sequence');
-//var sourcemaps = require('gulp-sourcemaps');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 var vulcanize = require('gulp-vulcanize');
+
+// Debug
+var debug = require('gulp-debug');
+var sourcemaps = require('gulp-sourcemaps');
 
 // Command line conf
 var gutil = require('gulp-util'),
@@ -26,13 +29,13 @@ var gutil = require('gulp-util'),
 // Browser reload
 var webserver = require('gulp-webserver');
 var opn = require('opn');
-
-//var browserify = require('browserify');
-
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+var watchify = require('watchify');
+var browserify = require('browserify');
 
 // Mobile
 var shell = require('gulp-shell');
-var debug = require('gulp-debug');
 
 
 var notGlob = function (elt) {
@@ -76,30 +79,31 @@ var src = {
   sass: '**/*.{scss,sass}'
 };
 
+// TODO in module cf https://github.com/greypants/gulp-starter/tree/master/gulp/tasks
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // DEFAULT FOR 'gulp' COMMAND
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('default', ['lint']);
 
-gulp.task('clean', ['clean:css'], function (cb) {
+gulp.task('clean', function (cb) {
   del(['build', 'dist'], cb); // Delete dist and build to allow for nice, clean files!
 });
 
 gulp.task('clean:css', function (cb) {
-  del(['app/**/*.css', '!app/bower_components'], cb);
+  del(['app/**/*.css',  notGlob(src.bower_components)] , cb);
 });
 
 
-gulp.task('build', function (cb) {
-  return runSequence('sass', 'vulcanize', cb);
+gulp.task('build', ['sass', 'cp'], function (cb) {
+  return runSequence(  'vulcanize', cb);
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Copy COMMAND to Generated
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var config_cp = {
-  src_patch: ['**', notGlob(src.sass), notGlob(src.bower_components)]
+  src_patch: ['**', notGlob(src.sass)]
 }
 
 gulp.task('cp', function (cb) {
@@ -117,21 +121,27 @@ gulp.task('cp:watch', ['cp'], function (cb) {
 });
 
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Saas TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('sass', function () {
   var DEST_DIR = path.build_generated;
-  var SASS_OPTS = prod ? {outputStyle: 'compressed'} : {};
+  var SASS_OPTS =  {
+    sourceComments: !prod,
+    outputStyle: prod ? 'compressed':'nested'
+  }
   return gulp.src(src.sass, {cwd: path.app, base: path.app})
     .pipe(cache('sassing', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR, {extension: '.css'}))
     .pipe(debug({title: 'changed:'}))
-    //   .pipe(sourcemaps.init())
+    .pipe(sourcemaps.init())
     .pipe(sass(SASS_OPTS))
     // Pass the compiled sass through the prefixer with defined
     .pipe(autoprefixer({
       browsers: ['last 2 versions'],
       cascade: !prod
     }))
-//    .pipe(sourcemaps.write('.'))
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest(DEST_DIR));
 });
 
@@ -139,6 +149,50 @@ gulp.task('sass:watch', ['sass'], function (cb) {
   gulp.watch(src.sass, {cwd: path.app}, ['sass']);
   cb();
 });
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Vulcanize TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gulp.task('vulcanize', function () {
+  var DEST_DIR = path.build_web;
+  return gulp.src('index.html', {cwd: path.build_generated})
+    .pipe(cache('vulcanizing', {optimizeMemory: true}))
+//    .pipe(changed(DEST_DIR))
+    .pipe(vulcanize({
+      dest: DEST_DIR,
+      strip: prod,
+      inline: true,
+      csp: true
+    }))
+    .pipe(gulp.dest(DEST_DIR));
+});
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Browserify TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+//var bundler = watchify(browserify('./src/index.js', watchify.args));
+//// add any other browserify options or transforms here
+//bundler.transform('brfs');
+//
+//gulp.task('js', bundle); // so you can run `gulp js` to build the file
+//bundler.on('update', bundle); // on any dep update, runs the bundler
+//
+//function bundle() {
+//  return bundler.bundle()
+//    // log errors if they happen
+//    .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+//    .pipe(source('bundle.js'))
+//    // optional, remove if you dont want sourcemaps
+//    .pipe(buffer())
+//    .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
+//    .pipe(sourcemaps.write('./')) // writes .map file
+//    //
+//    .pipe(gulp.dest('./dist'));
+//}
+//
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Browsers TASKS
@@ -148,8 +202,8 @@ var server = {
   port: '8001'
 }
 
-gulp.task('webserver', ['watch'], function () {
-  return gulp.src(path.build_web)
+gulp.task('webserver', ['sass:watch', 'cp:watch'], function () {
+  return gulp.src(path.build_generated)
     .pipe(webserver({
       host: server.host,
       port: server.port,
@@ -175,27 +229,7 @@ gulp.task('lint', function () {
 });
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Saas TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Vulcanize TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('vulcanize', function () {
-  var DEST_DIR = path.build_web;
-  return gulp.src('index.html', {cwd: path.app})
-//    .pipe(cache('vulcanizing', {optimizeMemory: true}))
-//    .pipe(changed(DEST_DIR))
-    .pipe(vulcanize({
-      dest: DEST_DIR,
-      strip: prod,
-      inline: true,
-      csp: true
-    }))
-    .pipe(gulp.dest(DEST_DIR));
-});
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,7 +274,7 @@ gulp.task('cca:prepare', function () {
 
 gulp.task('cca:push', function () {
   return gulp.src('*', {read: false, cwd: path.build_cca})
-    .pipe(shell(['cca push'], {cwd: path.build_cca}));
+    .pipe(shell(['cca push'], {cwsd: path.build_cca}));
 });
 
 
