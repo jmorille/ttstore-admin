@@ -2,10 +2,14 @@
 
 <polymer-element name="yo-list" attributes="">
   <template>
-    <link rel="stylesheet" href="yo-list.css">
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
     <ul>
       <template id="greeting" repeat="{{ item in items }}">
-        <li>{{ item }} XXXXXXXXXXXXXXXXXXXXXX</li>
+        <li>{{ item }} RRRRR</li>
       </template>
     </ul>
   </template>

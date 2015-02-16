@@ -62,12 +62,11 @@ var notGlob = function (elt) {
 // Config
 var path = {
   app: 'app',
-  src_chromeapp: 'chromeapp',
   build_generated: 'build/generated',
-  build_web: 'build/web',
-  build_chromeapp: 'build/chromeapp',
+  build_vulcanized: 'build/vulcanized',
   build_cca: 'build/cca',
   dist: 'dist',
+  dist_android: 'dist/android',
   src_polymer: ['app/elements/**/*.html'],
   sources: ['app/elements/**/*.html', 'app/scripts/{,*/}*.js'],
   sass: ['**/*.{scss,sass}', '!bower_components/**'],
@@ -75,8 +74,9 @@ var path = {
 };
 
 var src = {
-  bower_components: 'bower_components{,/**}',
-  sass: '**/*.{scss,sass}'
+  bower_components: 'bower_components{,/**/*}',
+  sass: '**/*.{scss,sass}',
+  polymer_elements: 'elements{,/**/*}'
 };
 
 // TODO in module cf https://github.com/greypants/gulp-starter/tree/master/gulp/tasks
@@ -91,23 +91,23 @@ gulp.task('clean', function (cb) {
 });
 
 gulp.task('clean:css', function (cb) {
-  del(['app/**/*.css',  notGlob(src.bower_components)] , cb);
+  del(['app/**/*.css', notGlob('app/' + src.bower_components)], cb);
 });
 
 
-gulp.task('build', ['sass', 'cp'], function (cb) {
-  return runSequence(  'vulcanize', cb);
+gulp.task('build', ['vulcanize', 'cp'], function (cb) {
+  return runSequence('vulcanize', cb);
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Copy COMMAND to Generated
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var config_cp = {
-  src_patch: ['**', notGlob(src.sass)]
+  src_patch: ['**', notGlob(src.sass), notGlob(src.bower_components), notGlob(src.polymer_elements)]
 }
 
 gulp.task('cp', function (cb) {
-  var DEST_DIR = path.build_generated;
+  var DEST_DIR = path.build_vulcanized;
   return gulp.src(config_cp.src_patch, {cwd: path.app, base: path.app})
     .pipe(cache('cping', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR))
@@ -125,10 +125,10 @@ gulp.task('cp:watch', ['cp'], function (cb) {
 // Saas TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('sass', function () {
-  var DEST_DIR = path.build_generated;
-  var SASS_OPTS =  {
+  var DEST_DIR = path.app;
+  var SASS_OPTS = {
     sourceComments: !prod,
-    outputStyle: prod ? 'compressed':'nested'
+    outputStyle: prod ? 'compressed' : 'nested'
   }
   return gulp.src(src.sass, {cwd: path.app, base: path.app})
     .pipe(cache('sassing', {optimizeMemory: true}))
@@ -154,11 +154,10 @@ gulp.task('sass:watch', ['sass'], function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Vulcanize TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 gulp.task('vulcanize', function () {
-  var DEST_DIR = path.build_web;
-  return gulp.src('index.html', {cwd: path.build_generated})
-    .pipe(cache('vulcanizing', {optimizeMemory: true}))
-//    .pipe(changed(DEST_DIR))
+  var DEST_DIR = path.build_vulcanized;
+  return gulp.src('index.html', {cwd: path.app, base: path.app})
     .pipe(vulcanize({
       dest: DEST_DIR,
       strip: prod,
@@ -167,6 +166,16 @@ gulp.task('vulcanize', function () {
     }))
     .pipe(gulp.dest(DEST_DIR));
 });
+
+
+gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
+  gulp.watch(src.polymer_elements, {cwd: path.app}, ['vulcanize']);
+  cb();
+});
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//  Chrome App TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -194,6 +203,13 @@ gulp.task('vulcanize', function () {
 //}
 //
 
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Watch TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gulp.task('watch', ['cp:watch', 'sass:watch', 'vulcanize:watch']);
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Browsers TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -202,8 +218,8 @@ var server = {
   port: '8001'
 }
 
-gulp.task('webserver', ['sass:watch', 'cp:watch'], function () {
-  return gulp.src(path.build_generated)
+gulp.task('webserver', ['watch'], function () {
+  return gulp.src(path.build_vulcanized)
     .pipe(webserver({
       host: server.host,
       port: server.port,
@@ -229,28 +245,7 @@ gulp.task('lint', function () {
 });
 
 
-
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Watch TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('watch', ['sass', 'vulcanize'], function (cb) {
-  gulp.watch(path.sass, ['sass', 'vulcanize']);
-  gulp.watch(path.src_polymer, ['vulcanize']);
-  cb();
-});
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//  Chrome App TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('chromeapp:cp', function () {
-  return gulp.src(path.src_chromeapp + "/**")
-    .pipe(gulp.dest(path.build_web));
-});
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
 // Chrome App Mobile TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -263,7 +258,7 @@ gulp.task('cca:create', function (cb) {
   var cca_action = ' --link-to=';
   //var cca_action = ' --copy-from=';
   gulp.src('.')
-    .pipe(shell(['cca checkenv', 'cca create ' + path.build_cca + cca_action + path.build_web + '/manifest.json']));
+    .pipe(shell(['cca checkenv', 'cca create ' + path.build_cca + cca_action + path.build_vulcanized + '/manifest.json']));
 });
 
 gulp.task('cca:prepare', function () {
@@ -274,12 +269,21 @@ gulp.task('cca:prepare', function () {
 
 gulp.task('cca:push', function () {
   return gulp.src('*', {read: false, cwd: path.build_cca})
-    .pipe(shell(['cca push'], {cwsd: path.build_cca}));
+    .pipe(shell(['cca push'], {cwd: path.build_cca}));
 });
 
 
-gulp.task('cca:build', function () {
-  return gulp.src('*', {read: false, cwd: path.build_cca})
-    .pipe(shell(['cca build ios'], {cwd: path.build_cca}));
+gulp.task('cca:dist', function (cb) {
+  gulp.src('*', {read: false, cwd: path.build_cca})
+    .pipe(shell(['cca build android'], {cwd: path.build_cca}));
+  cb();
 });
 
+
+gulp.task('dist:cca', ['cca:dist'], function (cb) { 
+  // Copy dist file
+  gulp.src('platforms/android/build/outputs/**/*', {read: false, cwd: path.build_cca})
+    .pipe(debug({title: 'android dist :'}))
+    .pipe(gulp.dest(path.dist_android));
+  cb();
+});

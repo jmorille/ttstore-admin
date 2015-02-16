@@ -4,7 +4,11 @@
 
 <polymer-element name="yo-greeting" attributes="">
   <template>
-    <link rel="stylesheet" href="yo-greeting.css">
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
     <h1>{{ greeting }}, {{ greeting }}!</h1>
     <span>Update text to change the greeting.</span>
     <core-field>
