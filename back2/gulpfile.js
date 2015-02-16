@@ -38,7 +38,7 @@ var browserify = require('browserify');
 var shell = require('gulp-shell');
 
 // Dist Packaging
-var gzip   = require('gulp-gzip');
+var gzip = require('gulp-gzip');
 var zip = require('gulp-zip');
 
 
@@ -261,11 +261,13 @@ gulp.task('cca:check', function () {
     .pipe(shell(['cca checkenv']));
 });
 
-gulp.task('cca:create', function () {
+
+gulp.task('cca:create', ['cca:check'], function (cb) {
   var cca_action = ' --link-to=';
   //var cca_action = ' --copy-from=';
   return gulp.src('.')
-    .pipe(shell(['cca checkenv', 'cca create ' + path.build_cca + cca_action + path.build_vulcanized + '/manifest.json']));
+    .pipe(debug({title: 'cca create :'}))
+    .pipe(shell(['cca checkenv', 'cca create ' + path.build_cca + cca_action + path.build_vulcanized + '/manifest.json'], {ignoreErrors: true}));
 });
 
 gulp.task('cca:prepare', function () {
@@ -280,13 +282,11 @@ gulp.task('cca:push', function () {
 });
 
 
-gulp.task('cca:dist-generated', function () {
+gulp.task('cca:dist-generated', ['cca:create'], function () {
   var releaseOpts = prod ? ' --release' : '';
   return gulp.src('*', {read: false, cwd: path.build_cca})
     .pipe(shell(['cca build' + releaseOpts], {cwd: path.build_cca}));
 });
-
-
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
@@ -299,11 +299,11 @@ gulp.task('dist:web', function (cb) {
   var DEST_DIR = path.dist_web;
   var gzipOptions = {};
   var gzipGlob = '**/*.{html,xml,json,css,js}';
-  gulp.src([gzipGlob], { cwd: path.build_vulcanized, base: path.build_vulcanized})
+  gulp.src([gzipGlob], {cwd: path.build_vulcanized, base: path.build_vulcanized})
     .pipe(debug({title: 'web dist :'}))
     .pipe(gzip(gzipOptions))
     .pipe(gulp.dest(DEST_DIR));
-  gulp.src(['**', notGlob(gzipGlob) ], { cwd: path.build_vulcanized, base: path.build_vulcanized})
+  gulp.src(['**', notGlob(gzipGlob)], {cwd: path.build_vulcanized, base: path.build_vulcanized})
     .pipe(debug({title: 'web dist gzip :'}))
     .pipe(gzip(gzipOptions))
     .pipe(gulp.dest(DEST_DIR));
@@ -312,7 +312,7 @@ gulp.task('dist:web', function (cb) {
 
 gulp.task('dist:ca', function (cb) {
   var DEST_DIR = path.dist_ca;
-  gulp.src(['**'], { cwd: path.build_vulcanized, base: path.build_vulcanized})
+  gulp.src(['**'], {cwd: path.build_vulcanized, base: path.build_vulcanized})
     .pipe(debug({title: 'ca dist :'}))
     .pipe(zip('chromeapp.zip'))
     .pipe(gulp.dest(DEST_DIR));
@@ -321,10 +321,10 @@ gulp.task('dist:ca', function (cb) {
 
 
 gulp.task('dist:cca', ['cca:dist-generated'], function (cb) {
-  gulp.src('platforms/android/build/outputs/**/*.apk', { cwd: path.build_cca})
+  gulp.src('platforms/android/build/outputs/**/*.apk', {cwd: path.build_cca})
     .pipe(debug({title: 'android dist :'}))
     .pipe(gulp.dest(path.dist_cca_android));
-  gulp.src('platforms/ios/*.xcodeproj', { cwd: path.build_cca})
+  gulp.src('platforms/ios/*.xcodeproj', {cwd: path.build_cca})
     .pipe(debug({title: 'android dist :'}))
     .pipe(gulp.dest(path.dist_cca_ios));
   cb();
