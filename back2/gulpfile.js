@@ -118,7 +118,8 @@ gulp.task('build', function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Watch TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('watch', ['cp:watch', 'images:watch', 'sass:watch', 'vulcanize:watch']);
+// , 'sass:watch'
+gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch']);
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -326,7 +327,9 @@ gulp.task('cca:dist-generated', ['cca:create'], function () {
 // Dist TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-gulp.task('dist', ['dist:web', 'dist:ca', 'dist:cca']);
+gulp.task('dist', function (cb) {
+  return runSequence('build', ['dist:web', 'dist:ca', 'dist:cca'] , cb);
+});
 
 gulp.task('dist:web', function (cb) {
   var DEST_DIR = path.dist_web;
