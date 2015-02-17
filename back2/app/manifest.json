@@ -1,3 +1,4 @@
+    foo aaa
 {
   "manifest_version": 2,
   "name": "Back2",
@@ -13,8 +14,9 @@
   "app": {
     "background": {
       "scripts": [
-         "/scripts/ca_background.js",
-         "/scripts/ca_chromereload.js"
+
+"/scripts/ca_chromereload.js",
+         "/scripts/ca_background.js"
       ]
     }
   }

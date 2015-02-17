@@ -353,9 +353,19 @@ gulp.task('dist:ca', function (cb) {
   var DEST_DIR = path.dist_ca;
   gulp.src(['**'], {cwd: path.build_vulcanized, base: path.build_vulcanized})
     .pipe(debug({title: 'ca dist :'}))
-    .pipe($.size({title: 'Uncompressed'}))
-    .pipe($.zip('chromeapp.zip'))
-    .pipe($.size({title: 'Zip Compressed'}))
+    //.pipe(function() {
+    //  var es = require('event-stream');
+    //  function transform(file, cb) {
+    //    console.log("file", file);
+    //    cb(null, file);
+    //  };
+    //  return es.map(transform);
+    //})
+   // .pipe($.replace(/o/, 'RRR'))
+//    .pipe($.if('**/manifest.json', $.replace("/scripts/ca_chromereload.js,", "")))
+  //  .pipe($.replace(/ca_chromereload.js/g, ""))
+   // .pipe($.zip('chromeapp.zip'))
+   // .pipe($.size({title: 'Zip Compressed'}))
     .pipe(gulp.dest(DEST_DIR));
   cb();
 });
