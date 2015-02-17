@@ -79,6 +79,7 @@ var path = {
   build_generated: 'build/generated',
   build_vulcanized: 'build/vulcanized',
   build_cca: 'build/cca',
+  build_cordova: 'build/cordova',
   dist: 'dist',
   dist_web: 'dist/web',
   dist_ca: 'dist/ca',
@@ -296,7 +297,7 @@ gulp.task('cca:check', function () {
 });
 
 
-gulp.task('cca:create', ['cca:check'], function (cb) {
+gulp.task('cca:create', ['cca:check'], function () {
   var cca_action = ' --link-to=';
   //var cca_action = ' --copy-from=';
   return gulp.src('.')
@@ -320,6 +321,18 @@ gulp.task('cca:dist-generated', ['cca:create'], function () {
   var releaseOpts = prod ? ' --release' : '';
   return gulp.src('*', {read: false, cwd: path.build_cca})
     .pipe($.shell(['cca build' + releaseOpts], {cwd: path.build_cca}));
+});
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
+// Cordova App Mobile TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gulp.task('cordova:create',  function () {
+  var cca_action = ' --link-to=';
+  //var cca_action = ' --copy-from=';
+  return gulp.src('.')
+    .pipe(debug({title: 'cordova create :'}))
+    .pipe($.shell(['cordova create ' + path.build_cordova + cca_action + path.build_vulcanized + '/manifest.json'], {ignoreErrors: true}));
 });
 
 

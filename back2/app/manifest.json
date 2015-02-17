@@ -9,6 +9,10 @@
     "16": "assets/icon_16.png",
     "128": "assets/icon_128.png"
   },
+  "offline_enabled": false,
+  "permissions": [
+    "https://localhost/"
+  ],
   "app": {
     "background": {
       "scripts": [ "/scripts/ca_chromereload.js",
