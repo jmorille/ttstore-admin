@@ -1,48 +1,50 @@
 'use strict';
 var gulp = require('gulp');
+var $ = require('gulp-load-plugins')();
 
 // Lint
-var jshint = require('gulp-jshint');
-var stylish = require('jshint-stylish');
+//var jshint = require('gulp-jshint');
+//var stylish = require('jshint-stylish');
 
 // Cache
 var cache = require('gulp-cached'),
   remember = require('gulp-remember'),
-  newer = require('gulp-newer'),
+ // newer = require('gulp-newer'),
   changed = require('gulp-changed');
 
 // Build
 var del = require('del');
 var runSequence = require('run-sequence');
-var imagemin = require('gulp-imagemin');
-var sass = require('gulp-sass');
-var autoprefixer = require('gulp-autoprefixer');
-var vulcanize = require('gulp-vulcanize');
+//var imagemin = require('gulp-imagemin');
+//var sass = require('gulp-sass');
+//var autoprefixer = require('gulp-autoprefixer');
+//var vulcanize = require('gulp-vulcanize');
 
 // Debug
 var debug = require('gulp-debug');
-var sourcemaps = require('gulp-sourcemaps');
+//var sourcemaps = require('gulp-sourcemaps');
 
 // Command line conf
 var gutil = require('gulp-util'),
   prod = gutil.env.prod;
 
 // Browser reload
-var webserver = require('gulp-webserver');
-var opn = require('opn');
+//var webserver = require('gulp-webserver');
+//var opn = require('opn');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-var watchify = require('watchify');
-var browserify = require('browserify');
+//var watchify = require('watchify');
+//var browserify = require('browserify');
 
 // Mobile
-var shell = require('gulp-shell');
+//var shell = require('gulp-shell');
 
 // Dist Packaging
-var gzip = require('gulp-gzip');
-var zip = require('gulp-zip');
-var rev = require('gulp-rev');
-var revReplace = require('gulp-rev-replace');
+//var gzip = require('gulp-gzip');
+//var zip = require('gulp-zip');
+
+//var rev = require('gulp-rev');
+//var revReplace = require('gulp-rev-replace');
 
 
 var notGlob = function (elt) {
@@ -59,21 +61,21 @@ var notGlob = function (elt) {
     return elt.reduce(function (acc, current) {
       var notelt = notGlob(current);
       if (notelt) {
-        acc= [].concat(acc, notelt);
+        acc = [].concat(acc, notelt);
       }
       return acc;
     }, []);
   }
 };
 var withNotGlob = function (include, excludes) {
-  return  [].concat.call([], include, notGlob(excludes));
+  return [].concat.apply( [],  [].concat.call([], include, notGlob(excludes)) ) ;
 };
-
 
 
 // Config
 var path = {
   app: 'app',
+  build: 'build',
   build_generated: 'build/generated',
   build_vulcanized: 'build/vulcanized',
   build_cca: 'build/cca',
@@ -82,17 +84,15 @@ var path = {
   dist_ca: 'dist/ca',
   dist_cca_android: 'dist/cca_android',
   dist_cca_ios: 'dist/cca_ios',
-  src_polymer: ['app/elements/**/*.html'],
-  sources: ['app/elements/**/*.html', 'app/scripts/{,*/}*.js'],
-  sass: ['**/*.{scss,sass}', '!bower_components/**'],
-  sass_not: ['**', '!**/*.{scss,sass}']
+  sources: ['app/elements/**/*.html', 'app/scripts/{,*/}*.js']
 };
 
+//bower_components: ['bower_components{,/**/*}', '!bower_components{,/**/package.json,/**/bower.json,/**/index.html,/**/metadata.html,/**/*.md,/**/demo*,/**/demo**/**,/**/test,/**/test/**}'],
 var src = {
-  bower_components: 'bower_components{,/**/*}',
-  images: '**/*.{gif,jpg,jpeg,png}',
+  bower_components: ['bower_components{,/**}' ],
+  images: ['**/*.{gif,jpg,jpeg,png}' ],
   sass: '**/*.{scss,sass}',
-  polymer_elements: 'elements{,**/*.html,**/*.css,**/*.js}'
+  polymer_elements: 'elements{,/*,/**/*.html,/**/*.css,/**/*.js}'
 };
 
 // TODO in module cf https://github.com/greypants/gulp-starter/tree/master/gulp/tasks
@@ -103,17 +103,17 @@ var src = {
 gulp.task('default', ['lint']);
 
 gulp.task('clean', function (cb) {
-  del(['build', 'dist'], cb); // Delete dist and build to allow for nice, clean files!
+  del([path.build, path.dist], cb); // Delete dist and build to allow for nice, clean files!
 });
 
 gulp.task('clean:css', function (cb) {
-  del(['app/**/*.css', notGlob('app/' + src.bower_components)], cb);
+  del(withNotGlob([path.app + '/**/*.css'], [path.app + '/' + src.bower_components]), cb);
 });
-
 
 gulp.task('build', function (cb) {
-  return runSequence('clean', ['cp'], 'vulcanize', cb);
+  return runSequence('clean', ['cp', 'images'], 'vulcanize', cb);
 });
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Watch TASKS
@@ -125,23 +125,22 @@ gulp.task('watch', ['cp:watch', 'images:watch', 'sass:watch', 'vulcanize:watch']
 // Copy COMMAND to Generated
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var config_cp = {
-  src_patch: withNotGlob(['**'], [src.sass, src.bower_components, src.polymer_elements, src.images])
+  cp_glob: withNotGlob(['**'], [src.sass, src.bower_components, src.polymer_elements, src.images]),
+  img_glob:  withNotGlob([src.images], [src.bower_components])
 }
-gulp.task('not', function (cb) {
-  console.log(config_cp.src_patch);
-});
+
 
 gulp.task('cp', function (cb) {
   var DEST_DIR = path.build_vulcanized;
-  return gulp.src(config_cp.src_patch, {cwd: path.app, base: path.app})
+  return gulp.src(config_cp.cp_glob, {cwd: path.app, base: path.app})
     .pipe(cache('cping', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR))
-    .pipe(debug({title: 'changed:'}))
+    .pipe(debug({title: 'cp changed:'}))
     .pipe(gulp.dest(DEST_DIR));
 });
 
 gulp.task('cp:watch', ['cp'], function (cb) {
-  gulp.watch(config_cp.src_patch, {cwd: path.app}, ['cp']);
+  gulp.watch(config_cp.cp_glob, {cwd: path.app}, ['cp']);
   cb();
 });
 
@@ -151,15 +150,19 @@ gulp.task('cp:watch', ['cp'], function (cb) {
 
 gulp.task('images', function (cb) {
   var DEST_DIR = path.build_vulcanized;
-  return gulp.src(src.images, {cwd: path.app, base: path.app})
-    .pipe(cache('imaging', {optimizeMemory: true}))
+  return gulp.src(config_cp.img_glob, {cwd: path.app, base: path.app})
+    .pipe(cache('imaging'))
     .pipe(changed(DEST_DIR))
     .pipe(debug({title: 'img changed:'}))
+    .pipe($.imagemin({
+      progressive: true,
+      interlaced: true
+    }))
     .pipe(gulp.dest(DEST_DIR));
 });
 
 gulp.task('images:watch', ['images'], function (cb) {
-  gulp.watch(src.images, {cwd: path.app}, ['images']);
+  gulp.watch(config_cp.img_glob, {cwd: path.app}, ['images']);
   cb();
 });
 
@@ -175,15 +178,15 @@ gulp.task('sass', function () {
   return gulp.src(src.sass, {cwd: path.app, base: path.app})
     .pipe(cache('sassing', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR, {extension: '.css'}))
-    .pipe(debug({title: 'changed:'}))
-    .pipe(sourcemaps.init())
-    .pipe(sass(SASS_OPTS))
+    .pipe(debug({title: 'sass changed:'}))
+    //.pipe($.sourcemaps.init())
+    .pipe($.sass(SASS_OPTS))
     // Pass the compiled sass through the prefixer with defined
-    .pipe(autoprefixer({
+    .pipe($.autoprefixer({
       browsers: ['last 2 versions'],
       cascade: !prod
     }))
-    .pipe(sourcemaps.write())
+    //.pipe($.sourcemaps.write())
     .pipe(gulp.dest(DEST_DIR));
 });
 
@@ -200,7 +203,7 @@ gulp.task('sass:watch', ['sass'], function (cb) {
 gulp.task('vulcanize', function () {
   var DEST_DIR = path.build_vulcanized;
   return gulp.src('index.html', {cwd: path.app, base: path.app})
-    .pipe(vulcanize({
+    .pipe($.vulcanize({
       dest: DEST_DIR,
       abspath: path.app,
       strip: prod,
@@ -257,7 +260,7 @@ var server = {
 
 gulp.task('webserver', ['watch'], function () {
   return gulp.src(path.build_vulcanized)
-    .pipe(webserver({
+    .pipe($.webserver({
       host: server.host,
       port: server.port,
       livereload: true,
@@ -267,7 +270,7 @@ gulp.task('webserver', ['watch'], function () {
 });
 
 gulp.task('openbrowser', function () {
-  return opn('http://' + server.host + ':' + server.port);
+  return $.opn('http://' + server.host + ':' + server.port);
 });
 
 
@@ -276,9 +279,9 @@ gulp.task('openbrowser', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('lint', function () {
   return gulp.src(path.sources)
-    .pipe(jshint.extract('auto'))
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'));
+    .pipe($.jshint.extract('auto'))
+    .pipe($.jshint())
+    .pipe($.jshint.reporter('jshint-stylish'));
 });
 
 
@@ -288,7 +291,7 @@ gulp.task('lint', function () {
 
 gulp.task('cca:check', function () {
   return gulp.src('.', {read: false})
-    .pipe(shell(['cca checkenv']));
+    .pipe($.shell(['cca checkenv']));
 });
 
 
@@ -297,25 +300,25 @@ gulp.task('cca:create', ['cca:check'], function (cb) {
   //var cca_action = ' --copy-from=';
   return gulp.src('.')
     .pipe(debug({title: 'cca create :'}))
-    .pipe(shell(['cca checkenv', 'cca create ' + path.build_cca + cca_action + path.build_vulcanized + '/manifest.json'], {ignoreErrors: true}));
+    .pipe($.shell(['cca checkenv', 'cca create ' + path.build_cca + cca_action + path.build_vulcanized + '/manifest.json'], {ignoreErrors: true}));
 });
 
 gulp.task('cca:prepare', function () {
   return gulp.src('*', {read: false, cwd: path.build_cca})
-    .pipe(shell(['cca prepare'], {cwd: path.build_cca}));
+    .pipe($.shell(['cca prepare'], {cwd: path.build_cca}));
 });
 
 
 gulp.task('cca:push', function () {
   return gulp.src('*', {read: false, cwd: path.build_cca})
-    .pipe(shell(['cca push'], {cwd: path.build_cca}));
+    .pipe($.shell(['cca push'], {cwd: path.build_cca}));
 });
 
 
 gulp.task('cca:dist-generated', ['cca:create'], function () {
   var releaseOpts = prod ? ' --release' : '';
   return gulp.src('*', {read: false, cwd: path.build_cca})
-    .pipe(shell(['cca build' + releaseOpts], {cwd: path.build_cca}));
+    .pipe($.shell(['cca build' + releaseOpts], {cwd: path.build_cca}));
 });
 
 
@@ -332,13 +335,13 @@ gulp.task('dist:web', function (cb) {
   var gzipGlob = ['**/*'];
   gulp.src(gzipGlob, {cwd: path.build_vulcanized, base: path.build_vulcanized})
     .pipe(debug({title: 'web dist :'}))
-//    .pipe(rev())
-//    .pipe(revReplace())
-    //  .pipe(gzip(gzipOptions))
+//    .pipe($.rev())
+//    .pipe($.revReplace())
+      .pipe($.gzip(gzipOptions))
     .pipe(gulp.dest(DEST_DIR));
   //gulp.src(['**', notGlob(gzipGlob)], {cwd: path.build_vulcanized, base: path.build_vulcanized})
   //  .pipe(debug({title: 'web dist gzip :'}))
-  //  .pipe(gzip(gzipOptions))
+  //  .pipe($.gzip(gzipOptions))
   //  .pipe(gulp.dest(DEST_DIR));
   cb();
 });
@@ -347,7 +350,9 @@ gulp.task('dist:ca', function (cb) {
   var DEST_DIR = path.dist_ca;
   gulp.src(['**'], {cwd: path.build_vulcanized, base: path.build_vulcanized})
     .pipe(debug({title: 'ca dist :'}))
-    .pipe(zip('chromeapp.zip'))
+    .pipe($.size({title: 'Uncompressed'}))
+    .pipe($.zip('chromeapp.zip'))
+    .pipe($.size({title: 'Zip Compressed'}))
     .pipe(gulp.dest(DEST_DIR));
   cb();
 });
@@ -356,6 +361,7 @@ gulp.task('dist:ca', function (cb) {
 gulp.task('dist:cca', ['cca:dist-generated'], function (cb) {
   gulp.src('platforms/android/build/outputs/**/*.apk', {cwd: path.build_cca})
     .pipe(debug({title: 'android dist :'}))
+    .pipe($.flatten())
     .pipe(gulp.dest(path.dist_cca_android));
   gulp.src('platforms/ios/*.xcodeproj', {cwd: path.build_cca})
     .pipe(debug({title: 'android dist :'}))
