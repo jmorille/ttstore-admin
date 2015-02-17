@@ -12,7 +12,7 @@
 
   "app": {
     "background": {
-      "scripts": ["scripts/ca_background.js"]
+      "scripts": ["/scripts/ca_background.js"]
     }
   }
 }

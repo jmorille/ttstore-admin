@@ -14,6 +14,7 @@ var cache = require('gulp-cached'),
 // Build
 var del = require('del');
 var runSequence = require('run-sequence');
+var imagemin = require('gulp-imagemin');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 var vulcanize = require('gulp-vulcanize');
@@ -40,6 +41,8 @@ var shell = require('gulp-shell');
 // Dist Packaging
 var gzip = require('gulp-gzip');
 var zip = require('gulp-zip');
+var rev = require('gulp-rev');
+var revReplace = require('gulp-rev-replace');
 
 
 var notGlob = function (elt) {
@@ -56,12 +59,17 @@ var notGlob = function (elt) {
     return elt.reduce(function (acc, current) {
       var notelt = notGlob(current);
       if (notelt) {
-        acc.push(notelt);
+        acc= [].concat(acc, notelt);
       }
       return acc;
     }, []);
   }
 };
+var withNotGlob = function (include, excludes) {
+  return  [].concat.call([], include, notGlob(excludes));
+};
+
+
 
 // Config
 var path = {
@@ -82,8 +90,9 @@ var path = {
 
 var src = {
   bower_components: 'bower_components{,/**/*}',
+  images: '**/*.{gif,jpg,jpeg,png}',
   sass: '**/*.{scss,sass}',
-  polymer_elements: 'elements{,/**/*}'
+  polymer_elements: 'elements{,**/*.html,**/*.css,**/*.js}'
 };
 
 // TODO in module cf https://github.com/greypants/gulp-starter/tree/master/gulp/tasks
@@ -102,16 +111,25 @@ gulp.task('clean:css', function (cb) {
 });
 
 
-gulp.task('build', ['vulcanize', 'cp'], function (cb) {
-  return runSequence('vulcanize', cb);
+gulp.task('build', function (cb) {
+  return runSequence('clean', ['cp'], 'vulcanize', cb);
 });
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Watch TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gulp.task('watch', ['cp:watch', 'images:watch', 'sass:watch', 'vulcanize:watch']);
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Copy COMMAND to Generated
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var config_cp = {
-  src_patch: ['**', notGlob(src.sass), notGlob(src.bower_components), notGlob(src.polymer_elements)]
+  src_patch: withNotGlob(['**'], [src.sass, src.bower_components, src.polymer_elements, src.images])
 }
+gulp.task('not', function (cb) {
+  console.log(config_cp.src_patch);
+});
 
 gulp.task('cp', function (cb) {
   var DEST_DIR = path.build_vulcanized;
@@ -127,6 +145,23 @@ gulp.task('cp:watch', ['cp'], function (cb) {
   cb();
 });
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Images TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+gulp.task('images', function (cb) {
+  var DEST_DIR = path.build_vulcanized;
+  return gulp.src(src.images, {cwd: path.app, base: path.app})
+    .pipe(cache('imaging', {optimizeMemory: true}))
+    .pipe(changed(DEST_DIR))
+    .pipe(debug({title: 'img changed:'}))
+    .pipe(gulp.dest(DEST_DIR));
+});
+
+gulp.task('images:watch', ['images'], function (cb) {
+  gulp.watch(src.images, {cwd: path.app}, ['images']);
+  cb();
+});
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Saas TASKS
@@ -167,6 +202,7 @@ gulp.task('vulcanize', function () {
   return gulp.src('index.html', {cwd: path.app, base: path.app})
     .pipe(vulcanize({
       dest: DEST_DIR,
+      abspath: path.app,
       strip: prod,
       inline: true,
       csp: true
@@ -209,12 +245,6 @@ gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
 //    .pipe(gulp.dest('./dist'));
 //}
 //
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Watch TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('watch', ['cp:watch', 'sass:watch', 'vulcanize:watch']);
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -298,15 +328,18 @@ gulp.task('dist', ['dist:web', 'dist:ca', 'dist:cca']);
 gulp.task('dist:web', function (cb) {
   var DEST_DIR = path.dist_web;
   var gzipOptions = {};
-  var gzipGlob = '**/*.{html,xml,json,css,js}';
-  gulp.src([gzipGlob], {cwd: path.build_vulcanized, base: path.build_vulcanized})
+//  var gzipGlob = '**/*.{html,xml,json,css,js}';
+  var gzipGlob = ['**/*'];
+  gulp.src(gzipGlob, {cwd: path.build_vulcanized, base: path.build_vulcanized})
     .pipe(debug({title: 'web dist :'}))
-    .pipe(gzip(gzipOptions))
+//    .pipe(rev())
+//    .pipe(revReplace())
+    //  .pipe(gzip(gzipOptions))
     .pipe(gulp.dest(DEST_DIR));
-  gulp.src(['**', notGlob(gzipGlob)], {cwd: path.build_vulcanized, base: path.build_vulcanized})
-    .pipe(debug({title: 'web dist gzip :'}))
-    .pipe(gzip(gzipOptions))
-    .pipe(gulp.dest(DEST_DIR));
+  //gulp.src(['**', notGlob(gzipGlob)], {cwd: path.build_vulcanized, base: path.build_vulcanized})
+  //  .pipe(debug({title: 'web dist gzip :'}))
+  //  .pipe(gzip(gzipOptions))
+  //  .pipe(gulp.dest(DEST_DIR));
   cb();
 });
 
