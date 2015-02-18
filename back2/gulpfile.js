@@ -123,7 +123,8 @@ gulp.task('build', function (cb) {
 // , 'sass:watch'
 gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch'], function (done) {
 //  livereload.listen();
-  $.livereload.listen();
+ // $.livereload.listen();
+  livereload.listen();
   done();
 });
 
@@ -143,16 +144,15 @@ gulp.task('cp', function (cb) {
     .pipe(cache('cping', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR))
     .pipe(debug({title: 'cp changed:'}))
-    .pipe(gulp.dest(DEST_DIR));
+    .pipe(gulp.dest(DEST_DIR))
+    .pipe(livereload());
 });
 
 
 
 
 gulp.task('cp:watch', ['cp'], function (cb) {
-  gulp.watch(config_cp.cp_glob, {cwd: path.app}, ['cp'])
-//    .on('change', livereload.changed)
-    ;
+  gulp.watch(config_cp.cp_glob, {cwd: path.app}, ['cp']);
   cb();
 });
 
@@ -170,11 +170,12 @@ gulp.task('images', function (cb) {
       progressive: true,
       interlaced: true
     }))
-    .pipe(gulp.dest(DEST_DIR));
+    .pipe(gulp.dest(DEST_DIR))
+    .pipe(livereload());
 });
 
 gulp.task('images:watch', ['images'], function (cb) {
-  gulp.watch(config_cp.img_glob, {cwd: path.app}, ['images']);
+  gulp.watch(config_cp.img_glob, {cwd: path.app}, ['images']) ;
   cb();
 });
 
@@ -199,7 +200,8 @@ gulp.task('sass', function () {
       cascade: !prod
     }))
     //.pipe($.sourcemaps.write())
-    .pipe(gulp.dest(DEST_DIR));
+    .pipe(gulp.dest(DEST_DIR))
+    .pipe(livereload());
 });
 
 gulp.task('sass:watch', ['sass'], function (cb) {
@@ -227,17 +229,13 @@ gulp.task('vulcanize', function () {
         ]
       }
     }))
-
     .pipe(gulp.dest(DEST_DIR))
-   ;
+    .pipe(livereload());
 });
 
 
 gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
-  gulp.watch(src.polymer_elements, {cwd: path.app}, ['vulcanize'])
-    .on('change', $.livereload.changed)
-    //.on('change', $.livereload.changed)
-  ;
+  gulp.watch(src.polymer_elements, {cwd: path.app}, ['vulcanize']);
   cb();
 });
 

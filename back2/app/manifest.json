@@ -11,7 +11,9 @@
   },
   "offline_enabled": false,
   "permissions": [
-    "https://localhost/"
+    "https://localhost/",
+    "geolocation",
+    "videoCapture"
   ],
   "app": {
     "background": {

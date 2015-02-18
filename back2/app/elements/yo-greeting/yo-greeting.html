@@ -1,6 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-field/core-field.html">
 
+<link rel="import" href="../../bower_components/geo-location/geo-location.html">
+<link rel="import" href="../../bower_components/video-camera-element/dist/video-camera.html">
 
 <polymer-element name="yo-greeting" attributes="">
   <template>
@@ -10,7 +12,14 @@
       }
 
     </style>
-    <h1>{{ greeting }}, {{ greeting }}!</h1>
+    <geo-location watchpos latitude="{{lat}}"
+                  longitude="{{lng}}"></geo-location>
+
+    <input type="file" accept="image/*;capture=camera">
+    <device type="media" on-change="{{update()}}"></device>
+    <video id="video" autoplay></video>
+
+    <h1>{{ lat }}, {{ lng }}!</h1>
     <span>Update text to change the greeting.</span>
     <core-field>
       <label>I'm a label!</label>
@@ -21,7 +30,10 @@
   <script>
     (function () {
       Polymer({
-        greeting : '\'Allo'
+        greeting : '\'Allo',
+        update: function (stream) {
+          this.$.video.src = stream.url;
+        }
       });
     })();
   </script>

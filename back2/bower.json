@@ -6,7 +6,9 @@
     "paper-elements": "Polymer/paper-elements#^0.5.4",
     "polymer": "Polymer/polymer#^0.5.4",
     "tt-crud": "https://github.com/tt-components/tt-crud.git#master",
-    "tt-paginator": "https://github.com/tt-components/tt-paginator.git#master"
+    "tt-paginator": "https://github.com/tt-components/tt-paginator.git#master",
+    "geo-location": "~0.0.7",
+    "video-camera-element": "~0.1.3"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^2.0.0"
