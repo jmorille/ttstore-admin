@@ -1,7 +1,7 @@
 'use strict';
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
-
+require('gulp-task-list')(gulp);
 // Lint
 //var jshint = require('gulp-jshint');
 //var stylish = require('jshint-stylish');
@@ -103,14 +103,18 @@ var src = {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('default', ['lint']);
 
+
+// Clean all files
 gulp.task('clean', function (cb) {
   del([path.build, path.dist], cb); // Delete dist and build to allow for nice, clean files!
 });
 
+// CLean css file
 gulp.task('clean:css', function (cb) {
   del(withNotGlob([path.app + '/**/*.css'], [path.app + '/' + src.bower_components]), cb);
 });
 
+// Build app
 gulp.task('build', function (cb) {
   return runSequence('clean', ['cp', 'images'], 'vulcanize', cb);
 });
@@ -119,7 +123,7 @@ gulp.task('build', function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Watch TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// , 'sass:watch'
+// Watch all files changes
 gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch'], function (done) {
   livereload.listen();
   done();
@@ -134,21 +138,21 @@ var config_cp = {
   img_glob: withNotGlob([src.images], [src.bower_components])
 };
 
-
-gulp.task('cp', function (cb) {
+// Copy all missing files
+gulp.task('cp', function () {
   var DEST_DIR = path.build_vulcanized;
   return gulp.src(config_cp.cp_glob, {cwd: path.app, base: path.app})
     .pipe(cache('cping', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR))
     .pipe(debug({title: 'cp changed:'}))
     .pipe(gulp.dest(DEST_DIR))
-//    .pipe(livereload());
-  //  .pipe(filter('**/*.css')) // Filtering stream to only css files
-    .pipe(debug({title: 'CSS changed:'}))
+    .pipe(livereload())
+    .pipe(filter('**/*.css')) // Filtering stream to only css files
+  //  .pipe(debug({title: 'CSS changed:'}))
     .pipe(browserSync.reload({stream: true}));
 });
 
-
+// Watch for Copy files
 gulp.task('cp:watch', ['cp'], function (cb) {
   gulp.watch(config_cp.cp_glob, {cwd: path.app}, ['cp']);
   cb();
@@ -158,6 +162,7 @@ gulp.task('cp:watch', ['cp'], function (cb) {
 // Images TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// Copy Images with Optimisation
 gulp.task('images', function (cb) {
   var DEST_DIR = path.build_vulcanized;
   return gulp.src(config_cp.img_glob, {cwd: path.app, base: path.app})
@@ -172,6 +177,7 @@ gulp.task('images', function (cb) {
     .pipe(livereload());
 });
 
+// Watch for images copy
 gulp.task('images:watch', ['images'], function (cb) {
   gulp.watch(config_cp.img_glob, {cwd: path.app}, ['images']);
   cb();
@@ -180,6 +186,8 @@ gulp.task('images:watch', ['images'], function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Saas TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// Sass generation
 gulp.task('sass', function () {
   var DEST_DIR = path.app;
   var SASS_OPTS = {
@@ -202,6 +210,7 @@ gulp.task('sass', function () {
     .pipe(livereload());
 });
 
+// Watch for Sass generation
 gulp.task('sass:watch', ['sass'], function (cb) {
   gulp.watch(src.sass, {cwd: path.app}, ['sass']);
   cb();
@@ -212,6 +221,7 @@ gulp.task('sass:watch', ['sass'], function (cb) {
 // Vulcanize TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// Vulcanize html files
 gulp.task('vulcanize', function () {
   var DEST_DIR = path.build_vulcanized;
   return gulp.src('index.html', {cwd: path.app, base: path.app})
@@ -232,7 +242,7 @@ gulp.task('vulcanize', function () {
   .pipe(browserSync.reload({stream: true}));
 });
 
-
+// Watch for Vulcanize html files
 gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
   gulp.watch(src.polymer_elements, {cwd: path.app}, ['vulcanize']);
   cb();
@@ -282,9 +292,8 @@ gulp.task('webserver', ['watch'], function () {
     .pipe($.webserver({
       host: server.host,
       port: server.port,
-      livereload: true,
-      directoryListing: false,
-      open: gutil.env.open
+      livereload: false,
+      open: true
     }));
 });
 
