@@ -29,6 +29,7 @@ var gutil = require('gulp-util'),
   prod = gutil.env.prod;
 
 // Browser reload
+var livereload = require('gulp-livereload');
 //var webserver = require('gulp-webserver');
 //var opn = require('opn');
 var source = require('vinyl-source-stream');
@@ -120,7 +121,11 @@ gulp.task('build', function (cb) {
 // Watch TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // , 'sass:watch'
-gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch']);
+gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch'], function (done) {
+//  livereload.listen();
+  $.livereload.listen();
+  done();
+});
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,8 +146,13 @@ gulp.task('cp', function (cb) {
     .pipe(gulp.dest(DEST_DIR));
 });
 
+
+
+
 gulp.task('cp:watch', ['cp'], function (cb) {
-  gulp.watch(config_cp.cp_glob, {cwd: path.app}, ['cp']);
+  gulp.watch(config_cp.cp_glob, {cwd: path.app}, ['cp'])
+//    .on('change', livereload.changed)
+    ;
   cb();
 });
 
@@ -210,14 +220,24 @@ gulp.task('vulcanize', function () {
       abspath: path.app,
       strip: prod,
       inline: true,
-      csp: true
+      csp: true,
+      "excludes": {
+        "styles": [
+          "/styles/main.css"
+        ]
+      }
     }))
-    .pipe(gulp.dest(DEST_DIR));
+
+    .pipe(gulp.dest(DEST_DIR))
+   ;
 });
 
 
 gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
-  gulp.watch(src.polymer_elements, {cwd: path.app}, ['vulcanize']);
+  gulp.watch(src.polymer_elements, {cwd: path.app}, ['vulcanize'])
+    .on('change', $.livereload.changed)
+    //.on('change', $.livereload.changed)
+  ;
   cb();
 });
 
@@ -257,7 +277,7 @@ gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var server = {
   host: 'localhost',
-  port: '8001'
+  port: '9000'
 }
 
 gulp.task('webserver', ['watch'], function () {
@@ -271,8 +291,27 @@ gulp.task('webserver', ['watch'], function () {
     }));
 });
 
-gulp.task('openbrowser', function () {
-  return $.opn('http://' + server.host + ':' + server.port);
+gulp.task('connect',  function () {
+  var serveStatic = require('serve-static');
+  var serveIndex = require('serve-index');
+  var app = require('connect')()
+    .use(require('connect-livereload')({port: 35729}))
+//    .use(serveStatic('.tmp'))
+    .use(serveStatic(path.app))
+    // paths to bower_components should be relative to the current file
+    // e.g. in app/index.html you should use ../bower_components
+  //  .use('/bower_components', serveStatic('bower_components'))
+    .use(serveIndex(path.app));
+
+  require('http').createServer(app)
+    .listen(9000)
+    .on('listening', function () {
+      console.log('Started connect web server on http://' +server.host +  ':' + server.port );
+    });
+});
+
+gulp.task('serve', ['connect', 'watch'], function () {
+  return require('opn')('http://' + server.host + ':' + server.port);
 });
 
 
@@ -313,7 +352,7 @@ gulp.task('cca:prepare', function () {
 
 gulp.task('cca:push', function () {
   return gulp.src('*', {read: false, cwd: path.build_cca})
-    .pipe($.shell(['cca push'], {cwd: path.build_cca}));
+    .pipe($.shell(['cca push --watch'], {cwd: path.build_cca}));
 });
 
 
@@ -332,7 +371,7 @@ gulp.task('cordova:create',  function () {
   //var cca_action = ' --copy-from=';
   return gulp.src('.')
     .pipe(debug({title: 'cordova create :'}))
-    .pipe($.shell(['cordova create ' + path.build_cordova + cca_action + path.build_vulcanized + '/manifest.json'], {ignoreErrors: true}));
+    .pipe($.shell(['cordova create ' + path.build_cordova + cca_action + path.build_vulcanized  ], {ignoreErrors: true}));
 });
 
 
