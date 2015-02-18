@@ -9,7 +9,7 @@ var $ = require('gulp-load-plugins')();
 // Cache
 var cache = require('gulp-cached'),
   remember = require('gulp-remember'),
- // newer = require('gulp-newer'),
+// newer = require('gulp-newer'),
   changed = require('gulp-changed');
 
 // Build
@@ -30,12 +30,11 @@ var gutil = require('gulp-util'),
 
 // Browser reload
 var livereload = require('gulp-livereload');
-//var webserver = require('gulp-webserver');
-//var opn = require('opn');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-//var watchify = require('watchify');
-//var browserify = require('browserify');
+var filter = require('gulp-filter');
+var browserSync = require("browser-sync");
+
+//var source = require('vinyl-source-stream');
+//var buffer = require('vinyl-buffer');
 
 // Mobile
 //var shell = require('gulp-shell');
@@ -69,7 +68,7 @@ var notGlob = function (elt) {
   }
 };
 var withNotGlob = function (include, excludes) {
-  return [].concat.apply( [],  [].concat.call([], include, notGlob(excludes)) ) ;
+  return [].concat.apply([], [].concat.call([], include, notGlob(excludes)));
 };
 
 
@@ -91,8 +90,8 @@ var path = {
 
 //bower_components: ['bower_components{,/**/*}', '!bower_components{,/**/package.json,/**/bower.json,/**/index.html,/**/metadata.html,/**/*.md,/**/demo*,/**/demo**/**,/**/test,/**/test/**}'],
 var src = {
-  bower_components: ['bower_components{,/**}' ],
-  images: ['**/*.{gif,jpg,jpeg,png}' ],
+  bower_components: ['bower_components{,/**}'],
+  images: ['**/*.{gif,jpg,jpeg,png}'],
   sass: '**/*.{scss,sass}',
   polymer_elements: 'elements{,/*,/**/*.html,/**/*.css,/**/*.js}'
 };
@@ -122,8 +121,6 @@ gulp.task('build', function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // , 'sass:watch'
 gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch'], function (done) {
-//  livereload.listen();
- // $.livereload.listen();
   livereload.listen();
   done();
 });
@@ -134,8 +131,8 @@ gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch'], function (do
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var config_cp = {
   cp_glob: withNotGlob(['**'], [src.sass, src.bower_components, src.polymer_elements, src.images]),
-  img_glob:  withNotGlob([src.images], [src.bower_components])
-}
+  img_glob: withNotGlob([src.images], [src.bower_components])
+};
 
 
 gulp.task('cp', function (cb) {
@@ -145,10 +142,11 @@ gulp.task('cp', function (cb) {
     .pipe(changed(DEST_DIR))
     .pipe(debug({title: 'cp changed:'}))
     .pipe(gulp.dest(DEST_DIR))
-    .pipe(livereload());
+//    .pipe(livereload());
+  //  .pipe(filter('**/*.css')) // Filtering stream to only css files
+    .pipe(debug({title: 'CSS changed:'}))
+    .pipe(browserSync.reload({stream: true}));
 });
-
-
 
 
 gulp.task('cp:watch', ['cp'], function (cb) {
@@ -175,7 +173,7 @@ gulp.task('images', function (cb) {
 });
 
 gulp.task('images:watch', ['images'], function (cb) {
-  gulp.watch(config_cp.img_glob, {cwd: path.app}, ['images']) ;
+  gulp.watch(config_cp.img_glob, {cwd: path.app}, ['images']);
   cb();
 });
 
@@ -230,7 +228,8 @@ gulp.task('vulcanize', function () {
       }
     }))
     .pipe(gulp.dest(DEST_DIR))
-    .pipe(livereload());
+//    .pipe(livereload());
+  .pipe(browserSync.reload({stream: true}));
 });
 
 
@@ -289,7 +288,7 @@ gulp.task('webserver', ['watch'], function () {
     }));
 });
 
-gulp.task('connect',  function () {
+gulp.task('connect', function () {
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
   var app = require('connect')()
@@ -298,13 +297,13 @@ gulp.task('connect',  function () {
     .use(serveStatic(path.app))
     // paths to bower_components should be relative to the current file
     // e.g. in app/index.html you should use ../bower_components
-  //  .use('/bower_components', serveStatic('bower_components'))
+    //  .use('/bower_components', serveStatic('bower_components'))
     .use(serveIndex(path.app));
 
   require('http').createServer(app)
     .listen(9000)
     .on('listening', function () {
-      console.log('Started connect web server on http://' +server.host +  ':' + server.port );
+      console.log('Started connect web server on http://' + server.host + ':' + server.port);
     });
 });
 
@@ -312,6 +311,24 @@ gulp.task('serve', ['connect', 'watch'], function () {
   return require('opn')('http://' + server.host + ':' + server.port);
 });
 
+
+gulp.task('browser-sync', ['watch'], function () {
+  //http://stackoverflow.com/questions/25410284/gulp-browser-sync-redirect-api-request-via-proxy
+  var url = require('url');
+  var proxyOptions = url.parse('http://localhost:3000/secret-api');
+  proxyOptions.route = '/api';
+  var proxy = require('proxy-middleware');
+  //
+  browserSync({
+    server: {
+      baseDir: path.app,
+      server: {
+        baseDir: "./",
+        middleware: [proxy(proxyOptions)]
+      }
+    }
+  });
+});
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Lint TASKS
@@ -364,12 +381,12 @@ gulp.task('cca:dist-generated', ['cca:create'], function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
 // Cordova App Mobile TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('cordova:create',  function () {
+gulp.task('cordova:create', function () {
   var cca_action = ' --link-to=';
   //var cca_action = ' --copy-from=';
   return gulp.src('.')
     .pipe(debug({title: 'cordova create :'}))
-    .pipe($.shell(['cordova create ' + path.build_cordova + cca_action + path.build_vulcanized  ], {ignoreErrors: true}));
+    .pipe($.shell(['cordova create ' + path.build_cordova + cca_action + path.build_vulcanized], {ignoreErrors: true}));
 });
 
 
@@ -378,7 +395,7 @@ gulp.task('cordova:create',  function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 gulp.task('dist', function (cb) {
-  return runSequence('build', ['dist:web', 'dist:ca', 'dist:cca'] , cb);
+  return runSequence('build', ['dist:web', 'dist:ca', 'dist:cca'], cb);
 });
 
 gulp.task('dist:web', function (cb) {
@@ -390,7 +407,7 @@ gulp.task('dist:web', function (cb) {
     .pipe(debug({title: 'web dist :'}))
 //    .pipe($.rev())
 //    .pipe($.revReplace())
-      .pipe($.gzip(gzipOptions))
+    .pipe($.gzip(gzipOptions))
     .pipe(gulp.dest(DEST_DIR));
   //gulp.src(['**', notGlob(gzipGlob)], {cwd: path.build_vulcanized, base: path.build_vulcanized})
   //  .pipe(debug({title: 'web dist gzip :'}))
