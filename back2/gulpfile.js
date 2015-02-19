@@ -46,6 +46,9 @@ var browserSync = require("browser-sync");
 //var rev = require('gulp-rev');
 //var revReplace = require('gulp-rev-replace');
 
+// Notification
+var notifier = require('node-notifier');
+
 
 var notGlob = function (elt) {
   if (!elt) {
@@ -76,7 +79,6 @@ var withNotGlob = function (include, excludes) {
 var path = {
   app: 'app',
   build: 'build',
-  build_generated: 'build/generated',
   build_vulcanized: 'build/vulcanized',
   build_cca: 'build/cca',
   build_cordova: 'build/cordova',
@@ -123,12 +125,36 @@ gulp.task('build', function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Watch TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+var isErrorEatByWatch = false;
+
+
 // Watch all files changes
 gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch'], function (done) {
+  isErrorEatByWatch = true;
   livereload.listen();
   done();
 });
 
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Watch Error Notification
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+var errorNotif = function (title) {
+  title = title || 'Build Error';
+  return function (err) {
+    var path = require('path');
+    notifier.notify({
+      'title': title,
+      'message': err.message,
+      icon: path.join(__dirname, '../exclamation.png'),
+      sound: true
+    });
+    gutil.log(gutil.colors.red(err));
+    this.emit('end');
+  };
+};
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Copy COMMAND to Generated
@@ -141,16 +167,23 @@ var config_cp = {
 // Copy all missing files
 gulp.task('cp', function () {
   var DEST_DIR = path.build_vulcanized;
+
+  var assets = $.useref.assets({searchPath: '{app}'});
+
   return gulp.src(config_cp.cp_glob, {cwd: path.app, base: path.app})
     .pipe(cache('cping', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR))
     .pipe(debug({title: 'cp changed:'}))
+    .pipe(assets)
+    //   .pipe($.if('*.js', $.uglify()))
+    //   .pipe($.if('*.css', cssChannel()))
+    .pipe(assets.restore())
+    .pipe($.useref())
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(filter('**/*.css')) // Filtering stream to only css files
-  //  .pipe(debug({title: 'CSS changed:'}))
     .pipe(browserSync.reload({stream: true}));
 });
+
 
 // Watch for Copy files
 gulp.task('cp:watch', ['cp'], function (cb) {
@@ -176,6 +209,7 @@ gulp.task('images', function (cb) {
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload());
 });
+
 
 // Watch for images copy
 gulp.task('images:watch', ['images'], function (cb) {
@@ -207,7 +241,8 @@ gulp.task('sass', function () {
     }))
     //.pipe($.sourcemaps.write())
     .pipe(gulp.dest(DEST_DIR))
-    .pipe(livereload());
+    .pipe(livereload())
+    .pipe(browserSync.reload({stream: true}));
 });
 
 // Watch for Sass generation
@@ -217,14 +252,17 @@ gulp.task('sass:watch', ['sass'], function (cb) {
 });
 
 
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Vulcanize TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Vulcanize html files
-gulp.task('vulcanize', function () {
-  var DEST_DIR = path.build_vulcanized;
-  return gulp.src('index.html', {cwd: path.app, base: path.app})
+gulp.task('vulcanize', function (cb) {
+  var DEST_DIR = path.build_vulcanized +'/elements/';
+  return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
+    .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
+    .pipe(debug({title: 'vulcanize :'}))
     .pipe($.vulcanize({
       dest: DEST_DIR,
       abspath: path.app,
@@ -238,8 +276,8 @@ gulp.task('vulcanize', function () {
       }
     }))
     .pipe(gulp.dest(DEST_DIR))
-//    .pipe(livereload());
-  .pipe(browserSync.reload({stream: true}));
+    .pipe(livereload())
+    .pipe(browserSync.reload({stream: true}));
 });
 
 // Watch for Vulcanize html files
@@ -300,14 +338,15 @@ gulp.task('webserver', ['watch'], function () {
 gulp.task('connect', function () {
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
+  var srcApp =  gutil.env.vulcanize ?  path.app: path.build_vulcanized;
   var app = require('connect')()
     .use(require('connect-livereload')({port: 35729}))
 //    .use(serveStatic('.tmp'))
-    .use(serveStatic(path.app))
+    .use(serveStatic(srcApp))
     // paths to bower_components should be relative to the current file
     // e.g. in app/index.html you should use ../bower_components
     //  .use('/bower_components', serveStatic('bower_components'))
-    .use(serveIndex(path.app));
+    .use(serveIndex(srcApp));
 
   require('http').createServer(app)
     .listen(9000)
@@ -321,7 +360,7 @@ gulp.task('serve', ['connect', 'watch'], function () {
 });
 
 
-gulp.task('browser-sync', ['watch'], function () {
+gulp.task('serveBS', ['watch'], function () {
   //http://stackoverflow.com/questions/25410284/gulp-browser-sync-redirect-api-request-via-proxy
   var url = require('url');
   var proxyOptions = url.parse('http://localhost:3000/secret-api');
@@ -334,7 +373,8 @@ gulp.task('browser-sync', ['watch'], function () {
       server: {
         baseDir: "./",
         middleware: [proxy(proxyOptions)]
-      }
+      } ,
+      logLevel: "info"
     }
   });
 });
