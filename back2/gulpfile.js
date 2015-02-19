@@ -330,7 +330,7 @@ gulp.task('webserver', ['watch'], function () {
 gulp.task('connect', function () {
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
-  var srcApp =  path.build_vulcanized; // path.app;
+  var srcApp =  gutil.env.vulcanize ?  path.app: path.build_vulcanized;
   var app = require('connect')()
     .use(require('connect-livereload')({port: 35729}))
 //    .use(serveStatic('.tmp'))
