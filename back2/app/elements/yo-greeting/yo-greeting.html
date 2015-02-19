@@ -10,22 +10,21 @@
       :host {
         display: block;
       }
+      google-map {
+        height: 600px;
+
+      }
 
     </style>
-    <geo-location watchpos latitude="{{lat}}"
-                  longitude="{{lng}}"></geo-location>
 
-    <input type="file" accept="image/*;capture=camera">
-    <device type="media" on-change="{{update()}}"></device>
-    <video id="video" autoplay></video>
+    <geo-location watchpos latitude="{{lat}}" longitude="{{lng}}"></geo-location>
 
-    <h1>{{ lat }}, {{ lng }}!</h1>
-    <span>Update text to change the greeting.</span>
-    <core-field>
-      <label>I'm a label!</label>
-      <input placeholder="I have a label" flex>
-    </core-field>
-    <input type="text" value="{{ greeting }}">
+    <h1>Lat, Lng : {{ lat }}, {{ lng }}! -- {{zoom}}</h1>
+
+    <google-map latitude="48.88" longitude="2.33"   minZoom="5"  maxZoom="16" zoom="{{zoom}}">
+      <google-map-marker latitude="{{lat}}" longitude="{{lng}}" title="I am Here!" ></google-map-marker>
+    </google-map>
+
   </template>
   <script>
     (function () {

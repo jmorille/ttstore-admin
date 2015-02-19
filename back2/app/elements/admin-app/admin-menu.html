@@ -1,0 +1,31 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="admin-menu" attributes="selected">
+
+  <template>
+
+    <core-menu selected="{{selected}}" valueattr="data-category">
+
+      <template repeat="{{menu in menus}}">
+        <core-item data-category="{{menu.route}}" label="{{menu.label}}"></core-item>
+      </template>
+
+    </core-menu>
+
+  </template>
+  <script>
+
+    Polymer({
+      menus: undefined,
+      created: function () {
+        this.menus =  [
+          { label: 'Home', route: 'home'},
+          { label: 'User', route: 'user'},
+          { label: 'Portfolio', route: 'portfolio'},
+          { label: 'Contact', route: 'contact'}
+        ];
+      }
+    });
+
+  </script>
+</polymer-element>

@@ -160,16 +160,14 @@ var errorNotif = function (title) {
 // Copy COMMAND to Generated
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var config_cp = {
-  cp_glob: withNotGlob(['**'], [src.sass, src.bower_components, src.polymer_elements, src.images]),
+  cp_glob: withNotGlob(['**.*'], [src.sass, src.bower_components, src.polymer_elements, src.images]),
   img_glob: withNotGlob([src.images], [src.bower_components])
 };
 
 // Copy all missing files
 gulp.task('cp', function () {
   var DEST_DIR = path.build_vulcanized;
-
-  var assets = $.useref.assets({searchPath: '{app}'});
-
+  var assets = $.useref.assets();
   return gulp.src(config_cp.cp_glob, {cwd: path.app, base: path.app})
     .pipe(cache('cping', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR))
@@ -252,14 +250,13 @@ gulp.task('sass:watch', ['sass'], function (cb) {
 });
 
 
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Vulcanize TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Vulcanize html files
 gulp.task('vulcanize', function (cb) {
-  var DEST_DIR = path.build_vulcanized +'/elements/';
+  var DEST_DIR = path.build_vulcanized + '/elements/';
   return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
     .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
     .pipe(debug({title: 'vulcanize :'}))
@@ -270,9 +267,8 @@ gulp.task('vulcanize', function (cb) {
       inline: true,
       csp: true,
       "excludes": {
-        "styles": [
-          "/styles/main.css"
-        ]
+        "imports": ['polymer.html$'],
+        "styles": ['/styles/main.css']
       }
     }))
     .pipe(gulp.dest(DEST_DIR))
@@ -338,7 +334,7 @@ gulp.task('webserver', ['watch'], function () {
 gulp.task('connect', function () {
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
-  var srcApp =  gutil.env.vulcanize ?  path.app: path.build_vulcanized;
+  var srcApp = gutil.env.build ? path.build_vulcanized : path.app;
   var app = require('connect')()
     .use(require('connect-livereload')({port: 35729}))
 //    .use(serveStatic('.tmp'))
@@ -351,7 +347,7 @@ gulp.task('connect', function () {
   require('http').createServer(app)
     .listen(9000)
     .on('listening', function () {
-      console.log('Started connect web server on http://' + server.host + ':' + server.port);
+      console.log('Started connect web server on http://' + server.host + ':' + server.port + ' on directory ' + srcApp);
     });
 });
 
@@ -373,7 +369,7 @@ gulp.task('serveBS', ['watch'], function () {
       server: {
         baseDir: "./",
         middleware: [proxy(proxyOptions)]
-      } ,
+      },
       logLevel: "info"
     }
   });
