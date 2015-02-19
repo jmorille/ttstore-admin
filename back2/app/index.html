@@ -45,7 +45,7 @@
         <div>My App</div>
         <span flex></span>
         <paper-icon-button icon="search"></paper-icon-button>
-        <paper-progress class="bottom fit" value="60"></paper-progress>
+        <paper-progress class="bottom fit" value="100"></paper-progress>
       </core-toolbar>
       <div class="content">
         <core-animated-pages selected="{{route}}" transitions="cross-fade" valueattr="data-category">
@@ -66,8 +66,7 @@
           <section data-category="contact">
             <div cross-fade>
               <h1>Contact</h1>
-
-              <div>Contact content</div>
+              <yo-greeting></yo-greeting>
             </div>
           </section>
         </core-animated-pages>
