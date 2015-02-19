@@ -79,7 +79,6 @@ var withNotGlob = function (include, excludes) {
 var path = {
   app: 'app',
   build: 'build',
-  build_generated: 'build/generated',
   build_vulcanized: 'build/vulcanized',
   build_cca: 'build/cca',
   build_cordova: 'build/cordova',
@@ -252,7 +251,7 @@ gulp.task('sass:watch', ['sass'], function (cb) {
 
 // Vulcanize html files
 gulp.task('vulcanize', function (cb) {
-  var DEST_DIR = path.build_vulcanized;
+  var DEST_DIR = path.build_vulcanized +'/elements/';
   return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
     .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
     .pipe(debug({title: 'vulcanize :'}))
@@ -331,14 +330,15 @@ gulp.task('webserver', ['watch'], function () {
 gulp.task('connect', function () {
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
+  var srcApp =  path.build_vulcanized; // path.app;
   var app = require('connect')()
     .use(require('connect-livereload')({port: 35729}))
 //    .use(serveStatic('.tmp'))
-    .use(serveStatic(path.app))
+    .use(serveStatic(srcApp))
     // paths to bower_components should be relative to the current file
     // e.g. in app/index.html you should use ../bower_components
     //  .use('/bower_components', serveStatic('bower_components'))
-    .use(serveIndex(path.app));
+    .use(serveIndex(srcApp));
 
   require('http').createServer(app)
     .listen(9000)
