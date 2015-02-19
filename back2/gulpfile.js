@@ -105,6 +105,11 @@ var src = {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('default', ['lint']);
 
+// Help like command gulp --tasks
+gulp.task('help', function () {
+ return gulp.run('task-list');
+});
+
 
 // Clean all files
 gulp.task('clean', function (cb) {
@@ -351,11 +356,13 @@ gulp.task('connect', function () {
     });
 });
 
+// Start liveReload Server. Options : --build
 gulp.task('serve', ['connect', 'watch'], function () {
   return require('opn')('http://' + server.host + ':' + server.port);
 });
 
 
+// Start CSS Injection Server. Options : --build
 gulp.task('serveBS', ['watch'], function () {
   //http://stackoverflow.com/questions/25410284/gulp-browser-sync-redirect-api-request-via-proxy
   var url = require('url');
@@ -363,9 +370,10 @@ gulp.task('serveBS', ['watch'], function () {
   proxyOptions.route = '/api';
   var proxy = require('proxy-middleware');
   //
+  var srcApp = gutil.env.build ? path.build_vulcanized : path.app;
   browserSync({
     server: {
-      baseDir: path.app,
+      baseDir: srcApp,
       server: {
         baseDir: "./",
         middleware: [proxy(proxyOptions)]
