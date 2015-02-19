@@ -48,7 +48,7 @@ var browserSync = require("browser-sync");
 
 // Notification
 var notifier = require('node-notifier');
-var path = require('path');
+
 
 var notGlob = function (elt) {
   if (!elt) {
@@ -145,9 +145,11 @@ gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch'], function (do
 var errorNotif = function (title) {
   title = title || 'Build Error';
   return function (err) {
+    var path = require('path');
     notifier.notify({
       'title': title,
       'message': err.message,
+      icon: path.join(__dirname, '../exclamation.png'),
       sound: true
     });
     gutil.log(gutil.colors.red(err));
