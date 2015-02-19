@@ -174,8 +174,6 @@ gulp.task('cp', function () {
     .pipe(debug({title: 'cp changed:'}))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    //.pipe(filter('**/*.css')) // Filtering stream to only css files
-    //  .pipe(debug({title: 'CSS changed:'}))
     .pipe(browserSync.reload({stream: true}));
 });
 
@@ -236,7 +234,8 @@ gulp.task('sass', function () {
     }))
     //.pipe($.sourcemaps.write())
     .pipe(gulp.dest(DEST_DIR))
-    .pipe(livereload());
+    .pipe(livereload())
+    .pipe(browserSync.reload({stream: true}));
 });
 
 // Watch for Sass generation
@@ -254,7 +253,7 @@ gulp.task('sass:watch', ['sass'], function (cb) {
 // Vulcanize html files
 gulp.task('vulcanize', function (cb) {
   var DEST_DIR = path.build_vulcanized;
-  return gulp.src('index.html', {cwd: path.app, base: path.app})
+  return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
     .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
     .pipe(debug({title: 'vulcanize :'}))
     .pipe($.vulcanize({
@@ -270,7 +269,7 @@ gulp.task('vulcanize', function (cb) {
       }
     }))
     .pipe(gulp.dest(DEST_DIR))
-//    .pipe(livereload());
+    .pipe(livereload())
     .pipe(browserSync.reload({stream: true}));
 });
 

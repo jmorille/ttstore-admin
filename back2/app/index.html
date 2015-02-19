@@ -10,7 +10,7 @@
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
   <!-- build:css styles/main.css -->
-  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/main.css" shim-shadowdom>
   <!-- endbuild-->
 
   <!-- build:js bower_components/webcomponentsjs/webcomponents.min.js -->
@@ -25,54 +25,7 @@
 <body unresolved fullbleed layout vertical>
 
 <template is="auto-binding">
-  <!-- Route controller. -->
-  <flatiron-director route="{{route}}" autoHash></flatiron-director>
-
-
-  <core-drawer-panel>
-    <core-header-panel drawer>
-      <core-toolbar>Menu</core-toolbar>
-      <core-menu selected="{{route}}" valueattr="data-category">
-        <core-item data-category="home" label="Home"></core-item>
-        <core-item data-category="portfolio" label="Portfolio"></core-item>
-        <core-item data-category="contact" label="Contact"></core-item>
-      </core-menu>
-    </core-header-panel>
-
-    <core-header-panel main>
-      <core-toolbar>
-        <paper-icon-button core-drawer-toggle icon="menu"></paper-icon-button>
-        <div>My App</div>
-        <span flex></span>
-        <paper-icon-button icon="search"></paper-icon-button>
-        <paper-progress class="bottom fit" value="100"></paper-progress>
-      </core-toolbar>
-      <div class="content">
-        <core-animated-pages selected="{{route}}" transitions="cross-fade" valueattr="data-category">
-          <section data-category="home">
-            <div cross-fade>
-              <h1>Home</h1>
-
-              <div>Home content</div>
-            </div>
-          </section>
-          <section data-category="portfolio">
-            <div cross-fade>
-              <h1>Portfolio</h1>
-
-              <div>Portfolio content</div>
-            </div>
-          </section>
-          <section data-category="contact">
-            <div cross-fade>
-              <h1>Contact</h1>
-              <yo-greeting></yo-greeting>
-            </div>
-          </section>
-        </core-animated-pages>
-      </div>
-    </core-header-panel>
-  </core-drawer-panel>
+  <admin-app selected="{{selected}}"></admin-app>
 
 
 </template>

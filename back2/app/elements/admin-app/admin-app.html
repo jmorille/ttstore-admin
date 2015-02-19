@@ -1,0 +1,54 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="admin-app" attributes="selected progress">
+
+  <template>
+    <style>
+      [main] {
+        background-color: #F9F9F9;
+      }
+
+      [drawer] {
+        background-color: #FFFFFF;
+      }
+
+      .content {
+        margin: 60px 180px 60px 20px;
+      }
+
+    </style>
+
+    <!-- Route controller. -->
+    <flatiron-director route="{{selected}}" autoHash></flatiron-director>
+
+
+    <core-drawer-panel>
+      <core-header-panel drawer>
+        <core-toolbar>Menu</core-toolbar>
+        <admin-menu selected="{{selected}}"></admin-menu>
+      </core-header-panel>
+
+      <core-header-panel main>
+        <core-toolbar>
+          <paper-icon-button core-drawer-toggle icon="menu"></paper-icon-button>
+          <div>My App</div>
+          <span flex></span>
+          <paper-icon-button icon="search"></paper-icon-button>
+          <paper-progress class="bottom fit" value="0"></paper-progress>
+        </core-toolbar>
+        <div class="content">
+          <admin-content selected="{{selected}}"></admin-content>
+        </div>
+      </core-header-panel>
+    </core-drawer-panel>
+
+
+  </template>
+  <script>
+
+    Polymer({
+      progress: 0
+    });
+
+  </script>
+</polymer-element>
