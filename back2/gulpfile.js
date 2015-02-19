@@ -167,10 +167,18 @@ var config_cp = {
 // Copy all missing files
 gulp.task('cp', function () {
   var DEST_DIR = path.build_vulcanized;
+
+  var assets = $.useref.assets({searchPath: '{app}'});
+
   return gulp.src(config_cp.cp_glob, {cwd: path.app, base: path.app})
     .pipe(cache('cping', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR))
     .pipe(debug({title: 'cp changed:'}))
+    .pipe(assets)
+    //   .pipe($.if('*.js', $.uglify()))
+    //   .pipe($.if('*.css', cssChannel()))
+    .pipe(assets.restore())
+    .pipe($.useref())
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
     .pipe(browserSync.reload({stream: true}));
