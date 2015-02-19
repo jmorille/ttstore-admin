@@ -46,6 +46,9 @@ var browserSync = require("browser-sync");
 //var rev = require('gulp-rev');
 //var revReplace = require('gulp-rev-replace');
 
+// Notification
+var notifier = require('node-notifier');
+var path = require('path');
 
 var notGlob = function (elt) {
   if (!elt) {
@@ -220,6 +223,20 @@ gulp.task('sass:watch', ['sass'], function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Vulcanize TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gulp.task('hello', function (cb) {
+  errorNotif();
+  cb();
+});
+
+var errorNotif = function (err) {
+  notifier.notify({
+    'title': 'Error notification',
+    'message': err.message,
+    sound: true
+  });
+  gutil.log( gutil.colors.red(err));
+  gutil.beep();
+};
 
 // Vulcanize html files
 gulp.task('vulcanize', function () {
@@ -237,6 +254,9 @@ gulp.task('vulcanize', function () {
         ]
       }
     }))
+    .on('error', function (err) {
+      errorNotif(err);
+    })
     .pipe(gulp.dest(DEST_DIR))
 //    .pipe(livereload());
   .pipe(browserSync.reload({stream: true}));
