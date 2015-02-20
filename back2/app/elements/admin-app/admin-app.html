@@ -9,7 +9,7 @@
       }
 
       [drawer] {
-        background-color: #CFD8DC;
+        background-color: #F9F9F9;
       }
 
       .content {
@@ -21,6 +21,19 @@
         width: 48px;
       }
 
+      .site-banner {
+        background-color: #7986cb;
+        color: white;
+      }
+      .site-menu {
+        background-color: #EEEEEE;
+        margin: 0px;
+        padding: 0px;
+      }
+      .site-menu-tb {
+
+      }
+
     </style>
 
     <!-- Route controller. -->
@@ -28,21 +41,21 @@
 
 
     <core-drawer-panel id="menuBody">
-      <core-header-panel drawer  mode="waterfall">
-        <core-toolbar>
+      <core-header-panel class="site-menu" drawer  mode="waterfall">
+        <core-toolbar class="site-menu-tb">
           <core-icon src="/images/polymer-logo.svg" class="menu-icon"></core-icon>
           Menu
         </core-toolbar>
-        <admin-menu selected="{{selected}}" on-core-select="{{menuSelectHandler}}"></admin-menu>
+        <admin-menu flex selected="{{selected}}" on-core-select="{{menuSelectHandler}}"></admin-menu>
       </core-header-panel>
 
       <core-header-panel main mode="waterfall-tall" tallclass="medium-tall">
-        <core-toolbar>
+        <core-toolbar class="site-banner">
           <paper-icon-button  icon="menu" core-drawer-toggle></paper-icon-button>
           <div class="bottom indent">Cordova App Killer</div>
           <span flex></span>
           <paper-icon-button icon="search" on-tap="{{openSearchBox}}"></paper-icon-button>
-          <paper-progress class="bottom fit" value="{{progress}}"></paper-progress>
+          <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
         </core-toolbar>
         <div class="content">
           <admin-content selected="{{selected}}"></admin-content>

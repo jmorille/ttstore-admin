@@ -4,10 +4,23 @@
 
   <template>
 
-    <core-menu selected="{{selected}}" valueattr="data-category">
+    <style>
+      core-menu {
+        border-top: 1px solid darkgrey;
+        padding: 0 24px;
+        margin: 0;
+      }
+      core-item.core-selected {
+        font-weight: bold;
+        color: #7986cb;
+      }
+
+    </style>
+
+    <core-menu selected="{{selected}}"  valueattr="data-category">
 
       <template repeat="{{menu in menus}}">
-        <core-item data-category="{{menu.route}}" label="{{menu.label}}"></core-item>
+        <core-item icon="{{menu.icon}}" data-category="{{menu.route}}" label="{{menu.label}}"></core-item>
       </template>
 
     </core-menu>
@@ -19,10 +32,10 @@
       menus: undefined,
       created: function () {
         this.menus =  [
-          { label: 'Home', route: 'home'},
-          { label: 'User', route: 'user'},
-          { label: 'Portfolio', route: 'portfolio'},
-          { label: 'Contact', route: 'contact'}
+          { icon:'home', label: 'Home', route: 'home'},
+          { icon:'supervisor-account', label: 'User', route: 'user'},
+          { icon:'perm-media', label: 'Portfolio', route: 'portfolio'},
+          { icon:'perm-contact-cal',  label: 'Contact', route: 'contact'}
         ];
       }
     });

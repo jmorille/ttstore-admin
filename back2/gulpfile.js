@@ -153,7 +153,10 @@ var errorNotif = function (title) {
     notifier.notify({
       'title': title,
       'message': err.message,
+      category: 'gulp watch',
       icon: path.join(__dirname, '../exclamation.png'),
+      time: 5000, // How long to show balloons in ms
+      wait: false, // if wait for notification to end
       sound: true
     });
     gutil.log(gutil.colors.red(err));
@@ -165,7 +168,7 @@ var errorNotif = function (title) {
 // Copy COMMAND to Generated
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var config_cp = {
-  cp_glob: withNotGlob(['**.*'], [src.sass, src.bower_components, src.polymer_elements, src.images]),
+  cp_glob: withNotGlob(['**/**.*'], [src.sass, src.bower_components, src.polymer_elements, src.images]),
   img_glob: withNotGlob([src.images], [src.bower_components])
 };
 
@@ -261,7 +264,7 @@ gulp.task('sass:watch', ['sass'], function (cb) {
 
 // Vulcanize html files
 gulp.task('vulcanize', function (cb) {
-  var DEST_DIR = path.build_vulcanized + '/elements/';
+  var DEST_DIR = path.build_vulcanized + '/elements';
   return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
     .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
     .pipe(debug({title: 'vulcanize :'}))
@@ -272,7 +275,7 @@ gulp.task('vulcanize', function (cb) {
       inline: true,
       csp: true,
       "excludes": {
-        "imports": ['polymer.html$'],
+        //"imports": ['polymer.html$'],
         "styles": ['/styles/main.css']
       }
     }))
@@ -455,7 +458,7 @@ gulp.task('dist:web', function (cb) {
   var DEST_DIR = path.dist_web;
   var gzipOptions = {};
 //  var gzipGlob = '**/*.{html,xml,json,css,js}';
-  var gzipGlob = ['**/*'];
+  var gzipGlob = ['**/*.*'];
   gulp.src(gzipGlob, {cwd: path.build_vulcanized, base: path.build_vulcanized})
     .pipe(debug({title: 'web dist :'}))
 //    .pipe($.rev())
@@ -471,7 +474,7 @@ gulp.task('dist:web', function (cb) {
 
 gulp.task('dist:ca', function (cb) {
   var DEST_DIR = path.dist_ca;
-  gulp.src(['**'], {cwd: path.build_vulcanized, base: path.build_vulcanized})
+  gulp.src(['**/*.*'], {cwd: path.build_vulcanized, base: path.build_vulcanized})
     .pipe(debug({title: 'ca dist :'}))
     .pipe($.if('**/manifest.json', $.replace(/"\/scripts\/ca_chromereload\.js",/g, '')))
     .pipe(gulp.dest(DEST_DIR))
