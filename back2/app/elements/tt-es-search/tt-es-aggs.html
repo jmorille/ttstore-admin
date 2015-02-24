@@ -1,0 +1,81 @@
+<link rel="import" href="../../components/polymer/polymer.html">
+<link rel="import" href="../../components/paper-input/paper-input.html">
+
+
+<polymer-element name="tt-es-aggs" attributes="aggs">
+
+    <template>
+        <style>
+            .filter-value {
+              text-transform: capitalize;
+              text-decoration: underline;
+              cursor: pointer;
+            }
+
+        </style>
+
+        <div>
+
+            <template repeat="{{filterName in aggs| enumerate}}">
+                <h2>{{filterName.name| filterLabelMapper}}</h2>
+
+                <ul>
+                    <template repeat="{{ filter in filterName.buckets }}">
+                        <li class="filter-value"
+                            filter-name="{{filterName.name}}" filter-value="{{filter.key}}" on-tap="{{filterHandler}}">
+                            {{filter.key}} ({{filter.doc_count}})
+                        </li>
+                    </template>
+                </ul>
+            </template>
+            </ul>
+
+        </div>
+
+
+    </template>
+
+    <script>
+        Polymer('tt-es-aggs', {
+
+            created: function () {
+                this.filterLabel = {
+                    firstname: 'Prénom'
+                };
+            },
+
+            filterLabelMapper: function (filterName) {
+                var label = filterName;
+                if (this.filterLabel[filterName]) {
+                    label = this.filterLabel[filterName];
+                }
+                return label;
+            },
+            enumerate: function (obj) {
+                var agg = [];
+                for (var key in obj) {
+                    var line = obj[key];
+                    line.name = key;
+                    // Push Line
+                    agg.push(line);
+                }
+                return agg;
+            },
+            getLineFilterId: function (e, data, sender) {
+                var filterName = sender.attributes['filter-name'].value;
+                var filterValue = sender.attributes['filter-value'].value;
+                var filter = {
+                    name: filterName,
+                    value: filterValue
+                };
+                return filter;
+            },
+            filterHandler: function (e, data, sender) {
+                var filter = this.getLineFilterId(e, data, sender);
+                this.fire('facet-select', filter);
+            }
+
+
+        });
+    </script>
+</polymer-element>
