@@ -31,7 +31,7 @@ var gutil = require('gulp-util'),
 // Browser reload
 var livereload = require('gulp-livereload');
 var filter = require('gulp-filter');
-var browserSync = require("browser-sync");
+var browserSync = require('browser-sync');
 
 //var source = require('vinyl-source-stream');
 //var buffer = require('vinyl-buffer');
@@ -79,23 +79,23 @@ var withNotGlob = function (include, excludes) {
 var path = {
   app: 'app',
   build: 'build',
-  build_vulcanized: 'build/vulcanized',
-  build_cca: 'build/cca',
-  build_cordova: 'build/cordova',
+  buildVulcanized: 'build/vulcanized',
+  buildCCA: 'build/cca',
+  buildCordova: 'build/cordova',
   dist: 'dist',
-  dist_web: 'dist/web',
-  dist_ca: 'dist/ca',
-  dist_cca_android: 'dist/cca_android',
-  dist_cca_ios: 'dist/cca_ios',
+  distWeb: 'dist/web',
+  distCa: 'dist/ca',
+  distCcaAndroid: 'dist/cca_android',
+  distCcaIOS: 'dist/cca_ios',
   sources: ['app/elements/**/*.html', 'app/scripts/{,*/}*.js']
 };
 
 //bower_components: ['bower_components{,/**/*}', '!bower_components{,/**/package.json,/**/bower.json,/**/index.html,/**/metadata.html,/**/*.md,/**/demo*,/**/demo**/**,/**/test,/**/test/**}'],
 var src = {
-  bower_components: ['bower_components{,/**}'],
+  bowerComponents: ['bower_components{,/**}'],
   images: ['**/*.{gif,jpg,jpeg,png}'],
   sass: '**/*.{scss,sass}',
-  polymer_elements: 'elements{,/*,/**/*.html,/**/*.css,/**/*.js}'
+  polymerElements: 'elements{,/*,/**/*.html,/**/*.css,/**/*.js}'
 };
 
 // TODO in module cf https://github.com/greypants/gulp-starter/tree/master/gulp/tasks
@@ -118,7 +118,7 @@ gulp.task('clean', function (cb) {
 
 // CLean css file
 gulp.task('clean:css', function (cb) {
-  del(withNotGlob([path.app + '/**/*.css'], [path.app + '/' + src.bower_components]), cb);
+  del(withNotGlob([path.app + '/**/*.css'], [path.app + '/' + src.bowerComponents]), cb);
 });
 
 // Build app
@@ -141,6 +141,22 @@ gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch'], function (do
   done();
 });
 
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Lint TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gulp.task('lint', function () {
+  return gulp.src(path.sources)
+    .pipe($.jshint.extract('auto'))
+    .pipe($.jshint())
+    .pipe($.jshint.reporter('jshint-stylish'));
+});
+gulp.task('lint:gulp', function () {
+  return gulp.src('gulpfile.js')
+    .pipe($.jshint.extract('auto'))
+    .pipe($.jshint())
+    .pipe($.jshint.reporter('jshint-stylish'));
+});
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Watch Error Notification
@@ -167,16 +183,16 @@ var errorNotif = function (title) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Copy COMMAND to Generated
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-var config_cp = {
-  cp_glob: withNotGlob(['**/**.*'], [src.sass, src.bower_components, src.polymer_elements, src.images]),
-  img_glob: withNotGlob([src.images], [src.bower_components])
+var configCp = {
+  cpGlob: withNotGlob(['**/**.*'], [src.sass, src.bowerComponents, src.polymerElements, src.images]),
+  imgGlob: withNotGlob([src.images], [src.bowerComponents])
 };
 
 // Copy all missing files
 gulp.task('cp', function () {
-  var DEST_DIR = path.build_vulcanized;
+  var DEST_DIR = path.buildVulcanized;
   var assets = $.useref.assets();
-  return gulp.src(config_cp.cp_glob, {cwd: path.app, base: path.app})
+  return gulp.src(configCp.cpGlob, {cwd: path.app, base: path.app})
     .pipe(cache('cping', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR))
     .pipe(debug({title: 'cp changed:'}))
@@ -193,7 +209,7 @@ gulp.task('cp', function () {
 
 // Watch for Copy files
 gulp.task('cp:watch', ['cp'], function (cb) {
-  gulp.watch(config_cp.cp_glob, {cwd: path.app}, ['cp']);
+  gulp.watch(configCp.cpGlob, {cwd: path.app}, ['cp']);
   cb();
 });
 
@@ -203,8 +219,8 @@ gulp.task('cp:watch', ['cp'], function (cb) {
 
 // Copy Images with Optimisation
 gulp.task('images', function (cb) {
-  var DEST_DIR = path.build_vulcanized;
-  return gulp.src(config_cp.img_glob, {cwd: path.app, base: path.app})
+  var DEST_DIR = path.buildVulcanized;
+  return gulp.src(configCp.imgGlob, {cwd: path.app, base: path.app})
     .pipe(cache('imaging'))
     .pipe(changed(DEST_DIR))
     .pipe(debug({title: 'img changed:'}))
@@ -219,7 +235,7 @@ gulp.task('images', function (cb) {
 
 // Watch for images copy
 gulp.task('images:watch', ['images'], function (cb) {
-  gulp.watch(config_cp.img_glob, {cwd: path.app}, ['images']);
+  gulp.watch(configCp.imgGlob, {cwd: path.app}, ['images']);
   cb();
 });
 
@@ -233,7 +249,7 @@ gulp.task('sass', function () {
   var SASS_OPTS = {
     sourceComments: !prod,
     outputStyle: prod ? 'compressed' : 'nested'
-  }
+  };
   return gulp.src(src.sass, {cwd: path.app, base: path.app})
     .pipe(cache('sassing', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR, {extension: '.css'}))
@@ -264,7 +280,7 @@ gulp.task('sass:watch', ['sass'], function (cb) {
 
 // Vulcanize html files
 gulp.task('vulcanize', function (cb) {
-  var DEST_DIR = path.build_vulcanized + '/elements';
+  var DEST_DIR = path.buildVulcanized + '/elements';
   return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
     .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
     .pipe(debug({title: 'vulcanize :'}))
@@ -274,9 +290,9 @@ gulp.task('vulcanize', function (cb) {
       strip: prod,
       inline: true,
       csp: true,
-      "excludes": {
-        //"imports": ['polymer.html$'],
-        "styles": ['/styles/main.css']
+      excludes: {
+        //imports: ['polymer.html$'],
+        styles: ['/styles/main.css']
       }
     }))
     .pipe(gulp.dest(DEST_DIR))
@@ -286,7 +302,7 @@ gulp.task('vulcanize', function (cb) {
 
 // Watch for Vulcanize html files
 gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
-  gulp.watch(src.polymer_elements, {cwd: path.app}, ['vulcanize']);
+  gulp.watch(src.polymerElements, {cwd: path.app}, ['vulcanize']);
   cb();
 });
 
@@ -327,10 +343,10 @@ gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
 var server = {
   host: 'localhost',
   port: '9000'
-}
+};
 
 gulp.task('webserver', ['watch'], function () {
-  return gulp.src(path.build_vulcanized)
+  return gulp.src(path.buildVulcanized)
     .pipe($.webserver({
       host: server.host,
       port: server.port,
@@ -342,7 +358,7 @@ gulp.task('webserver', ['watch'], function () {
 gulp.task('connect', function () {
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
-  var srcApp = gutil.env.build ? path.build_vulcanized : path.app;
+  var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
   var app = require('connect')()
     .use(require('connect-livereload')({port: 35729}))
 //    .use(serveStatic('.tmp'))
@@ -373,28 +389,19 @@ gulp.task('serveBS', ['watch'], function () {
   proxyOptions.route = '/api';
   var proxy = require('proxy-middleware');
   //
-  var srcApp = gutil.env.build ? path.build_vulcanized : path.app;
+  var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
   browserSync({
     server: {
       baseDir: srcApp,
       server: {
-        baseDir: "./",
+        baseDir: './',
         middleware: [proxy(proxyOptions)]
       },
-      logLevel: "info"
+      logLevel: 'info'
     }
   });
 });
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Lint TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('lint', function () {
-  return gulp.src(path.sources)
-    .pipe($.jshint.extract('auto'))
-    .pipe($.jshint())
-    .pipe($.jshint.reporter('jshint-stylish'));
-});
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
@@ -408,29 +415,29 @@ gulp.task('cca:check', function () {
 
 
 gulp.task('cca:create', ['cca:check'], function () {
-  var cca_action = ' --link-to=';
-  //var cca_action = ' --copy-from=';
+  var ccaAction = ' --link-to=';
+  //var ccaAction = ' --copy-from=';
   return gulp.src('.')
     .pipe(debug({title: 'cca create :'}))
-    .pipe($.shell(['cca checkenv', 'cca create ' + path.build_cca + cca_action + path.build_vulcanized + '/manifest.json'], {ignoreErrors: true}));
+    .pipe($.shell(['cca checkenv', 'cca create ' + path.buildCCA + ccaAction + path.buildVulcanized + '/manifest.json'], {ignoreErrors: true}));
 });
 
 gulp.task('cca:prepare', function () {
-  return gulp.src('*', {read: false, cwd: path.build_cca})
-    .pipe($.shell(['cca prepare'], {cwd: path.build_cca}));
+  return gulp.src('*', {read: false, cwd: path.buildCCA})
+    .pipe($.shell(['cca prepare'], {cwd: path.buildCCA}));
 });
 
 
 gulp.task('cca:push', function () {
-  return gulp.src('*', {read: false, cwd: path.build_cca})
-    .pipe($.shell(['cca push --watch'], {cwd: path.build_cca}));
+  return gulp.src('*', {read: false, cwd: path.buildCCA})
+    .pipe($.shell(['cca push --watch'], {cwd: path.buildCCA}));
 });
 
 
 gulp.task('cca:dist-generated', ['cca:create'], function () {
   var releaseOpts = prod ? ' --release' : '';
-  return gulp.src('*', {read: false, cwd: path.build_cca})
-    .pipe($.shell(['cca build' + releaseOpts], {cwd: path.build_cca}));
+  return gulp.src('*', {read: false, cwd: path.buildCCA})
+    .pipe($.shell(['cca build' + releaseOpts], {cwd: path.buildCCA}));
 });
 
 
@@ -438,11 +445,11 @@ gulp.task('cca:dist-generated', ['cca:create'], function () {
 // Cordova App Mobile TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('cordova:create', function () {
-  var cca_action = ' --link-to=';
-  //var cca_action = ' --copy-from=';
+  var ccaAction = ' --link-to=';
+  //var ccaAction = ' --copy-from=';
   return gulp.src('.')
     .pipe(debug({title: 'cordova create :'}))
-    .pipe($.shell(['cordova create ' + path.build_cordova + cca_action + path.build_vulcanized], {ignoreErrors: true}));
+    .pipe($.shell(['cordova create ' + path.buildCordova + ccaAction + path.buildVulcanized], {ignoreErrors: true}));
 });
 
 
@@ -455,17 +462,17 @@ gulp.task('dist', function (cb) {
 });
 
 gulp.task('dist:web', function (cb) {
-  var DEST_DIR = path.dist_web;
+  var DEST_DIR = path.distWeb;
   var gzipOptions = {};
 //  var gzipGlob = '**/*.{html,xml,json,css,js}';
   var gzipGlob = ['**/*.*'];
-  gulp.src(gzipGlob, {cwd: path.build_vulcanized, base: path.build_vulcanized})
+  gulp.src(gzipGlob, {cwd: path.buildVulcanized, base: path.buildVulcanized})
     .pipe(debug({title: 'web dist :'}))
 //    .pipe($.rev())
 //    .pipe($.revReplace())
     .pipe($.gzip(gzipOptions))
     .pipe(gulp.dest(DEST_DIR));
-  //gulp.src(['**', notGlob(gzipGlob)], {cwd: path.build_vulcanized, base: path.build_vulcanized})
+  //gulp.src(['**', notGlob(gzipGlob)], {cwd: path.buildVulcanized, base: path.buildVulcanized})
   //  .pipe(debug({title: 'web dist gzip :'}))
   //  .pipe($.gzip(gzipOptions))
   //  .pipe(gulp.dest(DEST_DIR));
@@ -473,8 +480,8 @@ gulp.task('dist:web', function (cb) {
 });
 
 gulp.task('dist:ca', function (cb) {
-  var DEST_DIR = path.dist_ca;
-  gulp.src(['**/*.*'], {cwd: path.build_vulcanized, base: path.build_vulcanized})
+  var DEST_DIR = path.distCa;
+  gulp.src(['**/*.*'], {cwd: path.buildVulcanized, base: path.buildVulcanized})
     .pipe(debug({title: 'ca dist :'}))
     .pipe($.if('**/manifest.json', $.replace(/"\/scripts\/ca_chromereload\.js",/g, '')))
     .pipe(gulp.dest(DEST_DIR))
@@ -487,12 +494,12 @@ gulp.task('dist:ca', function (cb) {
 
 
 gulp.task('dist:cca', ['cca:dist-generated'], function (cb) {
-  gulp.src('platforms/android/build/outputs/**/*.apk', {cwd: path.build_cca})
+  gulp.src('platforms/android/build/outputs/**/*.apk', {cwd: path.buildCCA})
     .pipe(debug({title: 'android dist :'}))
     .pipe($.flatten())
-    .pipe(gulp.dest(path.dist_cca_android));
-  gulp.src('platforms/ios/*.xcodeproj', {cwd: path.build_cca})
+    .pipe(gulp.dest(path.distCcaAndroid));
+  gulp.src('platforms/ios/*.xcodeproj', {cwd: path.buildCCA})
     .pipe(debug({title: 'android dist :'}))
-    .pipe(gulp.dest(path.dist_cca_ios));
+    .pipe(gulp.dest(path.distCcaIOS));
   cb();
 });

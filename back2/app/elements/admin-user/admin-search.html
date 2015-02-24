@@ -1,0 +1,59 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+
+<polymer-element name="admin-search" attributes="">
+  <template>
+
+    <style>
+
+
+
+    </style>
+
+    <voice-recognition id="voiceRecognition"
+                       continuous="false"
+                       on-result="{{handleVoiceRecognition}}"></voice-recognition>
+
+
+    Search User
+    <template id="request_query">
+      <section horizontal layout>
+        <core-field flex>
+          <paper-input placeHolder="Search Text" value="{{searchText}}"
+                       on-input="{{onSearchSuggest}}" flex></paper-input>
+          <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
+        </core-field>
+        <paper-icon-button icon="add" label="Add" on-tap="{{addButtonHandler}}"></paper-icon-button>
+
+
+        <paper-icon-button icon="settings-voice" label="Voice" on-tap="{{startVoiceRecognition}}">
+        <paper-icon-button id="filter_panel_button" icon="filter-list" label="Filters"
+                           on-tap="{{toggleFilter}}">
+        </paper-icon-button>
+      </section>
+    </template>
+
+
+    <div main>
+      <template bind ref="request_query"></template>
+    </div>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      searchText: undefined,
+      handleVoiceRecognition: function (event, data) {
+        this.searchText = data.result;
+        console.log('voice-recognition', data.result);
+      },
+      startVoiceRecognition: function () {
+        this.$.voiceRecognition.start();
+      }
+
+    });
+
+  </script>
+</polymer-element>
