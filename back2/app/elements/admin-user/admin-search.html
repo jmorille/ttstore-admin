@@ -11,9 +11,9 @@
 
     </style>
 
-    <voice-recognition id="voiceRecognition"
-                       continuous="false"
-                       on-result="{{handleVoiceRecognition}}"></voice-recognition>
+    <!--<voice-recognition id="voiceRecognition"-->
+                       <!--continuous="false"-->
+                       <!--on-result="{{handleVoiceRecognition}}"></voice-recognition>-->
 
 
     Search User
@@ -44,14 +44,14 @@
   <script>
 
     Polymer({
-      searchText: undefined,
-      handleVoiceRecognition: function (event, data) {
-        this.searchText = data.result;
-        console.log('voice-recognition', data.result);
-      },
-      startVoiceRecognition: function () {
-        this.$.voiceRecognition.start();
-      }
+      searchText: undefined //,
+//      handleVoiceRecognition: function (event, data) {
+//        this.searchText = data.result;
+//        console.log('voice-recognition', data.result);
+//      },
+//      startVoiceRecognition: function () {
+//        this.$.voiceRecognition.start();
+//      }
 
     });
 

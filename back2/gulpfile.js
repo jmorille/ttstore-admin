@@ -86,6 +86,7 @@ var path = {
   distWeb: 'dist/web',
   distCa: 'dist/ca',
   distCcaAndroid: 'dist/cca_android',
+  distCordovaAndroid: 'dist/cordova_android',
   distCcaIOS: 'dist/cca_ios',
   sources: ['app/elements/**/*.html', 'app/scripts/{,*/}*.js']
 };
@@ -448,8 +449,21 @@ gulp.task('cordova:create', function () {
   var ccaAction = ' --link-to=';
   //var ccaAction = ' --copy-from=';
   return gulp.src('.')
-    .pipe(debug({title: 'cordova create :'}))
     .pipe($.shell(['cordova create ' + path.buildCordova + ccaAction + path.buildVulcanized], {ignoreErrors: true}));
+});
+
+gulp.task('cordova:config', ['cordova:create'], function () {
+  var configPlateform ='android';
+  return gulp.src('*', {read: false, cwd: path.buildCordova})
+    .pipe($.shell(['cordova platform add ' + configPlateform], {cwd: path.buildCordova, ignoreErrors: true} ));
+});
+
+
+
+gulp.task('cordova:dist-generated', ['cordova:config'], function () {
+  var releaseOpts = prod ? ' --release' : '';
+  return gulp.src('*', {read: false, cwd: path.buildCordova})
+    .pipe($.shell(['cordova build' + releaseOpts], {cwd: path.buildCordova}));
 });
 
 
@@ -458,7 +472,7 @@ gulp.task('cordova:create', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 gulp.task('dist', function (cb) {
-  return runSequence('build', ['dist:web', 'dist:ca', 'dist:cca'], cb);
+  return runSequence('build', ['dist:web', 'dist:ca', 'dist:cca', 'dist:cordova'], cb);
 });
 
 gulp.task('dist:web', function (cb) {
@@ -501,5 +515,17 @@ gulp.task('dist:cca', ['cca:dist-generated'], function (cb) {
   gulp.src('platforms/ios/*.xcodeproj', {cwd: path.buildCCA})
     .pipe(debug({title: 'android dist :'}))
     .pipe(gulp.dest(path.distCcaIOS));
+  cb();
+});
+
+
+gulp.task('dist:cordova', ['cordova:dist-generated'], function (cb) {
+  gulp.src('platforms/android/ant-build/**/*.apk', {cwd: path.buildCordova})
+    .pipe(debug({title: 'android dist :'}))
+    .pipe($.flatten())
+    .pipe(gulp.dest(path.distCordovaAndroid));
+  //gulp.src('platforms/ios/*.xcodeproj', {cwd: path.buildCordova})
+  //  .pipe(debug({title: 'android dist :'}))
+  //  .pipe(gulp.dest(path.distCcaIOS));
   cb();
 });
