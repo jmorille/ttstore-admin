@@ -78,6 +78,7 @@ var withNotGlob = function (include, excludes) {
 // Config
 var path = {
   app: 'app',
+  sass: 'sass',
   build: 'build',
   buildVulcanized: 'build/vulcanized',
   buildCCA: 'build/cca',
@@ -95,7 +96,7 @@ var path = {
 var src = {
   bowerComponents: ['bower_components{,/**}'],
   images: ['**/*.{gif,jpg,jpeg,png}'],
-  sass: '**/*.{scss,sass}',
+  sass: ['**/*.{scss,sass}', '!includes/**/*.*'],
   polymerElements: 'elements{,/*,/**/*.html,/**/*.css,/**/*.js}'
 };
 
@@ -249,21 +250,27 @@ gulp.task('images:watch', ['images'], function (cb) {
 gulp.task('sass', function () {
   var DEST_DIR = path.app;
   var SASS_OPTS = {
+    includePaths: [
+      'sass/includes'
+    ],
+    errLogToConsole: false,
     sourceComments: !prod,
-    outputStyle: prod ? 'compressed' : 'nested'
+    outputStyle: prod ? 'compressed' : 'expanded'
   };
-  return gulp.src(src.sass, {cwd: path.app, base: path.app})
-    .pipe(cache('sassing', {optimizeMemory: true}))
+  return gulp.src(src.sass, {cwd: path.sass, base: path.sass})
+    .pipe(cache('sassing' ))
     .pipe(changed(DEST_DIR, {extension: '.css'}))
     .pipe(debug({title: 'sass changed:'}))
-    //.pipe($.sourcemaps.init())
+    .pipe($.sourcemaps.init())
     .pipe($.sass(SASS_OPTS))
     // Pass the compiled sass through the prefixer with defined
     .pipe($.autoprefixer({
       browsers: ['last 2 versions'],
       cascade: !prod
     }))
-    //.pipe($.sourcemaps.write())
+    .pipe($.sourcemaps.write('../maps', {
+      includeContent: true
+    }))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
     .pipe(browserSync.reload({stream: true}));
@@ -271,7 +278,7 @@ gulp.task('sass', function () {
 
 // Watch for Sass generation
 gulp.task('sass:watch', ['sass'], function (cb) {
-  gulp.watch(src.sass, {cwd: path.app}, ['sass']);
+  gulp.watch(src.sass, {cwd: path.sass}, ['sass']);
   cb();
 });
 

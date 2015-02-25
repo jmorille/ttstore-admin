@@ -1,0 +1,66 @@
+@import "settings";
+
+.Table {
+
+  $md: 500px;
+
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  border: 1px solid $dark-color;
+  font-size: 1rem;
+  margin: 0.5rem;
+  line-height: 1.5;
+
+  // .Table-header
+  &-header {
+    display: none;
+    @media (min-width: $md) {
+      font-weight: bold;
+      background-image: linear-gradient(to bottom, #f6f7f8 50%, #d2d7d9 100%);
+      text-align: center;
+    }
+  }
+  // .Table-footer
+  &-footer {
+
+  }
+  // .Table-row
+  &-row {
+    width: 100%;
+    &:nth-of-type(even) { background-color: $dark-color; }
+    &:nth-of-type(odd) { background-color: $light-color; }
+    @media (min-width: $md) {
+      display: flex;
+      flex-flow: row nowrap;
+      &:nth-of-type(even) { background-color: $light-color; }
+      &:nth-of-type(odd) { background-color: $dark-color; }
+    }
+    // .Table-row-item
+    &-item {
+      display: flex;
+      flex-flow: row nowrap;
+      flex-grow: 1;
+      flex-basis: 0;
+      word-wrap: break-word;
+      padding: 0.5em;
+      &:before {
+        content: attr(data-header);
+        width: 30%;
+        font-weight: 700;
+      }
+      @media (min-width: $md) {
+        border: 1px solid $light-color;
+        padding: 0.5em;
+        &:before { content: none; }
+      }
+    }
+  }
+}
+
+// generate Flexbox grow-rate utility classes
+@for $i from 1 through 10 {
+  .u-Flex-grow#{$i} {
+    flex-grow: $i;
+  }
+}

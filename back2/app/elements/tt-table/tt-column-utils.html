@@ -1,0 +1,38 @@
+<script>
+  'use strict';
+  var ttColumnUtilsMixin = {
+    rebuildColumns: function (htmlNode) {
+      // https://github.com/stevenrskelton/sortable-table/blob/master/sortable-table.html
+      var columnNodes = htmlNode.querySelectorAll('tt-column');
+      if (columnNodes.length > 0) {
+        var c = [];
+        [].forEach.call(columnNodes, function (elt, i) {
+          var classNames = '';
+          // name
+          var name = elt.getAttribute('column');
+          // sortable
+          var sortableCol = elt.getAttribute('sortable');
+          // Optional
+          var optional = elt.getAttribute('optional');
+
+          if (optional === '') {
+            classNames = 'optional';
+          }
+          // Title
+          var title = elt.getAttribute('title');
+          if (!title || title === '') title = elt.textContent.trim();
+          // Column obj
+          var colObj = {
+            column: name,
+            title: title,
+            sortable: sortableCol,
+            classNames: classNames
+          };
+          c.push(colObj);
+        });
+        // define Columns
+        return c.length > 0 ? c : undefined;
+      }
+    }
+  };
+</script>

@@ -5,15 +5,7 @@
 <polymer-element name="admin-search" attributes="">
   <template>
 
-    <style>
 
-
-
-    </style>
-
-    <!--<voice-recognition id="voiceRecognition"-->
-                       <!--continuous="false"-->
-                       <!--on-result="{{handleVoiceRecognition}}"></voice-recognition>-->
 
 
     Search User
@@ -35,19 +27,51 @@
     </template>
 
 
-    <div main>
+    <div main flex>
       <template bind ref="request_query"></template>
+
+      <tt-table-flexbox data="{{data}}"  sort="{{sort}}"  on-sort="{{sortHandler}}">
+        <tt-column column="lastname" sortable="$.raw" classNames="u-Flex-grow2">Nom</tt-column>
+        <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
+        <div action>
+          Action sss
+        </div>
+      </tt-table-flexbox>
     </div>
+
+
 
   </template>
 
   <script>
 
     Polymer({
-      searchText: undefined //,
+      searchText: undefined,
+      created: function () {
+        this.columns = [
+          {column:"firstname", title:"Nom", sortable:'firstname.raw', classNames:"u-Flex-grow2"},
+          {column:"lastname", title: "Prénom", classNames:"u-Flex-grow2"},
+          {column:"email", title:"Email"}
+        ];
+        this.data = [
+          {_id: '1', _source: {firstname: 'Nom 1', lastname: 'Prénom 1', email: 'Email-1@gmail.com'}},
+          {_id: '2:', _source: {firstname: 'Nom 2', lastname: 'Prénom 2', email: 'Email-2@gmail.com'}},
+          {_id: '3:', _source: {firstname: 'Nom 3', lastname: 'Prénom 3', email: 'Email-3@gmail.com'}},
+          {_id: '4:', _source: {firstname: 'Nom 4', lastname: 'Prénom 4', email: 'Email-4@gmail.com'}},
+          {_id: '5:', _source: {firstname: 'Nom 5', lastname: 'Prénom 5', email: 'Email-5@gmail.com'}},
+          {_id: '6:', _source: {firstname: 'Nom 6', lastname: 'Prénom 6', email: 'Email-6@gmail.com'}}
+        ];
+        this.sort = ['firstname.raw'];
+      },
+      sortHandler: function (event, data, sender) {
+        var sort = {sort: [ data.column + ":" + data.order ]};
+        console.log("sortHandler", data);
+       // this.search(sort);
+      }
+
 //      handleVoiceRecognition: function (event, data) {
 //        this.searchText = data.result;
-//        console.log('voice-recognition', data.result);
+//        _id.log('voice-recognition', data.result);
 //      },
 //      startVoiceRecognition: function () {
 //        this.$.voiceRecognition.start();

@@ -1,8 +1,8 @@
 <!-- -->
-<link rel="import" href="../../components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../components/core-icons/editor-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/core-icons/editor-icons.html">
 
 <link rel="import" href="tt-column.html">
 
@@ -56,7 +56,7 @@
                 <tbody>
                 <tr template repeat="{{item in data.hits}}">
                     <td template repeat="{{col in columns}}"  class="{{ col.classNames }}"
-                        on-click="{{editHandler}}" entity-id="{{item._id}}">
+                        on-tap="{{editHandler}}" entity-id="{{item._id}}">
                         {{item._source[col.column]}}
                     </td>
                     <td>

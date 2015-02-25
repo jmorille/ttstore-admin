@@ -1,0 +1,132 @@
+<!--
+`tt-table-flexbox` provides table emulation with ccs flexbox
+
+ Example:
+
+  <tt-table-flexbox data="{{data}}" columns="{{columns}}" sort="{{sort}}"></tt-table-flexbox>
+  <script>
+      created: function () {
+        this.columns = [
+          {column:"firstname", title:"Nom", sortable:'firstname.raw', classNames:"u-Flex-grow2"},
+          {column:"lastname", title: "Prénom", classNames:"u-Flex-grow2"},
+          {column:"email", title:"Email"}
+        ];
+        this.data = [
+          {id: '1', _source: {firstname: 'Nom 1', lastname: 'Prénom 1', email: 'Email-1@gmail.com'}},
+          {id: '2:', _source: {firstname: 'Nom 2', lastname: 'Prénom 2', email: 'Email-2@gmail.com'}},
+          {id: '3:', _source: {firstname: 'Nom 3', lastname: 'Prénom 3', email: 'Email-3@gmail.com'}},
+          {id: '4:', _source: {firstname: 'Nom 4', lastname: 'Prénom 4', email: 'Email-4@gmail.com'}},
+          {id: '5:', _source: {firstname: 'Nom 5', lastname: 'Prénom 5', email: 'Email-5@gmail.com'}},
+          {id: '6:', _source: {firstname: 'Nom 6', lastname: 'Prénom 6', email: 'Email-6@gmail.com'}}
+        ];
+        this.sort = ['firstname.raw'];
+      }
+  </script>
+
+ Example:
+
+  <tt-table-flexbox data="{{data}}" sort="{{sort}}" on-sort="{{sortHandler}}">
+    <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
+    <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
+    <tt-column column="email" optional sortable>Email</tt-column>
+  </tt-table-flexbox>
+
+-->
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+
+<link rel="import" href="tt-column-utils.html">
+
+<polymer-element name='tt-table-flexbox' attributes='data columns sort'>
+  <template>
+    <link rel="stylesheet" href="tt-table-flexbox.css">
+
+
+    <div class="Table">
+      <!-- Header -->
+      <template bind ref="theader" ></template>
+      <!-- Body -->
+      <template repeat='{{item in data}}'>
+        <div class="Table-row" on-tap="{{tapLineHandler}}" entity-id="{{item._id}}">
+          <template repeat="{{col in columns}}" class="{{col.classNames}}">
+            <div class="Table-row-item {{col.classNames}}" data-header="{{col.title}}"
+                 on-tap="{{tapColumnHandler}}" entity-id="{{item._id}}" entity-column="{{col.column}}">
+              {{item._source[col.column]}}
+            </div>
+          </template>
+          <!-- Line Action -->
+          <template bind ref="taction"  if="{{isAction}}"></template>
+        </div>
+      </template>
+      <!-- Footer -->
+      <!--<template bind ref="tfooter"  if="{{isFooter}}"></template>-->
+
+    </div>
+
+
+    <template id="theader">
+      <div class="Table-row Table-header">
+        <template repeat="{{col in columns}}" class="{{ col.classNames }}">
+          <div class="Table-row-item {{col.classNames}}">
+            <tt-column column="{{col.column}}" sortable="{{col.sortable}}"
+                       sort="{{sort}}" on-sort="{{sortHandler}}">
+              {{col.title}}
+            </tt-column>
+          </div>
+        </template>
+        <template bind ref="thaction"  if="{{isAction}}"></template>
+      </div>
+    </template>
+
+    <template id="thaction">
+      <div class="Table-row-item">
+        <content id="action" select="[action]"></content>
+      </div>
+    </template>
+
+    <template id="taction">
+      <div class="Table-row-item">
+        <paper-icon-button icon="editor:mode-edit" entity-id="{{item._id}}"
+                           on-tap="{{editHandler}}"></paper-icon-button>
+        <paper-icon-button icon="delete" entity-id="{{item._id}}" on-tap="{{deleteHandler}}"></paper-icon-button>
+
+      </div>
+    </template>
+
+
+    <template id="tfooter">
+      <div class="Table-row footer">
+        <content id="footer" select="[footer]"></content>
+      </div>
+    </template>
+
+  </template>
+  <script>
+    'use strict';
+    Polymer('tt-table-flexbox', Polymer.mixin({
+      isAction : true,
+      ready: function () {
+        this.columns = this.rebuildColumns(this) || this.columns;
+      },
+      getLineEntityId: function (e, data, sender) {
+        var toEdit = sender.attributes['entity-id'].value;
+        return toEdit;
+      },
+      getLineEntityColumn: function (e, data, sender) {
+        var toEdit = sender.attributes['entity-column'].value;
+        return toEdit;
+      },
+      tapLineHandler: function (e, data, sender) {
+        var entityId = this.getLineEntityId(event, data, sender);
+        this.fire('tap-line', {_id: entityId});
+        console.log('---- on Tap on Line : ', entityId);
+      },
+      tapColumnHandler: function (e, data, sender) {
+        var entityId = this.getLineEntityId(event, data, sender);
+        var entityColumn = this.getLineEntityColumn(event, data, sender);
+        this.fire('tap-line-column', {_id: entityId});
+        console.log('---- on Tap on Column Line : ', entityId, 'on column', entityColumn);
+      }
+
+    }, ttColumnUtilsMixin));
+  </script>
+</polymer-element>
