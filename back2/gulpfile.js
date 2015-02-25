@@ -109,7 +109,7 @@ gulp.task('default', ['lint']);
 
 // Help like command gulp --tasks
 gulp.task('help', function () {
- return gulp.run('task-list');
+  return gulp.run('task-list');
 });
 
 
@@ -258,7 +258,7 @@ gulp.task('sass', function () {
     outputStyle: prod ? 'compressed' : 'expanded'
   };
   return gulp.src(src.sass, {cwd: path.sass, base: path.sass})
-    .pipe(cache('sassing' ))
+    .pipe(cache('sassing'))
     .pipe(changed(DEST_DIR, {extension: '.css'}))
     .pipe(debug({title: 'sass changed:'}))
     .pipe($.sourcemaps.init())
@@ -363,12 +363,39 @@ gulp.task('webserver', ['watch'], function () {
       open: true
     }));
 });
+gulp.task('connect2', function () {
+  var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
+  var connect = require('gulp-connect');
+  var cros = require('connect-cors');
+  connect.server({
+    root: srcApp,
+    port: 9000,
+    middleware: function(connect, o) {
+      return [
+         (function() {
+        var url = require('url');
+        var proxy = require('proxy-middleware');
+        var options = url.parse('http://localhost:8000/s');
+        options.route = 's';
+        return proxy(options);
+      })
+        ()];
+    }
+  });
+});
 
 gulp.task('connect', function () {
+  // http://stackoverflow.com/questions/24546450/use-proxy-middleware-with-gulp-connect
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
+  var cros = require('connect-cors');
   var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
   var app = require('connect')()
+    .use(require('connect-modrewrite')(['^/s/(.*)$ http://localhost:8000/s/$1 [P]']))
+    .use(cros({
+      origins: ['http://127.0.0.1:8000'],
+      methods: ['HEAD', 'GET', 'POST']
+    }))
     .use(require('connect-livereload')({port: 35729}))
 //    .use(serveStatic('.tmp'))
     .use(serveStatic(srcApp))
@@ -410,7 +437,6 @@ gulp.task('serveBS', ['watch'], function () {
     }
   });
 });
-
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
@@ -461,11 +487,10 @@ gulp.task('cordova:create', function () {
 });
 
 gulp.task('cordova:config', ['cordova:create'], function () {
-  var configPlateform ='android';
+  var configPlateform = 'android';
   return gulp.src('*', {read: false, cwd: path.buildCordova})
-    .pipe($.shell(['cordova platform add ' + configPlateform], {cwd: path.buildCordova, ignoreErrors: true} ));
+    .pipe($.shell(['cordova platform add ' + configPlateform], {cwd: path.buildCordova, ignoreErrors: true}));
 });
-
 
 
 gulp.task('cordova:dist-generated', ['cordova:config'], function () {

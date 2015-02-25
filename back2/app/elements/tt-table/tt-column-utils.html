@@ -12,11 +12,16 @@
           var name = elt.getAttribute('column');
           // sortable
           var sortableCol = elt.getAttribute('sortable');
+          // rowClass
+          var rowClass = elt.getAttribute('rowclass');
+          if (rowClass) {
+            classNames += rowClass;
+          }
           // Optional
           var optional = elt.getAttribute('optional');
 
           if (optional === '') {
-            classNames = 'optional';
+            classNames += ' optional';
           }
           // Title
           var title = elt.getAttribute('title');

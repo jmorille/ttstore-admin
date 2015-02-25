@@ -10,33 +10,33 @@ var http = require('http');
 var esapi = require('./crud-es');
 
 function registerIndex(payload) {
-    payload.index = 'users';
-    if (!payload.type) {
-        payload.type = 'user';
-    }
-    payload._sourceExclude = ['password'];
-    return payload;
+  payload.index = 'users';
+  if (!payload.type) {
+    payload.type = 'user';
+  }
+  payload._sourceExclude = ['password'];
+  return payload;
 }
 
 
 function users(app, client) {
-    console.log('Module model users ');
-    if (!app) {
-        throw new TypeError('app required');
-    }
-    if (!client) {
-        throw new TypeError('client required');
-    }
+  console.log('Module model users ');
+  if (!app) {
+    throw new TypeError('app required');
+  }
+  if (!client) {
+    throw new TypeError('client required');
+  }
 
-    var crudapi =  esapi(client, registerIndex);
-    var index = 'users';
+  var crudapi = esapi(client, registerIndex);
+  var index = 'users';
 
 
-    app.post('/s/'  + index + '/_search', crudapi.search);
-    app.get('/s/'  + index + '/:id',  crudapi.findById);
-    app.post('/s/'  + index+ '/', crudapi.create);
-    app.put('/s/'  + index + '/:id', crudapi.update);
-    app.delete('/s/'  + index + '/:id', crudapi.delete);
+  app.post('/s/' + index + '/_search', crudapi.search);
+  app.get('/s/' + index + '/:id', crudapi.findById);
+  app.post('/s/' + index + '/', crudapi.create);
+  app.put('/s/' + index + '/:id', crudapi.update);
+  app.delete('/s/' + index + '/:id', crudapi.delete);
 
 }
 

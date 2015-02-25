@@ -1,11 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-
 <polymer-element name="admin-search" attributes="">
   <template>
-
-
 
 
     Search User
@@ -19,26 +16,34 @@
         <paper-icon-button icon="add" label="Add" on-tap="{{addButtonHandler}}"></paper-icon-button>
 
 
-        <paper-icon-button icon="settings-voice" label="Voice" on-tap="{{startVoiceRecognition}}">
-        <paper-icon-button id="filter_panel_button" icon="filter-list" label="Filters"
-                           on-tap="{{toggleFilter}}">
-        </paper-icon-button>
+          <paper-icon-button id="filter_panel_button" icon="filter-list" label="Filters"
+                             on-tap="{{toggleFilter}}">
+          </paper-icon-button>
       </section>
+    </template>
+
+    <template id="resultList">
+      <tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{sortHandler}}">
+        <tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>
+        <tt-column column="firstname" sortable="$.raw"  rowClass="u-Flex-grow4">Prénom</tt-column>
+        <div action>
+          <paper-icon-button icon="add" label="Add" on-tap="{{addEntityHandler}}"></paper-icon-button>
+        </div>
+      </tt-table-flexbox>
+      <tt-paginator range="{{rangesize}}"
+                    from="{{searchOpt.from}}" size="{{searchOpt.size}}"
+                    total="{{data.hits.total}}"
+                    on-change="{{pagingHandler}}">
+      </tt-paginator>
     </template>
 
 
     <div main flex>
       <template bind ref="request_query"></template>
-
-      <tt-table-flexbox data="{{data}}"  sort="{{sort}}"  on-sort="{{sortHandler}}">
-        <tt-column column="lastname" sortable="$.raw" classNames="u-Flex-grow2">Nom</tt-column>
-        <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
-        <div action>
-          Action sss
-        </div>
-      </tt-table-flexbox>
+      <template bind ref="resultList"></template>
     </div>
 
+    <tt-es-search id="service" endpoint="/s/users/_search"   options="{{searchOpt}}" response="{{data}}"></tt-es-search>
 
 
   </template>
@@ -46,28 +51,134 @@
   <script>
 
     Polymer({
+      // Search Datas
+      data: undefined,
+      searchOpt: undefined,
+
+      // Search Option
       searchText: undefined,
+      searchOptAggs: undefined,
+      rangesize: 10,
+
       created: function () {
+        this.searchOpt = {
+          "from": 0,
+          "size": 10,
+          "_source": ["firstname", "lastname", "email"],
+          "sort": ["lastname.raw:asc", "firstname.raw:asc"]
+        };
+        this.searchOptAggs = [];
+
         this.columns = [
-          {column:"firstname", title:"Nom", sortable:'firstname.raw', classNames:"u-Flex-grow2"},
-          {column:"lastname", title: "Prénom", classNames:"u-Flex-grow2"},
-          {column:"email", title:"Email"}
+          {column: "firstname", title: "Nom", sortable: 'firstname.raw', classNames: "u-Flex-grow2"},
+          {column: "lastname", title: "Prénom", classNames: "u-Flex-grow2"},
+          {column: "email", title: "Email"}
         ];
-        this.data = [
-          {_id: '1', _source: {firstname: 'Nom 1', lastname: 'Prénom 1', email: 'Email-1@gmail.com'}},
-          {_id: '2:', _source: {firstname: 'Nom 2', lastname: 'Prénom 2', email: 'Email-2@gmail.com'}},
-          {_id: '3:', _source: {firstname: 'Nom 3', lastname: 'Prénom 3', email: 'Email-3@gmail.com'}},
-          {_id: '4:', _source: {firstname: 'Nom 4', lastname: 'Prénom 4', email: 'Email-4@gmail.com'}},
-          {_id: '5:', _source: {firstname: 'Nom 5', lastname: 'Prénom 5', email: 'Email-5@gmail.com'}},
-          {_id: '6:', _source: {firstname: 'Nom 6', lastname: 'Prénom 6', email: 'Email-6@gmail.com'}}
-        ];
+        this.data = {
+          hits: {
+            total: 120,
+            hits: []
+          }
+        };
+        for (n=1; n<=20; n++) {
+          var line =  {_id: ''+n, _source: {firstname: 'Nom '+n, lastname: 'Prénom '+n, email: 'Email-' +n + '@gmail.com'}};
+          this.data.hits.hits.push(line);
+        }
         this.sort = ['firstname.raw'];
       },
+      // --- List Action
+      // ------------------
+      addEntityHandler: function (event, data, sender) {
+        console.log("addEntityHandler", data);
+      },
       sortHandler: function (event, data, sender) {
-        var sort = {sort: [ data.column + ":" + data.order ]};
+        var sort = {sort: [data.column + ":" + data.order]};
         console.log("sortHandler", data);
-       // this.search(sort);
+        // this.search(sort);
+      },
+
+      // --- Search Action
+      // ------------------
+      searchReset: function () {
+        this.search({
+          from: 0
+        });
+      },
+      search: function (optToSave) {
+        var that = this;
+        // Save Options
+//        if (optToSave) {
+//          this.$.service.copyProperties(optToSave, this.searchOpt, true);
+//        }
+        // Add Search Criteria
+        this.searchOpt.body = this.searchQueryBody();
+
+        // Search Service
+        this.$.service.entitySearch();
+      },
+
+      // --- Search Logic
+      // ------------------
+      searchQueryBody: function () {
+        var query = undefined;
+        var body = undefined;
+        // Query : http://docs.fullscale.co/elasticjs/
+        if (this.searchText) {
+          query = ejs.QueryStringQuery(this.searchText).defaultOperator('and');
+        } else {
+          query = ejs.MatchAllQuery();
+        }
+
+        // Facets Filter
+        // ----------------
+        var facetFilter = this.searchOptAggs.reduce(function (previous, current, index, array) {
+          var facetFilter = ejs.TermFilter(current.name + '.raw', current.value);
+          console.log("facetFilter : ", facetFilter.toJSON());
+          if (!previous) {
+            previous = ejs.BoolFilter();
+          }
+          return previous.must(facetFilter);
+        }, undefined);
+
+        if (facetFilter) {
+          console.log("boolFilter : ", facetFilter.toJSON());
+          query = ejs.FilteredQuery(query, facetFilter);
+        }
+
+
+        // Create Es Request
+        // ----------------
+        body = ejs.Request().query(query).from(this.searchOpt.from).size(this.searchOpt.size);
+
+        // Agg Aggregations
+        // ----------------
+        var expectedAggs = [
+          {
+            name: 'categorie',
+            aggregation: ejs.TermsAggregation('categorie').field('categorie.raw').order('_count', 'desc')
+          },
+          {name: 'statut', aggregation: ejs.TermsAggregation('statut').field('statut.raw').order('_count', 'desc')},
+          {name: 'editeur', aggregation: ejs.TermsAggregation('editeur').field('editeur.raw').order('_count', 'desc')},
+          {name: 'support', aggregation: ejs.TermsAggregation('support').field('support.raw').order('_count', 'desc')}
+        ];
+        // Filter Aggs
+        var that = this;
+        expectedAggs = expectedAggs.filter(function (elt) {
+          return !that.searchOptAggs.some(function (optAgg) {
+            return elt.name === optAgg.name;
+          });
+        });
+        // Register Aggs
+        expectedAggs.forEach(function (elt) {
+          body.aggregation(elt.aggregation);
+        });
+
+
+        console.log("Elastic.js Body", body.toJSON());
+        return body.toJSON();
       }
+
+
 
 //      handleVoiceRecognition: function (event, data) {
 //        this.searchText = data.result;

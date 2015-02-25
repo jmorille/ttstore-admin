@@ -4,11 +4,13 @@
 
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="tt-es-search" hidden attributes="options response index">
+<link rel="import" href="tt-es-base-lib.html">
+
+<polymer-element name="tt-es-search" hidden attributes="options response endpoint">
 
     <template>
         <!--application/json-->
-        <core-ajax id="service" url="/s/{{index}}/_search" handleAs="json"
+        <core-ajax id="service" url="{{endpoint}}" handleAs="json"
                    contentType="application/json"
                    body="{{optionstring}}"
                    response="{{response}}"
