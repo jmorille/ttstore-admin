@@ -388,12 +388,12 @@ gulp.task('connect', function () {
   // http://stackoverflow.com/questions/24546450/use-proxy-middleware-with-gulp-connect
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
-  var cros = require('connect-cors');
+  var cros = require('cors');
   var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
   var app = require('connect')()
     .use(require('connect-modrewrite')(['^/s/(.*)$ http://localhost:8000/s/$1 [P]']))
     .use(cros({
-      origins: ['http://127.0.0.1:8000'],
+      origin: 'http://127.0.0.1:8000',
       methods: ['HEAD', 'GET', 'POST']
     }))
     .use(require('connect-livereload')({port: 35729}))
@@ -561,4 +561,30 @@ gulp.task('dist:cordova', ['cordova:dist-generated'], function (cb) {
   //  .pipe(debug({title: 'android dist :'}))
   //  .pipe(gulp.dest(path.distCcaIOS));
   cb();
+});
+
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Maven TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+gulp.task('deploy', function(){
+  var maven = require('gulp-maven-deploy');
+  gulp.src('dist/cca_android/**/*armv7*.apk', {base: '.'})
+    .pipe(debug({title: 'maven deploy :'}))
+    .pipe(maven.deploy({
+      'config': {
+        'groupId': 'fr.generali.ccj.test',
+        'artifactId': 'chromeapp-mobile',
+        'classifier': 'armv7',
+        'type': 'apk',
+        'repositories': [
+          {
+            'id': 'artifacts-server',
+            'url': 'http://maven-proxy.groupe.generali.fr/nexus/content/repositories/socles-releases/'
+          }
+        ]
+      }
+    }))
 });

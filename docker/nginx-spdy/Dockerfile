@@ -111,6 +111,8 @@ COPY /build/sites-enabled /etc/nginx/sites-enabled
 # Expose
 # #######################
 
+COPY ../.  /data/wwww
+
 EXPOSE 80 443
 VOLUME ["/data/wwww", "/etc/nginx/logs", "/var/lib/nginx", "/etc/nginx/ssl" ]
 

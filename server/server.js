@@ -22,8 +22,12 @@ app.use(helmet.frameguard('sameorigin')); // deny
 app.use(helmet.hidePoweredBy({ setTo: 'ASP.NET' }));
 app.use(helmet.hsts({ maxAge: 31536000 }));
 app.use(helmet.xssFilter({ setOnOldIE: true }));
-//app.disable('x-powered-by');
 
+
+// Cors
+var cors = require('cors')
+app.options('*', cors()); // include before other routes
+app.use(cors()); // include before other routes
 
 // https://github.com/senchalabs/connect#middleware
 var compression = require('compression');
@@ -67,10 +71,17 @@ var client = new elasticsearch.Client({
 });
 
 
+
 // create application/json parser
 var jsonParser = bodyParser.json();
 // create application/x-www-form-urlencoded parser
 
+// CSP report Violation
+var cspViolation = require('./models/cspViolation');
+cspViolation(app, client);
+
+
+// Business module
 oauth2(app, client);
 users(app, client);
 
