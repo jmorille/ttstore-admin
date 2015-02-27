@@ -10,18 +10,17 @@
     <div>
       <google-signin clientId="{{clientId}}"
                      scopes="{{scopes}}"
-                     approval_prompt="force" offline="true"  height="short"
+                     approval_prompt="force" offline="true" height="short"
                      labelSignin="Identifiez vous"
                      theme="light">
 
       </google-signin>
     </div>
     <div>
-      <google-signin-aware
-        scopes="{{scopes}}"
+      <google-signin-aware  scopes="{{scopes}}"
         on-google-signin-aware-success="{{signIn}}"
-        on-google-signin-aware-signed-out="{{signedOut}}"
-        ></google-signin-aware>
+        on-google-signin-aware-signed-out="{{signedOut}}">
+      </google-signin-aware>
 
       <p>Testing <code>google-signin-aware</code>: {{status}}</p>
     </div>
@@ -35,23 +34,32 @@
     </core-ajax>
 
 
+
+
+
+
   </template>
   <script>
     'use strict';
     Polymer('tt-login', {
       status: 'Not granted',
       bodyString: undefined,
-      signIn: function(response) {
+      signIn: function (response) {
         this.status = 'Signin granted';
-        var  googleAuth = response.detail.result;
-        var accessToken =  googleAuth.access_token;
+        //ss
+        var googleAuth = response.detail.result;
+        //
+        var accessToken = googleAuth.access_token;
+        ///
         console.log('Signin Response', response);
-        console.dir( googleAuth);
+        console.dir(googleAuth);
         // this.$.googleCal.displayCalendars();
+        console.log('delte g-oauth-window : ', googleAuth['g-oauth-window']);
+        delete googleAuth['g-oauth-window'];
         this.bodyString = JSON.stringify(googleAuth);
-    //    this.$.service.go();
+        this.$.service.go();
       },
-      signedOut: function(response) {
+      signedOut: function (response) {
         this.status = 'Not granted';
       },
 

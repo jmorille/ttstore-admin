@@ -4,13 +4,19 @@
 <polymer-element name="admin-search" attributes="">
   <template>
 
+<style>
+  .searchBox {
+   width: 400px;
+  }
 
-    Search User
+</style>
     <template id="request_query">
       <section horizontal layout>
-        <core-field flex>
-          <paper-input placeHolder="Search Text" value="{{searchText}}"
-                       on-input="{{onSearchSuggest}}" flex></paper-input>
+        <core-field class="searchBox">
+          <paper-input-decorator floatingLabel label="Zone de Recherche" flex>
+            <input id="search" is="core-input" type="search" value="{{searchText}}" class="searchBox"/>
+          </paper-input-decorator>
+
           <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
         </core-field>
         <paper-icon-button icon="add" label="Add" on-tap="{{addButtonHandler}}"></paper-icon-button>
@@ -82,6 +88,8 @@
 
       // --- Search Aggs
       // ------------------
+
+
 
 
       // --- Search Action

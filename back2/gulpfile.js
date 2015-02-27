@@ -394,8 +394,8 @@ gulp.task('connect', function () {
   // Proxy Options
   var fs = require('fs');
   var url = require('url');
-  var proxyOptions = url.parse('http://127.0.0.1:8000/s');
-  proxyOptions.route = '/s';
+  var proxyOptions = url.parse('http://127.0.0.1:8000/s/');
+  proxyOptions.route = '/s/';
 
 
   // Connect Configuration
