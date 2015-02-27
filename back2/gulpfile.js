@@ -137,7 +137,7 @@ var isErrorEatByWatch = false;
 
 
 // Watch all files changes
-gulp.task('watch', ['cp:watch', 'images:watch', 'vulcanize:watch'], function (done) {
+gulp.task('watch', ['sass:watch', 'cp:watch', 'images:watch', 'vulcanize:watch'], function (done) {
   isErrorEatByWatch = true;
   livereload.listen();
   done();

@@ -11,14 +11,16 @@
           {column:"lastname", title: "Prénom", classNames:"u-Flex-grow2"},
           {column:"email", title:"Email"}
         ];
-        this.data = [
-          {id: '1', _source: {firstname: 'Nom 1', lastname: 'Prénom 1', email: 'Email-1@gmail.com'}},
-          {id: '2:', _source: {firstname: 'Nom 2', lastname: 'Prénom 2', email: 'Email-2@gmail.com'}},
-          {id: '3:', _source: {firstname: 'Nom 3', lastname: 'Prénom 3', email: 'Email-3@gmail.com'}},
-          {id: '4:', _source: {firstname: 'Nom 4', lastname: 'Prénom 4', email: 'Email-4@gmail.com'}},
-          {id: '5:', _source: {firstname: 'Nom 5', lastname: 'Prénom 5', email: 'Email-5@gmail.com'}},
-          {id: '6:', _source: {firstname: 'Nom 6', lastname: 'Prénom 6', email: 'Email-6@gmail.com'}}
-        ];
+        this.data = {
+          hits: {
+            total: 120,
+            hits: []
+          }
+        };
+        for (n=1; n<=20; n++) {
+          var line =  {_id: ''+n, _source: {firstname: 'Nom '+n, lastname: 'Prénom '+n, email: 'Email-' +n + '@gmail.com'}};
+          this.data.hits.hits.push(line);
+        }
         this.sort = ['firstname.raw'];
       }
   </script>
