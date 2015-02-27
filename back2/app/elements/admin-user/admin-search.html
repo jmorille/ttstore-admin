@@ -68,23 +68,6 @@
           "sort": ["lastname.raw:asc", "firstname.raw:asc"]
         };
         this.searchOptAggs = [];
-
-        this.columns = [
-          {column: "firstname", title: "Nom", sortable: 'firstname.raw', classNames: "u-Flex-grow2"},
-          {column: "lastname", title: "Prénom", classNames: "u-Flex-grow2"},
-          {column: "email", title: "Email"}
-        ];
-        this.data = {
-          hits: {
-            total: 120,
-            hits: []
-          }
-        };
-        for (n=1; n<=20; n++) {
-          var line =  {_id: ''+n, _source: {firstname: 'Nom '+n, lastname: 'Prénom '+n, email: 'Email-' +n + '@gmail.com'}};
-          this.data.hits.hits.push(line);
-        }
-        this.sort = ['firstname.raw'];
       },
       // --- List Action
       // ------------------
@@ -94,8 +77,12 @@
       sortHandler: function (event, data, sender) {
         var sort = {sort: [data.column + ":" + data.order]};
         console.log("sortHandler", data);
-        // this.search(sort);
+        this.search(sort);
       },
+
+      // --- Search Aggs
+      // ------------------
+
 
       // --- Search Action
       // ------------------
