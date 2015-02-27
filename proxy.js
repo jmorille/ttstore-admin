@@ -57,7 +57,7 @@ app.use(compression({
 
 
 
-app.route('/components/*')
+app.route('/bower_components/*')
     .get(function (req, res, next) {
         console.log(new Date(Date.now()).toUTCString(), "-", req.method, "-", req.url);
         res.setHeader("Cache-Control", "public, max-age=" + oneDay); // 1 days

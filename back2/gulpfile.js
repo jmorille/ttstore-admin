@@ -268,7 +268,7 @@ gulp.task('sass', function () {
       browsers: ['last 2 versions'],
       cascade: !prod
     }))
-    .pipe($.sourcemaps.write('../maps', {
+    .pipe($.sourcemaps.write('../build/maps', {
       includeContent: true
     }))
     .pipe(gulp.dest(DEST_DIR))
@@ -350,15 +350,17 @@ gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
 // Browsers TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var server = {
-  host: 'localhost',
-  port: '9000'
+  httpHost: 'localhost',
+  httpPort: '9000',
+  httpsHost: 'localhost',
+  httpsPort: '9001'
 };
 
 gulp.task('webserver', ['watch'], function () {
   return gulp.src(path.buildVulcanized)
     .pipe($.webserver({
-      host: server.host,
-      port: server.port,
+      host: server.httpHost,
+      port: server.httpPort,
       livereload: false,
       open: true
     }));
@@ -388,32 +390,45 @@ gulp.task('connect', function () {
   // http://stackoverflow.com/questions/24546450/use-proxy-middleware-with-gulp-connect
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
-  var cros = require('cors');
   var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
+  // Proxy Options
+  var fs = require('fs');
+  var url = require('url');
+  var proxyOptions = url.parse('http://127.0.0.1:8000/s');
+  proxyOptions.route = '/s';
+
+
+  // Connect Configuration
   var app = require('connect')()
-    .use(require('connect-modrewrite')(['^/s/(.*)$ http://localhost:8000/s/$1 [P]']))
-    .use(cros({
-      origin: 'http://127.0.0.1:8000',
-      methods: ['HEAD', 'GET', 'POST']
-    }))
+  //  .use(require('connect-modrewrite')(['^/s/(.*)$ http://localhost:8000/s/$1 [P]']))
+    .use(  require('proxy-middleware')(proxyOptions) )
+    .use(require('cors')({ origin: 'http://127.0.0.1:8000', methods: ['HEAD', 'GET', 'POST'] }))
     .use(require('connect-livereload')({port: 35729}))
 //    .use(serveStatic('.tmp'))
     .use(serveStatic(srcApp))
     // paths to bower_components should be relative to the current file
-    // e.g. in app/index.html you should use ../bower_components
     //  .use('/bower_components', serveStatic('bower_components'))
     .use(serveIndex(srcApp));
 
+  // Https Option
+  var tlsOptions = {
+    key:    fs.readFileSync('../docker/nginx-spdy/build/ssl/server.key', 'utf8'),
+    cert:   fs.readFileSync('../docker/nginx-spdy/build/ssl/server.crt', 'utf8')
+  };
+  require('https').createServer(tlsOptions,app).listen(server.httpsPort)   .on('listening', function () {
+    console.log('Started connect web server on https://' + server.httpsHost + ':' + server.httpsPort + ' on directory ' + srcApp);
+  });
+  // Http Server
   require('http').createServer(app)
-    .listen(9000)
+    .listen(server.httpPort)
     .on('listening', function () {
-      console.log('Started connect web server on http://' + server.host + ':' + server.port + ' on directory ' + srcApp);
+      console.log('Started connect web server on http://' + server.httpHost + ':' + server.httpPort + ' on directory ' + srcApp);
     });
 });
 
 // Start liveReload Server. Options : --build
 gulp.task('serve', ['connect', 'watch'], function () {
-  return require('opn')('http://' + server.host + ':' + server.port);
+  return require('opn')('http://' + server.httpHost + ':' + server.httpPort);
 });
 
 

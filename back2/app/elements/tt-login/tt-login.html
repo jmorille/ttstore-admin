@@ -1,0 +1,69 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/google-signin/google-signin.html">
+
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="tt-login" attributes="clientId scopes">
+  <template>
+
+    <div>
+      <google-signin clientId="{{clientId}}"
+                     scopes="{{scopes}}"
+                     approval_prompt="force" offline="true"  height="short"
+                     labelSignin="Identifiez vous"
+                     theme="light">
+
+      </google-signin>
+    </div>
+    <div>
+      <google-signin-aware
+        scopes="{{scopes}}"
+        on-google-signin-aware-success="{{signIn}}"
+        on-google-signin-aware-signed-out="{{signedOut}}"
+        ></google-signin-aware>
+
+      <p>Testing <code>google-signin-aware</code>: {{status}}</p>
+    </div>
+
+    <core-ajax id="service" url="/s/oauth2callback" handleAs="json"
+               contentType="application/json"
+               body="{{bodyString}}"
+               method="POST"
+               on-core-error="{{handleError}}"
+               on-core-response="{{handleResponse}}">
+    </core-ajax>
+
+
+  </template>
+  <script>
+    'use strict';
+    Polymer('tt-login', {
+      status: 'Not granted',
+      bodyString: undefined,
+      signIn: function(response) {
+        this.status = 'Signin granted';
+        var  googleAuth = response.detail.result;
+        var accessToken =  googleAuth.access_token;
+        console.log('Signin Response', response);
+        console.dir( googleAuth);
+        // this.$.googleCal.displayCalendars();
+        this.bodyString = JSON.stringify(googleAuth);
+    //    this.$.service.go();
+      },
+      signedOut: function(response) {
+        this.status = 'Not granted';
+      },
+
+      handleResponse: function (resp) {
+        console.log("handleResponse", resp);
+      },
+      handleError: function (resp) {
+        console.log("handleError", resp);
+      }
+
+    });
+
+  </script>
+
+</polymer-element>

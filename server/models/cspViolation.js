@@ -9,9 +9,9 @@ var http = require('http');
 
 
 function reportViolation (request, response) {
-  console.err('------------- Report Violation');
+  console.log('------------- Report Violation');
   var body = request.body;
-  console.err('------------- Report Violation', body);
+  console.log('------------- Report Violation', body);
 
 }
 

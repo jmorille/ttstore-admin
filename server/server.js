@@ -12,16 +12,16 @@ app.disable('x-powered-by');
 // https://github.com/strongloop/express/tree/master/examples
 // security : https://www.npmjs.com/package/helmet
 var helmet = require('helmet');
-app.use(helmet.crossdomain());
-app.use(helmet.contentSecurityPolicy({
-  defaultSrc: ["'self'"],
-  reportUri: '/report-violation',
-  reportOnly: false // set to true if you only want to report errors
-}));
-app.use(helmet.frameguard('sameorigin')); // deny
-app.use(helmet.hidePoweredBy({ setTo: 'ASP.NET' }));
-app.use(helmet.hsts({ maxAge: 31536000 }));
-app.use(helmet.xssFilter({ setOnOldIE: true }));
+//app.use(helmet.crossdomain());
+//app.use(helmet.contentSecurityPolicy({
+//  defaultSrc: ["'self'"],
+//  reportUri: '/report-violation',
+//  reportOnly: false // set to true if you only want to report errors
+//}));
+//app.use(helmet.frameguard('sameorigin')); // deny
+//app.use(helmet.hidePoweredBy({ setTo: 'ASP.NET' }));
+//app.use(helmet.hsts({ maxAge: 31536000 }));
+//app.use(helmet.xssFilter({ setOnOldIE: true }));
 
 
 // Cors
@@ -73,7 +73,10 @@ var client = new elasticsearch.Client({
 
 
 // create application/json parser
-var jsonParser = bodyParser.json();
+// chrome sends application/csp-report
+// firefox sends application/json
+// it seems chrome is doing it well: https://w3c.github.io/webappsec/specs/content-security-policy/
+var jsonParser = bodyParser.json({  type: ['application/json', 'application/csp-report'] });
 // create application/x-www-form-urlencoded parser
 
 // CSP report Violation

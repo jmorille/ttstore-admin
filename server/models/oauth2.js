@@ -11,7 +11,7 @@ exports.ping = function() {
 
 
 function oauth2(app, client) {
-  console.log('Module model users ');
+  console.log('Module model OAUTH2 ');
   if (!app) {
     throw new TypeError('app required');
   }
