@@ -370,15 +370,15 @@ gulp.task('connect2', function () {
   connect.server({
     root: srcApp,
     port: 9000,
-    middleware: function(connect, o) {
+    middleware: function (connect, o) {
       return [
-         (function() {
-        var url = require('url');
-        var proxy = require('proxy-middleware');
-        var options = url.parse('http://localhost:8000/s');
-        options.route = 's';
-        return proxy(options);
-      })
+        (function () {
+          var url = require('url');
+          var proxy = require('proxy-middleware');
+          var options = url.parse('http://localhost:8000/s');
+          options.route = 's';
+          return proxy(options);
+        })
         ()];
     }
   });
@@ -564,12 +564,11 @@ gulp.task('dist:cordova', ['cordova:dist-generated'], function (cb) {
 });
 
 
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Maven TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-gulp.task('deploy', function(){
+gulp.task('deployOne', function () {
   var maven = require('gulp-maven-deploy');
   gulp.src('dist/cca_android/**/*armv7*.apk', {base: '.'})
     .pipe(debug({title: 'maven deploy :'}))
@@ -587,4 +586,25 @@ gulp.task('deploy', function(){
         ]
       }
     }))
+});
+
+gulp.task('deploy', function () {
+  var maven = require('gulp-maven-deploy');
+  gulp.src('dist/cca_android/**/*.apk', {base: '.'})
+    .pipe(debug({title: 'maven deploy :'}))
+    .pipe(maven.deploy(function (fileParsed) {
+        return {
+          'config': {
+            'groupId': 'fr.generali.ccj.test',
+            'artifactId': fileParsed.name,
+            'type': fileParsed.extname,
+            'classifier' : 'android',
+            'repositories': [{
+              'id': 'artifacts-server',
+              'url': 'http://maven-proxy.groupe.generali.fr/nexus/content/repositories/socles-releases/'
+            }]
+          }
+        };
+      }
+    ))
 });
