@@ -1,8 +1,6 @@
-/* line 1, /home/a000cqp/project/ttstore-admin/back2/app/styles/main.scss */
-body {
+html,body {
   background: #CCC;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'RobotoDraft', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
 }
-
 

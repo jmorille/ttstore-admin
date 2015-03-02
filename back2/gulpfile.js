@@ -137,10 +137,10 @@ var isErrorEatByWatch = false;
 
 
 // Watch all files changes
-gulp.task('watch', ['sass:watch', 'cp:watch', 'images:watch', 'vulcanize:watch'], function (done) {
+gulp.task('watch',['sass:watch', 'cp:watch', 'images:watch', 'vulcanize:watch'],  function (cb) {
   isErrorEatByWatch = true;
   livereload.listen();
-  done();
+  cb();
 });
 
 
@@ -265,7 +265,7 @@ gulp.task('sass', function () {
     .pipe($.sass(SASS_OPTS))
     // Pass the compiled sass through the prefixer with defined
     .pipe($.autoprefixer({
-      browsers: ['last 2 versions'],
+      browsers: ['last 2 versions', 'Firefox > 20'],
       cascade: !prod
     }))
     .pipe($.sourcemaps.write('../build/maps', {

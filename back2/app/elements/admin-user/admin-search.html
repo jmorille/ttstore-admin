@@ -4,12 +4,13 @@
 <polymer-element name="admin-search" attributes="">
   <template>
 
-<style>
-  .searchBox {
-   width: 400px;
-  }
+    <style>
+      .searchBox {
+        width: 400px;
+      }
 
-</style>
+    </style>
+
     <template id="request_query">
       <section horizontal layout>
         <core-field class="searchBox">
@@ -22,19 +23,17 @@
         <paper-icon-button icon="add" label="Add" on-tap="{{addButtonHandler}}"></paper-icon-button>
 
 
-          <paper-icon-button id="filter_panel_button" icon="filter-list" label="Filters"
-                             on-tap="{{toggleFilter}}">
-          </paper-icon-button>
+        <paper-icon-button id="filter_panel_button" icon="filter-list" label="Filters"
+                           on-tap="{{toggleFilter}}">
+        </paper-icon-button>
       </section>
     </template>
 
     <template id="resultList">
       <tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{sortHandler}}">
         <tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>
-        <tt-column column="firstname" sortable="$.raw"  rowClass="u-Flex-grow4">Prénom</tt-column>
-        <div action>
-          <paper-icon-button icon="add" label="Add" on-tap="{{addEntityHandler}}"></paper-icon-button>
-        </div>
+        <tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>
+
       </tt-table-flexbox>
       <tt-paginator range="{{rangesize}}"
                     from="{{searchOpt.from}}" size="{{searchOpt.size}}"
@@ -46,11 +45,16 @@
 
     <div main flex>
       <template bind ref="request_query"></template>
+      <div>
+        <tt-es-aggs aggs="{{data.aggregations}}" on-agg-select="{{handleAggAdd}}" filterLabel="{{searchOptAggLabels}}"></tt-es-aggs>
+      </div>
+      <div>{{data.hits.total}} records found in {{data.took}} ms</div>
       <template bind ref="resultList"></template>
     </div>
 
-    <tt-es-search id="service" endpoint="/s/users/_search"   options="{{searchOpt}}" response="{{data}}"></tt-es-search>
 
+    <tt-lodash></tt-lodash>
+    <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}"></tt-es-search>
 
   </template>
 
@@ -59,52 +63,84 @@
     Polymer({
       // Search Datas
       data: undefined,
-      searchOpt: undefined,
+      searchOptDefault: undefined,
 
       // Search Option
+       searchOpt: undefined,
       searchText: undefined,
       searchOptAggs: undefined,
+      searchOptAggLabels: undefined,
       rangesize: 10,
 
       created: function () {
-        this.searchOpt = {
+        this.searchOptDefault = {
           "from": 0,
-          "size": 10,
+          "size": 20,
           "_source": ["firstname", "lastname", "email"],
-          "sort": ["lastname.raw:asc", "firstname.raw:asc"]
+          "sort": ["_score"]
         };
+        this.searchOpt =   _.cloneDeep(this.searchOptDefault);
         this.searchOptAggs = [];
+        this.searchOptAggLabels = {
+          firstname: 'Prénom',
+          lastname: 'Nom'
+        };
       },
       // --- List Action
       // ------------------
-      addEntityHandler: function (event, data, sender) {
-        console.log("addEntityHandler", data);
+      entityAddHandler: function (event, data, sender) {
+        console.log("entityAddHandler", data);
       },
+
+      entityEditHandler: function (event, data, sender) {
+        console.log("entityEditHandler", data);
+      },
+
+      // --- Search Event
+      // ------------------
       sortHandler: function (event, data, sender) {
-        var sort = {sort: [data.column + ":" + data.order]};
-        console.log("sortHandler", data);
-        this.search(sort);
+        var sort = data.column + ":" + data.order;
+        // compute merging sort
+        if (Array.isArray(this.searchOpt.sort)) {
+          var filterSort =  this.searchOpt.sort.filter(function (elt) {
+            var eltColSortSep = elt.lastIndexOf(':');
+            var eltColSort = eltColSortSep > -1 ? elt.slice(0, eltColSortSep) : elt;
+            return eltColSort !== data.column;
+          });
+          sort = [sort].concat(filterSort);
+        }
+        // Do search
+
+        this.search({ sort: sort});
+      },
+
+      pagingHandler: function (event, data, sender) {
+        //console.log("----- pagingHandler", detail);
+        this.search();
       },
 
       // --- Search Aggs
       // ------------------
-
-
-
+      handleAggAdd: function (e, detail, sender) {
+        console.log("----- Agg Add", detail);
+        this.searchOptAggs.push(detail);
+        this.search();
+      },
 
       // --- Search Action
       // ------------------
       searchReset: function () {
-        this.search({
-          from: 0
-        });
+        this.searchOpt =  _.cloneDeep(this.searchOptDefault);
+        this.search();
       },
+
       search: function (optToSave) {
         var that = this;
         // Save Options
-//        if (optToSave) {
-//          this.$.service.copyProperties(optToSave, this.searchOpt, true);
-//        }
+        if (optToSave) {
+          this.searchOpt = _.merge(this.searchOpt, optToSave);
+        }
+        console.log('sortHandler -->', this.searchOpt.sort);
         // Add Search Criteria
         this.searchOpt.body = this.searchQueryBody();
 
@@ -149,12 +185,10 @@
         // ----------------
         var expectedAggs = [
           {
-            name: 'categorie',
-            aggregation: ejs.TermsAggregation('categorie').field('categorie.raw').order('_count', 'desc')
+            name: 'firstname',
+            aggregation: ejs.TermsAggregation('firstname').field('firstname.raw').order('_count', 'desc')
           },
-          {name: 'statut', aggregation: ejs.TermsAggregation('statut').field('statut.raw').order('_count', 'desc')},
-          {name: 'editeur', aggregation: ejs.TermsAggregation('editeur').field('editeur.raw').order('_count', 'desc')},
-          {name: 'support', aggregation: ejs.TermsAggregation('support').field('support.raw').order('_count', 'desc')}
+          {name: 'lastname', aggregation: ejs.TermsAggregation('lastname').field('lastname.raw').order('_count', 'desc')}
         ];
         // Filter Aggs
         var that = this;
