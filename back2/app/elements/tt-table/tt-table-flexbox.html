@@ -22,6 +22,7 @@
           this.data.hits.hits.push(line);
         }
         this.sort = ['firstname.raw'];
+        this.sort = ['firstname.raw'];
       }
   </script>
 
@@ -42,27 +43,29 @@
   <template>
     <link rel="stylesheet" href="tt-table-flexbox.css">
 
+    <template if="{{data}}">
 
-    <div class="Table">
-      <!-- Header -->
-      <template bind ref="theader" ></template>
-      <!-- Body -->
-      <template repeat='{{item in data}}'>
-        <div class="Table-row" on-tap="{{tapLineHandler}}" entity-id="{{item._id}}">
-          <template repeat="{{col in columns}}" class="{{col.classNames}}">
-            <div class="Table-row-item {{col.classNames}}" data-header="{{col.title}}"
-                 on-tap="{{tapColumnHandler}}" entity-id="{{item._id}}" entity-column="{{col.column}}">
-              {{item._source[col.column]}}
-            </div>
-          </template>
-          <!-- Line Action -->
-          <template bind ref="taction"  if="{{isAction}}"></template>
-        </div>
-      </template>
-      <!-- Footer -->
-      <!--<template bind ref="tfooter"  if="{{isFooter}}"></template>-->
+      <div class="Table">
+        <!-- Header -->
+        <template bind ref="theader"></template>
+        <!-- Body -->
+        <template repeat='{{item in data}}'>
+          <div class="Table-row" on-tap="{{tapLineHandler}}" entity-id="{{item._id}}">
+            <template repeat="{{col in columns}}" class="{{col.classNames}}">
+              <div class="Table-row-item {{col.classNames}}" data-header="{{col.title}}"
+                   on-tap="{{tapColumnHandler}}" entity-id="{{item._id}}" entity-column="{{col.column}}">
+                {{item._source[col.column]}}
+              </div>
+            </template>
+            <!-- Line Action -->
+            <template bind ref="taction" if="{{isAction}}"></template>
+          </div>
+        </template>
+        <!-- Footer -->
+        <!--<template bind ref="tfooter"  if="{{isFooter}}"></template>-->
 
-    </div>
+      </div>
+    </template>
 
 
     <template id="theader">
@@ -75,7 +78,7 @@
             </tt-column>
           </div>
         </template>
-        <template bind ref="thaction"  if="{{isAction}}"></template>
+        <template bind ref="thaction" if="{{isAction}}"></template>
       </div>
     </template>
 
@@ -105,7 +108,7 @@
   <script>
     'use strict';
     Polymer('tt-table-flexbox', Polymer.mixin({
-      isAction : true,
+      isAction: true,
       ready: function () {
         this.columns = this.rebuildColumns(this) || this.columns;
       },

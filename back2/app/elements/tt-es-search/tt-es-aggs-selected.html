@@ -1,0 +1,73 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+
+<polymer-element name="tt-es-aggs-selected" attributes="aggs filterLabel">
+
+  <template>
+    <style>
+      :host {
+        display: inline-flex;
+        flex-direction: row;
+      }
+
+      .card {
+        display: inline-block;
+        background: white;
+        box-sizing: border-box;
+        margin: 10px;
+        padding: 10px;
+        border-radius: 2px;
+      }
+    </style>
+
+
+    <template repeat="{{agg in aggs}}">
+      <paper-shadow class="card" z="1">
+        <div agg-name="{{agg.name}}" agg-value="{{agg.value}}" on-tap="{{handleAggDelete}}">
+          {{agg.name | filterLabelMapper}}:{{agg.value}}
+          <core-icon icon="clear"></core-icon>
+        </div>
+      </paper-shadow>
+    </template>
+
+
+  </template>
+
+  <script>
+    Polymer('tt-es-aggs-selected', {
+
+      created: function () {
+      },
+
+      filterLabelMapper: function (filterName) {
+        var label = filterName;
+        if (this.filterLabel[filterName]) {
+          label = this.filterLabel[filterName];
+        }
+        return label;
+      },
+
+      getLineFilterId: function (e, data, sender) {
+        var filterName = sender.attributes['agg-name'].value;
+        var filterValue = sender.attributes['agg-value'].value;
+        var filter = {
+          name: filterName,
+          value: filterValue
+        };
+        return filter;
+      },
+      handleAggDelete: function (e, data, sender) {
+        var filter = this.getLineFilterId(e, data, sender);
+        this.aggs = this.aggs.filter(function (elt) {
+//          console.log("test delete", elt, " ==? ", filter, "==> ", (elt == filter));
+          return !((elt.name === filter.name) && (elt.value === filter.value));
+        });
+        console.log('------------------------', filter);
+        this.fire('agg-delete', filter);
+      }
+
+
+    });
+  </script>
+</polymer-element>

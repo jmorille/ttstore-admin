@@ -15,7 +15,7 @@
       <section horizontal layout>
         <core-field class="searchBox">
           <paper-input-decorator floatingLabel label="Zone de Recherche" flex>
-            <input id="search" is="core-input" type="search" value="{{searchText}}" class="searchBox"/>
+            <input id="search" is="core-input" type="search" value="{{searchText}}"  on-keypress="{{searchKeypressHandler}}" class="searchBox"/>
           </paper-input-decorator>
 
           <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
@@ -35,7 +35,7 @@
         <tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>
 
       </tt-table-flexbox>
-      <tt-paginator range="{{rangesize}}"
+      <tt-paginator range="{{rangeSize}}"
                     from="{{searchOpt.from}}" size="{{searchOpt.size}}"
                     total="{{data.hits.total}}"
                     on-change="{{pagingHandler}}">
@@ -45,10 +45,14 @@
 
     <div main flex>
       <template bind ref="request_query"></template>
-      <div>
-        <tt-es-aggs aggs="{{data.aggregations}}" on-agg-select="{{handleAggAdd}}" filterLabel="{{searchOptAggLabels}}"></tt-es-aggs>
-      </div>
-      <div>{{data.hits.total}} records found in {{data.took}} ms</div>
+      <template if="{{data.hits.total}}">
+        <div><em>{{data.hits.total}} records found in {{data.took}} ms</em></div>
+      </template>
+
+      <tt-es-aggs aggs="{{data.aggregations}}" on-agg-select="{{handleAggAdd}}"
+                  filterLabel="{{searchOptAggLabels}}"></tt-es-aggs>
+      <tt-es-aggs-selected aggs="{{searchOptAggs}}" on-agg-delete="{{handleAggDelete}}"
+                           filterLabel="{{searchOptAggLabels}}"></tt-es-aggs-selected>
       <template bind ref="resultList"></template>
     </div>
 
@@ -66,11 +70,11 @@
       searchOptDefault: undefined,
 
       // Search Option
-       searchOpt: undefined,
+      searchOpt: undefined,
       searchText: undefined,
       searchOptAggs: undefined,
       searchOptAggLabels: undefined,
-      rangesize: 10,
+      rangeSize: 10,
 
       created: function () {
         this.searchOptDefault = {
@@ -79,7 +83,7 @@
           "_source": ["firstname", "lastname", "email"],
           "sort": ["_score"]
         };
-        this.searchOpt =   _.cloneDeep(this.searchOptDefault);
+        this.searchOpt = _.cloneDeep(this.searchOptDefault);
         this.searchOptAggs = [];
         this.searchOptAggLabels = {
           firstname: 'Prénom',
@@ -102,7 +106,7 @@
         var sort = data.column + ":" + data.order;
         // compute merging sort
         if (Array.isArray(this.searchOpt.sort)) {
-          var filterSort =  this.searchOpt.sort.filter(function (elt) {
+          var filterSort = this.searchOpt.sort.filter(function (elt) {
             var eltColSortSep = elt.lastIndexOf(':');
             var eltColSort = eltColSortSep > -1 ? elt.slice(0, eltColSortSep) : elt;
             return eltColSort !== data.column;
@@ -111,7 +115,7 @@
         }
         // Do search
 
-        this.search({ sort: sort});
+        this.search({sort: sort});
       },
 
       pagingHandler: function (event, data, sender) {
@@ -119,18 +123,28 @@
         this.search();
       },
 
+      searchKeypressHandler: function (event, data, sender) {
+        var key=event.keyCode ;
+        if (key==13){
+          this.searchReset();
+        }
+      },
       // --- Search Aggs
       // ------------------
-      handleAggAdd: function (e, detail, sender) {
-        console.log("----- Agg Add", detail);
-        this.searchOptAggs.push(detail);
+      handleAggAdd: function (e, data, sender) {
+        console.log("----- Agg Add", data);
+        this.searchOptAggs.push(data);
+        this.search();
+      },
+      handleAggDelete: function (e, data, sender) {
+        console.log("----- Agg Delete", data);
         this.search();
       },
 
       // --- Search Action
       // ------------------
       searchReset: function () {
-        this.searchOpt =  _.cloneDeep(this.searchOptDefault);
+        this.searchOpt = _.cloneDeep(this.searchOptDefault);
         this.search();
       },
 
@@ -188,7 +202,10 @@
             name: 'firstname',
             aggregation: ejs.TermsAggregation('firstname').field('firstname.raw').order('_count', 'desc')
           },
-          {name: 'lastname', aggregation: ejs.TermsAggregation('lastname').field('lastname.raw').order('_count', 'desc')}
+          {
+            name: 'lastname',
+            aggregation: ejs.TermsAggregation('lastname').field('lastname.raw').order('_count', 'desc')
+          }
         ];
         // Filter Aggs
         var that = this;
