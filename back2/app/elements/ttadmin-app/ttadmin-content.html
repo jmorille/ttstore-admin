@@ -137,17 +137,20 @@
         var item = detail.item;
         if (detail.isSelected) {
           console.log("Select ", item);
-           this.callNodesWithFunction(item, 'pageSelected');
+          this.callNodesWithFunction(item, 'pageSelected');
         } else {
-          console.log("DeSelect ", item);
-          this.callNodesWithFunction(item, 'pageUnselected');
+          console.log("UnSelect ", item); 
+          this.async( function() {
+              this.callNodesWithFunction(item, 'pageUnselected');
+            }
+          );
         }
       },
 
       callNodesWithFunction: function (item, searchFunc) {
         var childNodes = item;
         if (!Array.isArray(childNodes)) {
-          childNodes =  childNodes.querySelectorAll("*");
+          childNodes = childNodes.querySelectorAll("*");
         }
         if (childNodes) {
           Array.prototype.forEach.call(childNodes, function (childNode) {
