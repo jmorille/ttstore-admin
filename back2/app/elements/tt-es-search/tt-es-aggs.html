@@ -30,14 +30,16 @@
     <template repeat="{{filterName in aggs| enumerate}}">
       <paper-shadow class="card" z="1">
         <h3>{{filterName.name| filterLabelMapper}}</h3>
-        <ul>
-          <template repeat="{{ filter in filterName.buckets }}">
-            <li class="filter-value"
-                agg-name="{{filterName.name}}" agg-value="{{filter.key}}" on-tap="{{filterHandler}}">
-              {{filter.key}} ({{filter.doc_count}})
-            </li>
-          </template>
-        </ul>
+
+          <ul>
+            <template repeat="{{ filter in filterName.buckets }}">
+              <li class="filter-value"
+                  agg-name="{{filterName.name}}" agg-value="{{filter.key}}" on-tap="{{filterHandler}}">
+                {{filter.key}} ({{filter.doc_count}})
+              </li>
+            </template>
+          </ul>
+
       </paper-shadow>
 
     </template>

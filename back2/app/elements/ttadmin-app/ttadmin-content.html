@@ -1,10 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../bower_components/core-animated-pages/transitions/slide-from-right.html">
+
 <polymer-element name="ttadmin-content" attributes="selected">
 
   <template>
 
-    <core-animated-pages selected="{{selected}}" on-core-select="{{selectContentHandler}}" transitions="cross-fade"
+    <core-animated-pages selected="{{selected}}" on-core-select="{{selectContentHandler}}" transitions="slide-from-right cross-fade"
                          valueattr="data-category">
       <section data-category="home">
         <div cross-fade>
@@ -135,11 +137,9 @@
 
       selectContentHandler: function (event, detail) {
         var item = detail.item;
-        if (detail.isSelected) {
-          console.log("Select ", item);
+        if (detail.isSelected) { 
           this.callNodesWithFunction(item, 'pageSelected');
         } else {
-          console.log("UnSelect ", item); 
           this.async( function() {
               this.callNodesWithFunction(item, 'pageUnselected');
             }
@@ -159,16 +159,7 @@
             }
           });
         }
-      },
-
-      findNodesWithFunction: function (node, searchFunc) {
-        var childNodes = node.querySelectorAll("*");
-        var selectNodes = Array.prototype.filter.call(childNodes, function (childNode) {
-          return (typeof childNode[searchFunc] === 'function');
-        });
-        return selectNodes;
       }
-
 
     });
 
