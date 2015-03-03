@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<polymer-element name="admin-menu" attributes="selected">
+<polymer-element name="ttadmin-menu" attributes="selected">
 
   <template>
 
@@ -28,7 +28,7 @@
   </template>
   <script>
 
-    Polymer({
+    Polymer('ttadmin-menu', {
       menus: undefined,
       created: function () {
         this.menus =  [

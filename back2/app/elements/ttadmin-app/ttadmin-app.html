@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<polymer-element name="admin-app" attributes="selected progress">
+<polymer-element name="ttadmin-app" attributes="selected progress">
 
   <template>
     <style>
@@ -12,9 +12,7 @@
         background-color: #F9F9F9;
       }
 
-      .content {
-        margin: 20px 20px 20px 20px;
-      }
+
 
       .menu-icon {
         height: 32px;
@@ -46,7 +44,7 @@
           <core-icon src="/images/polymer-logo.svg" class="menu-icon"></core-icon>
           Menu
         </core-toolbar>
-        <admin-menu flex selected="{{selected}}" on-core-select="{{menuSelectHandler}}"></admin-menu>
+        <ttadmin-menu flex selected="{{selected}}" on-core-select="{{menuSelectHandler}}"></ttadmin-menu>
       </core-header-panel>
 
       <core-header-panel main mode="waterfall-tall" tallclass="medium-tall">
@@ -58,7 +56,7 @@
           <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
         </core-toolbar>
         <div class="content">
-          <admin-content selected="{{selected}}"></admin-content>
+          <ttadmin-content selected="{{selected}}"></ttadmin-content>
         </div>
       </core-header-panel>
     </core-drawer-panel>
@@ -133,8 +131,8 @@
 
   </template>
   <script>
+    Polymer('ttadmin-app', {
 
-    Polymer({
       progress: undefined,
       menuSelectHandler: function (event, detail) {
         if (event) { // comes first

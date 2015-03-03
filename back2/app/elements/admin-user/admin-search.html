@@ -84,12 +84,34 @@
           "sort": ["_score"]
         };
         this.searchOpt = _.cloneDeep(this.searchOptDefault);
+
+        this.expectedAggs = [
+          {
+            name: 'firstname',
+            aggregation: ejs.TermsAggregation('firstname').field('firstname.raw').order('_count', 'desc')
+          },
+          {
+            name: 'lastname',
+            aggregation: ejs.TermsAggregation('lastname').field('lastname.raw').order('_count', 'desc')
+          }
+        ];
         this.searchOptAggs = [];
         this.searchOptAggLabels = {
           firstname: 'Prénom',
           lastname: 'Nom'
         };
       },
+      // --- App Lyfe Cycle
+      // ------------------
+      pageSelected: function () {
+        console.log('Life Cycle : pageSelected');
+        this.search();
+      },
+      pageUnselected: function () {
+        console.log('Life Cycle : pageUnselected');
+        this.data = undefined;
+      },
+
       // --- List Action
       // ------------------
       entityAddHandler: function (event, data, sender) {
@@ -197,19 +219,10 @@
 
         // Agg Aggregations
         // ----------------
-        var expectedAggs = [
-          {
-            name: 'firstname',
-            aggregation: ejs.TermsAggregation('firstname').field('firstname.raw').order('_count', 'desc')
-          },
-          {
-            name: 'lastname',
-            aggregation: ejs.TermsAggregation('lastname').field('lastname.raw').order('_count', 'desc')
-          }
-        ];
+
         // Filter Aggs
         var that = this;
-        expectedAggs = expectedAggs.filter(function (elt) {
+        var expectedAggs = this.expectedAggs.filter(function (elt) {
           return !that.searchOptAggs.some(function (optAgg) {
             return elt.name === optAgg.name;
           });
