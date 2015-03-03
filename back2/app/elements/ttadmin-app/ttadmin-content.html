@@ -137,7 +137,7 @@
 
       selectContentHandler: function (event, detail) {
         var item = detail.item;
-        if (detail.isSelected) { 
+        if (detail.isSelected) {
           this.callNodesWithFunction(item, 'pageSelected');
         } else {
           this.async( function() {
