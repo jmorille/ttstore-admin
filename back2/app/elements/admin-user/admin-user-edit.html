@@ -1,0 +1,34 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+<polymer-element name="admin-user-edit" attributes="entityid">
+  <template>
+
+    <tt-crud data="{{data}}" entityid="{{entityid}}" index="users" autosave >
+      <section>
+        <paper-input-decorator floatingLabel label="First name" autoValidate>
+          <input is="core-input" value="{{ data._source.firstname}}" required>
+        </paper-input-decorator>
+
+        <paper-input-decorator floatingLabel label="Last name" autoValidate>
+          <input is="core-input" value="{{ data._source.lastname}}" required>
+        </paper-input-decorator>
+
+        <paper-input-decorator floatingLabel label="Email" autoValidate>
+          <input is="core-input" id="input2" value="{{ data._source.email}}" type="email">
+        </paper-input-decorator>
+      </section>
+    </tt-crud>
+
+  </template>
+
+  <script>
+
+    Polymer('admin-user-edit', {
+
+
+
+    });
+
+  </script>
+</polymer-element>
