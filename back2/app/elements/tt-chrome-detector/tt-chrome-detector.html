@@ -1,0 +1,31 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="tt-chrome-detector" attributes="">
+
+  <template>
+    <style>
+
+
+    </style>
+
+
+    Is chrome {{chrome}}
+
+  </template>
+  <script>
+
+    Polymer('tt-chrome-detector', {
+      chrome: undefined,
+      created: function () {
+        this.chrome = this.isChrome();
+      },
+
+      isChrome: function () {
+        var isChromium = window.chrome,
+          vendorName = window.navigator.vendor;
+        return (isChromium !== null && isChromium !== undefined && vendorName === "Google Inc.");
+      }
+    });
+
+  </script>
+</polymer-element>

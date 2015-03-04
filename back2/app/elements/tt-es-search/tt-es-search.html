@@ -6,70 +6,73 @@
 
 <link rel="import" href="tt-es-base-lib.html">
 
-<polymer-element name="tt-es-search" hidden attributes="options response endpoint">
+<polymer-element name="tt-es-search" hidden attributes="options response error endpoint">
 
-    <template>
-        <!--application/json-->
-        <core-ajax id="service" url="{{endpoint}}" handleAs="json"
-                   contentType="application/json"
-                   body="{{optionstring}}"
-                   response="{{response}}"
-                   method="POST"
-                   on-core-error="{{handleError}}"
-                   on-core-response="{{handleResponse}}">
-        </core-ajax>
+  <template>
+    <!--application/json-->
+    <core-ajax id="service" url="{{endpoint}}" handleAs="json"
+               contentType="application/json"
+               body="{{optionstring}}"
+               response="{{response}}"
+               method="POST"
+               on-core-error="{{handleError}}"
+               on-core-response="{{handleResponse}}">
+    </core-ajax>
 
 
-    </template>
+  </template>
 
-    <script>
-        'use strict';
-        Polymer('tt-es-search', {
-            optionstring : '',
+  <script>
+    'use strict';
+    Polymer('tt-es-search', {
+      optionstring: '',
 
-            entitySearch: function () {
-                // Search Query
-                if (!this.options.hasOwnProperty('q') && !this.options.hasOwnProperty('body')) {
-                    this.options.body = ejs.Request().query(ejs.MatchAllQuery());
-                }
-                this.optionstring = JSON.stringify(this.options);
-                this.$.service.go();
-            },
+      entitySearch: function () {
+        // Search Query
+        if (!this.options.hasOwnProperty('q') && !this.options.hasOwnProperty('body')) {
+          this.options.body = ejs.Request().query(ejs.MatchAllQuery());
+        }
+        this.optionstring = JSON.stringify(this.options);
+        this.$.service.go();
+      },
 
-            handleResponse: function (resp) {
-                this.fire('response', {
-                    response: resp,
-                    status: resp.status
-                });
-            },
-            handleError: function (resp) {
-                this.fire('error', {
-                    error: resp,
-                    status: resp.status
-                });
-            },
+      handleResponse: function (event, data) {
+        //  console.log("handleResponse", data.response);
+        this.fire('response', data.response);
+      },
 
-            copyProperties: function (src, dest, override) {
-                dest = dest || {};
-                for (var attr in src) {
-                    if (typeof src[attr] == 'object' && !Array.isArray(src[attr])) {
-                        // console.log('copyProperties type : ', attr, ' --> ', typeof src[attr], ' / is Array '  , Array.isArray(src[attr]) );
-                        if (override || !dest.hasOwnProperty(attr)) {
-                            var subDest = this.copyProperties(src[attr]);
-                            // console.log('sub dest', subDest);
-                            dest[attr] = subDest;
-                        }
-                    } else  if (src.hasOwnProperty(attr)) {
-                        if (override || !dest.hasOwnProperty(attr)) {
-                            dest[attr] = src[attr];
-                        }
-                    }
-                }
-                return dest;
+      handleError: function (event, data) {
+        var response = data.response;
+        var error = {
+          error: response.response.message,
+          statusCode: response.statusCode
+        };
+        //console.log("handleError", error);
+        // Propage error
+        this.error = error;
+        this.fire('error', error);
+      },
+
+      copyProperties: function (src, dest, override) {
+        dest = dest || {};
+        for (var attr in src) {
+          if (typeof src[attr] == 'object' && !Array.isArray(src[attr])) {
+            // console.log('copyProperties type : ', attr, ' --> ', typeof src[attr], ' / is Array '  , Array.isArray(src[attr]) );
+            if (override || !dest.hasOwnProperty(attr)) {
+              var subDest = this.copyProperties(src[attr]);
+              // console.log('sub dest', subDest);
+              dest[attr] = subDest;
             }
+          } else if (src.hasOwnProperty(attr)) {
+            if (override || !dest.hasOwnProperty(attr)) {
+              dest[attr] = src[attr];
+            }
+          }
+        }
+        return dest;
+      }
 
 
-
-        });
-    </script>
+    });
+  </script>
 </polymer-element>
