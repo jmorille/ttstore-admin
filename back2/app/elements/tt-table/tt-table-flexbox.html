@@ -53,9 +53,8 @@
           <div class="Table-row" on-tap="{{tapLineHandler}}" entity-id="{{item._id}}">
             <template repeat="{{col in columns}}" class="{{col.classNames}}">
               <div class="Table-row-item {{col.classNames}}" data-header="{{col.title}}"
-                   on-tap="{{tapColumnHandler}}" entity-id="{{item._id}}" entity-column="{{col.column}}">
-                {{item._source[col.column]}}
-              </div>
+                   on-tap="{{tapColumnHandler}}"
+                   entity-id="{{item._id}}" entity-column="{{col.column}}">{{item._source[col.column]}}</div>
             </template>
             <!-- Line Action -->
             <template bind ref="taction" if="{{isAction}}"></template>

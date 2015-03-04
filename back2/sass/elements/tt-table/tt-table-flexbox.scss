@@ -28,13 +28,21 @@
   // .Table-row
   &-row {
     width: 100%;
-    &:nth-of-type(even) { background-color: $dark-color; }
-    &:nth-of-type(odd) { background-color: $light-color; }
+    &:nth-of-type(even) {
+      background-color: $dark-color;
+    }
+    &:nth-of-type(odd) {
+      background-color: $light-color;
+    }
     @media (min-width: $md) {
       display: flex;
       flex-flow: row nowrap;
-      &:nth-of-type(even) { background-color: $light-color; }
-      &:nth-of-type(odd) { background-color: $dark-color; }
+      &:nth-of-type(even) {
+        background-color: $light-color;
+      }
+      &:nth-of-type(odd) {
+        background-color: $dark-color;
+      }
     }
     // .Table-row-item
     &-item {
@@ -53,8 +61,10 @@
         border: 1px solid $light-color;
         padding: 0.5em;
         &:before {
-          //content: "";
-          content: none;
+          // Bug in IE and Firefox with
+          // content: none;
+          content: "";
+          width: 0px;
         }
       }
     }

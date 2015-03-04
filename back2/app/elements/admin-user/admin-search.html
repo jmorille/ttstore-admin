@@ -15,7 +15,8 @@
       <section horizontal layout>
         <core-field class="searchBox">
           <paper-input-decorator floatingLabel label="Zone de Recherche" flex>
-            <input id="search" is="core-input" type="search" value="{{searchText}}"  on-keypress="{{searchKeypressHandler}}" class="searchBox"/>
+            <input id="search" is="core-input" type="search" value="{{searchText}}"
+                   on-keypress="{{searchKeypressHandler}}" class="searchBox"/>
           </paper-input-decorator>
 
           <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
@@ -30,16 +31,20 @@
     </template>
 
     <template id="resultList">
-      <tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{sortHandler}}">
-        <tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>
-        <tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>
+      <div>
+        <tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{sortHandler}}">
+          <tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>
+          <tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>
 
-      </tt-table-flexbox>
-      <tt-paginator range="{{rangeSize}}"
-                    from="{{searchOpt.from}}" size="{{searchOpt.size}}"
-                    total="{{data.hits.total}}"
-                    on-change="{{pagingHandler}}">
-      </tt-paginator>
+        </tt-table-flexbox>
+      </div>
+      <div>
+        <tt-paginator range="{{rangeSize}}"
+                      from="{{searchOpt.from}}" size="{{searchOpt.size}}"
+                      total="{{data.hits.total}}"
+                      on-change="{{pagingHandler}}">
+        </tt-paginator>
+      </div>
     </template>
 
 
@@ -48,11 +53,14 @@
       <template if="{{data.hits.total}}">
         <div><em>{{data.hits.total}} records found in {{data.took}} ms</em></div>
       </template>
-
-      <tt-es-aggs aggs="{{data.aggregations}}" on-agg-select="{{handleAggAdd}}"
-                  filterLabel="{{searchOptAggLabels}}"></tt-es-aggs>
-      <tt-es-aggs-selected aggs="{{searchOptAggs}}" on-agg-delete="{{handleAggDelete}}"
-                           filterLabel="{{searchOptAggLabels}}"></tt-es-aggs-selected>
+      <div>
+        <tt-es-aggs-selected aggs="{{searchOptAggs}}" on-agg-delete="{{handleAggDelete}}"
+                             filterLabel="{{searchOptAggLabels}}"></tt-es-aggs-selected>
+      </div>
+      <div>
+        <tt-es-aggs aggs="{{data.aggregations}}" on-agg-select="{{handleAggAdd}}"
+                    filterLabel="{{searchOptAggLabels}}"></tt-es-aggs>
+      </div>
       <template bind ref="resultList"></template>
     </div>
 
@@ -146,8 +154,8 @@
       },
 
       searchKeypressHandler: function (event, data, sender) {
-        var key=event.keyCode ;
-        if (key==13){
+        var key = event.keyCode;
+        if (key == 13) {
           this.searchReset();
         }
       },
