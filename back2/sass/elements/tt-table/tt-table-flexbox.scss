@@ -52,7 +52,10 @@
       @media (min-width: $md) {
         border: 1px solid $light-color;
         padding: 0.5em;
-        &:before { content: 'none';  }
+        &:before {
+          //content: "";
+          content: none;
+        }
       }
     }
   }

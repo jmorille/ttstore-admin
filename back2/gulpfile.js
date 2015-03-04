@@ -80,6 +80,7 @@ var path = {
   app: 'app',
   sass: 'sass',
   build: 'build',
+  buildMap: 'build/maps',
   buildVulcanized: 'build/vulcanized',
   buildCCA: 'build/cca',
   buildCordova: 'build/cordova',
@@ -100,7 +101,7 @@ var src = {
   polymerElements: 'elements{,/*,/**/*.html,/**/*.css,/**/*.js}'
 };
 
-// TODO in module cf https://github.com/greypants/gulp-starter/tree/master/gulp/tasks
+//TODO in module cf https://github.com/greypants/gulp-starter/tree/master/gulp/tasks
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // DEFAULT FOR 'gulp' COMMAND
@@ -260,6 +261,7 @@ gulp.task('sass', function () {
   return gulp.src(src.sass, {cwd: path.sass, base: path.sass})
     .pipe(cache('sassing'))
     .pipe(changed(DEST_DIR, {extension: '.css'}))
+    .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
     .pipe(debug({title: 'sass changed:'}))
     .pipe($.sourcemaps.init())
     .pipe($.sass(SASS_OPTS))
@@ -268,7 +270,7 @@ gulp.task('sass', function () {
       browsers: ['last 2 versions', 'Firefox > 20'],
       cascade: !prod
     }))
-    .pipe($.sourcemaps.write('../build/maps', {
+    .pipe($.sourcemaps.write('../' + path.buildMap, {
       includeContent: true
     }))
     .pipe(gulp.dest(DEST_DIR))

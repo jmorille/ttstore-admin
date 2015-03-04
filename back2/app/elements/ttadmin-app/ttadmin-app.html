@@ -1,6 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<polymer-element name="admin-app" attributes="selected progress">
+<link rel="import" href="../../bower_components/core-animation/core-animation.html" >
+<link rel="import" href="../../bower_components/core-animation/core-animation-group.html" >
+
+
+<polymer-element name="ttadmin-app" attributes="selected progress">
 
   <template>
     <style>
@@ -12,24 +16,23 @@
         background-color: #F9F9F9;
       }
 
-      .content {
-        margin: 20px 20px 20px 20px;
-      }
-
       .menu-icon {
         height: 32px;
         width: 48px;
+        margin: 6px;
       }
 
       .site-banner {
         background-color: #7986cb;
         color: white;
       }
+
       .site-menu {
         background-color: #EEEEEE;
         margin: 0px;
         padding: 0px;
       }
+
       .site-menu-tb {
 
       }
@@ -39,13 +42,40 @@
     <!-- Route controller. -->
     <flatiron-director route="{{selected}}" autoHash></flatiron-director>
 
+    <core-animation-group id="opacityAndScaleAnimation" type="seq">
+      <core-animation duration="300">
+        <core-animation-keyframe>
+          <core-animation-prop name="opacity" value="1"></core-animation-prop>
+        </core-animation-keyframe>
+        <core-animation-keyframe>
+          <core-animation-prop name="opacity" value="0.3"></core-animation-prop>
+        </core-animation-keyframe>
+        <core-animation-keyframe>
+          <core-animation-prop name="opacity" value="1"></core-animation-prop>
+        </core-animation-keyframe>
+      </core-animation>
+      <core-animation duration="300">
+        <core-animation-keyframe>
+          <core-animation-prop name="transform" value="scale(1)"></core-animation-prop>
+        </core-animation-keyframe>
+        <core-animation-keyframe>
+          <core-animation-prop name="transform" value="scale(1.2)"></core-animation-prop>
+        </core-animation-keyframe>
+        <core-animation-keyframe>
+          <core-animation-prop name="transform" value="scale(1)"></core-animation-prop>
+        </core-animation-keyframe>
+      </core-animation>
+    </core-animation-group>
+
 
     <core-drawer-panel id="menuBody">
       <core-header-panel class="site-menu" drawer  mode="waterfall">
         <!-- Side Menu Header -->
         <core-toolbar class="site-menu-tb">
-          <core-icon src="/images/polymer-logo.svg" class="menu-icon"></core-icon>
-          Menu
+          <div id="siteMenuHeaderContent" on-tap="{{siteMenuHeaderTapHandler}}"  layout horizontal center>
+            <core-icon src="/images/polymer-logo.svg" class="menu-icon"></core-icon>
+            <span>Menu</span>
+          </div>
         </core-toolbar>
         <!-- Side Menu -->
         <admin-menu flex selected="{{selected}}" on-core-select="{{menuSelectHandler}}"></admin-menu>
@@ -54,15 +84,15 @@
       <core-header-panel main mode="waterfall-tall" tallclass="medium-tall">
         <!-- Site Banner -->
         <core-toolbar class="site-banner">
-          <paper-icon-button  icon="menu" core-drawer-toggle></paper-icon-button>
+          <paper-icon-button icon="menu" core-drawer-toggle></paper-icon-button>
           <div class="bottom indent">Cordova App Killer</div>
           <span flex></span>
-          <paper-icon-button icon="search" on-tap="{{openSearchBox}}"></paper-icon-button>
+          <paper-icon-button icon="info-outline" on-tap="{{openSearchBox}}"></paper-icon-button>
           <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
         </core-toolbar>
         <!-- Content -->
         <div class="content">
-          <admin-content selected="{{selected}}"></admin-content>
+          <ttadmin-content selected="{{selected}}"></ttadmin-content>
         </div>
       </core-header-panel>
     </core-drawer-panel>
@@ -137,8 +167,8 @@
 
   </template>
   <script>
+    Polymer('ttadmin-app', {
 
-    Polymer({
       progress: undefined,
       menuSelectHandler: function (event, detail) {
         if (event) { // comes first
@@ -147,6 +177,10 @@
         if (detail.isSelected) {
           this.$.menuBody.togglePanel();
         }
+      },
+      siteMenuHeaderTapHandler: function () {
+        this.$.opacityAndScaleAnimation.target = this.$.siteMenuHeaderContent;
+        this.$.opacityAndScaleAnimation.play();
       },
       openSearchBox: function () {
         this.$.searchDialog.toggle();

@@ -4,13 +4,20 @@
 <polymer-element name="admin-user" attributes="">
   <template>
 
-    <admin-search></admin-search>
+    <admin-search id="search"></admin-search>
 
   </template>
 
   <script>
 
     Polymer({
+
+      pageSelected: function () {
+        this.$.search.pageSelected();
+      },
+      pageUnselected: function () {
+        this.$.search.pageUnselected();
+      }
 
     });
 
