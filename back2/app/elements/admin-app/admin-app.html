@@ -42,14 +42,17 @@
 
     <core-drawer-panel id="menuBody">
       <core-header-panel class="site-menu" drawer  mode="waterfall">
+        <!-- Side Menu Header -->
         <core-toolbar class="site-menu-tb">
           <core-icon src="/images/polymer-logo.svg" class="menu-icon"></core-icon>
           Menu
         </core-toolbar>
+        <!-- Side Menu -->
         <admin-menu flex selected="{{selected}}" on-core-select="{{menuSelectHandler}}"></admin-menu>
       </core-header-panel>
 
       <core-header-panel main mode="waterfall-tall" tallclass="medium-tall">
+        <!-- Site Banner -->
         <core-toolbar class="site-banner">
           <paper-icon-button  icon="menu" core-drawer-toggle></paper-icon-button>
           <div class="bottom indent">Cordova App Killer</div>
@@ -57,6 +60,7 @@
           <paper-icon-button icon="search" on-tap="{{openSearchBox}}"></paper-icon-button>
           <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
         </core-toolbar>
+        <!-- Content -->
         <div class="content">
           <admin-content selected="{{selected}}"></admin-content>
         </div>

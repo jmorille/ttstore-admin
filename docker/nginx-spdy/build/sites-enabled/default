@@ -35,6 +35,8 @@ server {
      # gzip_static on;
      #  gunzip on;
 
+
+
        root /data/wwww;
        index index.html;
        expires 0;
