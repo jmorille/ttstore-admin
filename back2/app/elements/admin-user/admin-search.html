@@ -25,7 +25,6 @@
         <tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{sortHandler}}">
           <tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>
           <tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>
-
         </tt-table-flexbox>
       </div>
       <div>
@@ -142,7 +141,7 @@
         //console.log("----- pagingHandler", detail);
         this.search();
       },
- 
+
       // --- Search Aggs
       // ------------------
       handleAggAdd: function (e, data, sender) {
