@@ -13,20 +13,10 @@
 
     <template id="request_query">
       <section horizontal layout>
-        <core-field class="searchBox">
-          <paper-input-decorator floatingLabel label="Zone de Recherche" flex>
-            <input id="search" is="core-input" type="search" value="{{searchText}}"
-                   on-keypress="{{searchKeypressHandler}}" class="searchBox"/>
-          </paper-input-decorator>
+        <tt-input-search class="searchBox" value="{{searchText}}" on-search-input={{searchReset}}"></tt-input-search>
 
-          <paper-icon-button icon="search" on-tap="{{searchReset}}"></paper-icon-button>
-        </core-field>
         <paper-icon-button icon="add" label="Add" on-tap="{{addButtonHandler}}"></paper-icon-button>
-
-
-        <paper-icon-button id="filter_panel_button" icon="filter-list" label="Filters"
-                           on-tap="{{toggleFilter}}">
-        </paper-icon-button>
+        <paper-icon-button id="filter_panel_button" icon="filter-list" label="Filters" on-tap="{{toggleFilter}}"></paper-icon-button>
       </section>
     </template>
 
@@ -152,13 +142,7 @@
         //console.log("----- pagingHandler", detail);
         this.search();
       },
-
-      searchKeypressHandler: function (event, data, sender) {
-        var key = event.keyCode;
-        if (key == 13) {
-          this.searchReset();
-        }
-      },
+ 
       // --- Search Aggs
       // ------------------
       handleAggAdd: function (e, data, sender) {

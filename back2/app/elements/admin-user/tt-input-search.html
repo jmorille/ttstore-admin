@@ -1,0 +1,42 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+<polymer-element name="tt-input-search" attributes="value">
+  <template>
+    <style>
+      :host{
+        display: block;
+      }
+    </style>
+
+    <core-field class="searchBox">
+      <paper-input-decorator floatingLabel label="Zone de Recherche" flex>
+        <input id="search" is="core-input" type="search" value="{{value}}"
+               on-keypress="{{searchKeypressHandler}}" class="searchBox"/>
+      </paper-input-decorator>
+      <paper-icon-button icon="search" on-tap="{{fireInputSearch}}"></paper-icon-button>
+    </core-field>
+
+  </template>
+
+  <script>
+
+    'use strict';
+    Polymer('tt-input-search', {
+
+      searchKeypressHandler: function (event, data, sender) {
+        var key = event.keyCode;
+        if (key == 13) {
+          this.fireInputSearch();
+        }
+      },
+      fireInputSearch: function () {
+        this.fire('search-input', {
+          value: this.value
+        });
+      }
+
+    });
+
+  </script>
+</polymer-element>
