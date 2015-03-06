@@ -6,7 +6,6 @@
     <style>
       :host {
         display: block;
-
       }
 
       .chromeToast {
@@ -23,12 +22,10 @@
         transform: translate(-50%, 0);
         padding: 10px 50px 10px 20px;
 
-        /*Animation*/
+        /* Animation */
         opacity: 0;
         bottom: -100px;
         transition: all 1s ease-in-out;
-        -webkit-transition: all 1s ease-in-out;
-
       }
 
       a, a:hover, a:active:hover {
@@ -67,6 +64,10 @@
 
     Polymer('tt-chrome-detector', {
       chrome: undefined,
+
+
+      // --- Life Cycle ---
+      // ------------------
       ready: function () {
         this.async(function () {
           if (!this.isChrome()) {
@@ -76,19 +77,26 @@
       },
 
 
+      // --- Browser Detection ---
+      // -------------------------
       isChrome: function () {
         var isChromium = window.chrome,
           vendorName = window.navigator.vendor;
         return (isChromium !== null && isChromium !== undefined && vendorName === 'Google Inc.');
       },
 
+      // --- Chrome Toast ---
+      // --------------------
       hideToastChrome: function () {
+        var that = this;
         this.$.chromeToast.style.opacity = '0';
         this.$.chromeToast.style.bottom = '-100px';
-        this.async(function () {
-          this.$.chromeToast.style.display = 'none';
-        }, null, 2000);
-
+        // Add transitionend Event Listenr to remove display of Toast
+        var displayNoneListener = function () {
+          that.$.chromeToast.removeEventListener('transitionend', displayNoneListener);
+          that.$.chromeToast.style.display = 'none';
+        };
+        this.$.chromeToast.addEventListener('transitionend', displayNoneListener);
       },
 
       displayToastChrome: function () {
@@ -97,7 +105,37 @@
           this.$.chromeToast.style.opacity = '1';
           this.$.chromeToast.style.bottom = '10px';
         }, null, 20);
+      },
+
+      // --- Cookies ---
+      // ----------------
+      createCookie: function (name, value, days) {
+        if (days) {
+          var date = new Date();
+          date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+          var expires = "; expires=" + date.toGMTString();
+        }
+        else var expires = "";
+        document.cookie = name + "=" + value + expires + "; path=/";
+      },
+
+      readCookie: function (name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+      },
+
+      eraseCookie: function (name) {
+        createCookie(name, "", -1);
       }
+
+      // --- End ---
+      // ------------
 
     });
 
