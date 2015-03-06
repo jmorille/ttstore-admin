@@ -15,6 +15,11 @@
 
     </style>
 
+
+    <tt-lodash></tt-lodash>
+    <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}"></tt-es-search>
+
+
     <template id="request_query">
       <section horizontal layout>
         <tt-input-search class="searchBox" value="{{searchText}}" on-search-input={{searchReset}}"></tt-input-search>
@@ -24,6 +29,7 @@
                            on-tap="{{toggleFilter}}"></paper-icon-button>
       </section>
     </template>
+
 
     <template id="resultList">
       <div>
@@ -57,10 +63,6 @@
       </div>
       <template bind ref="resultList"></template>
     </div>
-
-
-    <tt-lodash></tt-lodash>
-    <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}"></tt-es-search>
 
   </template>
 
@@ -180,10 +182,7 @@
         var facetFilter = this.searchOptAggs.reduce(function (previous, current, index, array) {
           var facetFilter = ejs.TermFilter(current.name + '.raw', current.value);
           console.log('facetFilter : ', facetFilter.toJSON());
-          if (!previous) {
-            previous = ejs.BoolFilter();
-          }
-          return previous.must(facetFilter);
+          return (previous || ejs.BoolFilter()).must(facetFilter);
         }, undefined);
 
         if (facetFilter) {
