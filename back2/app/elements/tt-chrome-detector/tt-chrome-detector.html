@@ -1,30 +1,104 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<polymer-element name="tt-chrome-detector" attributes="">
+<polymer-element name="tt-chrome-detector">
 
   <template>
     <style>
+      :host {
+        display: block;
 
+      }
 
+      .chromeToast {
+        display: none;
+        background: rgba(0, 0, 0, 0.75);
+        text-align: center;
+        color: #fff;
+        font-size: .90em;
+        position: fixed;
+        z-index: 100;
+        border-radius: 5px;
+        box-shadow: -2px 2px 5px 1px rgba(105, 105, 105, 0.70);
+        left: 50%;
+        transform: translate(-50%, 0);
+        padding: 10px 50px 10px 20px;
+
+        /*Animation*/
+        opacity: 0;
+        bottom: -100px;
+        transition: all 1s ease-in-out;
+        -webkit-transition: all 1s ease-in-out;
+
+      }
+
+      a, a:hover, a:active:hover {
+        color: #acde84;
+      }
+
+      .cta {
+        float: right;
+        color: #fff;
+        background: #74b73f;
+        padding: 0 10px;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 24px;
+      }
+
+      .dismiss {
+        padding: 3px 10px 0;
+        border: 2px solid #fff;
+        border-radius: 25px;
+        margin-top: -48px;
+        margin-right: -40px;
+      }
     </style>
+    <span on-tap="{{displayToastChrome}}">Is chrome {{chrome}}</span>
 
 
-    Is chrome {{chrome}}
+    <div id="chromeToast" class="chromeToast">
+      <div>Pour une meilleure expérience <a href="https://www.google.fr/intl/fr/chrome/browser/desktop/index.html"
+                                            target="_blank">télécharger Chrome</a></div>
+      <a on-tap="{{hideToastChrome}}" class="cta dismiss">X</a>
+    </div>
 
   </template>
   <script>
 
     Polymer('tt-chrome-detector', {
       chrome: undefined,
-      created: function () {
-        this.chrome = this.isChrome();
+      ready: function () {
+        this.async(function () {
+          if (!this.isChrome()) {
+            this.displayToastChrome();
+          }
+        }, null, 5000);
       },
+
 
       isChrome: function () {
         var isChromium = window.chrome,
           vendorName = window.navigator.vendor;
         return (isChromium !== null && isChromium !== undefined && vendorName === "Google Inc.");
+      },
+
+      hideToastChrome: function () {
+        this.$.chromeToast.style.opacity = '0';
+        this.$.chromeToast.style.bottom = '-100px';
+        this.async(function () {
+          this.$.chromeToast.style.display = 'none';
+        }, null, 2000);
+
+      },
+
+      displayToastChrome: function () {
+        this.$.chromeToast.style.display = 'block';
+        this.async(function () {
+          this.$.chromeToast.style.opacity = '1';
+          this.$.chromeToast.style.bottom = '10px';
+        }, null, 20);
       }
+
     });
 
   </script>
