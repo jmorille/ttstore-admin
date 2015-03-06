@@ -49,7 +49,7 @@
             create: function () {
             },
             unsort: function () {
-                if (this.order != 'none') {
+                if (this.order !== 'none') {
                     this.order = 'none';
                 }
             },
@@ -115,7 +115,6 @@
             },
 
             sortChanged: function (oldValue, newValue) {
-                var that = this;
                 var expectedOrder = 'none';
                 var expectedOrderIdx = 0;
                 var sortableColumn = this.getOrderColumn(this.column, this.sortable);

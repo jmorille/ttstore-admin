@@ -56,7 +56,7 @@
       copyProperties: function (src, dest, override) {
         dest = dest || {};
         for (var attr in src) {
-          if (typeof src[attr] == 'object' && !Array.isArray(src[attr])) {
+          if (typeof src[attr] === 'object' && !Array.isArray(src[attr])) {
             // console.log('copyProperties type : ', attr, ' --> ', typeof src[attr], ' / is Array '  , Array.isArray(src[attr]) );
             if (override || !dest.hasOwnProperty(attr)) {
               var subDest = this.copyProperties(src[attr]);

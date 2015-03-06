@@ -59,15 +59,15 @@
         this.bodyString = JSON.stringify(googleAuth);
         this.$.service.go();
       },
-      signedOut: function (response) {
+      signedOut: function (event, response) {
         this.status = 'Not granted';
       },
 
-      handleResponse: function (resp) {
-        console.log("handleResponse", resp);
+      handleResponse: function (event, resp) {
+        console.log('handleResponse', resp);
       },
-      handleError: function (resp) {
-        console.log("handleError", resp);
+      handleError: function (event, resp) {
+        console.log('handleError', resp);
       }
 
     });

@@ -8,6 +8,7 @@
       :host {
         display: block;
       }
+
       .searchBox {
         width: 400px;
       }
@@ -19,7 +20,8 @@
         <tt-input-search class="searchBox" value="{{searchText}}" on-search-input={{searchReset}}"></tt-input-search>
 
         <paper-icon-button icon="add" label="Add" on-tap="{{addButtonHandler}}"></paper-icon-button>
-        <paper-icon-button id="filter_panel_button" icon="filter-list" label="Filters" on-tap="{{toggleFilter}}"></paper-icon-button>
+        <paper-icon-button id="filter_panel_button" icon="filter-list" label="Filters"
+                           on-tap="{{toggleFilter}}"></paper-icon-button>
       </section>
     </template>
 
@@ -78,10 +80,10 @@
 
       created: function () {
         this.searchOptDefault = {
-          "from": 0,
-          "size": 20,
-          "_source": ["firstname", "lastname", "email"],
-          "sort": []
+          'from': 0,
+          'size': 20,
+          '_source': ['firstname', 'lastname', 'email'],
+          'sort': []
         };
         this.searchOpt = _.cloneDeep(this.searchOptDefault);
 
@@ -101,7 +103,7 @@
           lastname: 'Nom'
         };
       },
-      // --- App Lyfe Cycle
+      // --- App Life Cycle
       // ------------------
       pageSelected: function () {
         console.log('Life Cycle : pageSelected');
@@ -115,29 +117,29 @@
       // --- List Action
       // ------------------
       entityAddHandler: function (event, data, sender) {
-        console.log("entityAddHandler", data);
+        console.log('entityAddHandler', data);
       },
 
       entityEditHandler: function (event, data, sender) {
-        console.log("entityEditHandler", data);
+        console.log('entityEditHandler', data);
       },
 
       // --- Search Event
       // ------------------
       searchHandler: function (event, data, sender) {
-        console.log("----- searchHandler", data);
+        console.log('----- searchHandler', data);
         this.search();
       },
 
       // --- Search Aggs
       // ------------------
       handleAggAdd: function (e, data, sender) {
-        console.log("----- Agg Add", data);
+        console.log('----- Agg Add', data);
         this.searchOptAggs.push(data);
         this.search();
       },
       handleAggDelete: function (e, data, sender) {
-        console.log("----- Agg Delete", data);
+        console.log('----- Agg Delete', data);
         this.search();
       },
 
@@ -149,7 +151,6 @@
       },
 
       search: function (optToSave) {
-        var that = this;
         // Save Options
         if (optToSave) {
           this.searchOpt = _.merge(this.searchOpt, optToSave);
@@ -178,7 +179,7 @@
         // ----------------
         var facetFilter = this.searchOptAggs.reduce(function (previous, current, index, array) {
           var facetFilter = ejs.TermFilter(current.name + '.raw', current.value);
-          console.log("facetFilter : ", facetFilter.toJSON());
+          console.log('facetFilter : ', facetFilter.toJSON());
           if (!previous) {
             previous = ejs.BoolFilter();
           }
@@ -186,7 +187,7 @@
         }, undefined);
 
         if (facetFilter) {
-          console.log("boolFilter : ", facetFilter.toJSON());
+          console.log('boolFilter : ', facetFilter.toJSON());
           query = ejs.FilteredQuery(query, facetFilter);
         }
 
@@ -211,7 +212,7 @@
         });
 
 
-        console.log("Elastic.js Body", body.toJSON());
+        console.log('Elastic.js Body', body.toJSON());
         return body.toJSON();
       }
 

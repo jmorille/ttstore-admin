@@ -150,7 +150,7 @@
       callNodesWithFunction: function (item, searchFunc) {
         var childNodes = item;
         if (!Array.isArray(childNodes)) {
-          childNodes = childNodes.querySelectorAll("*");
+          childNodes = childNodes.querySelectorAll('*');
         }
         if (childNodes) {
           Array.prototype.forEach.call(childNodes, function (childNode) {

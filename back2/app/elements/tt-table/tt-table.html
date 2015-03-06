@@ -112,7 +112,9 @@
                         }
                         // Title
                         var title = elt.getAttribute('title');
-                        if (!title || title === '') title = elt.textContent.trim();
+                        if (!title || title === '') {
+                          title = elt.textContent.trim();
+                        }
                         // Column obj
                         var colObj = {
                             column: name,
