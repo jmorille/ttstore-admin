@@ -3,7 +3,11 @@
 
 <polymer-element name="admin-user-edit" attributes="entityid">
   <template>
-
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
     <tt-crud data="{{data}}" entityid="{{entityid}}" index="users" autosave >
       <section>
         <paper-input-decorator floatingLabel label="First name" autoValidate>

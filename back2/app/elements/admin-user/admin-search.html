@@ -5,6 +5,9 @@
   <template>
 
     <style>
+      :host {
+        display: block;
+      }
       .searchBox {
         width: 400px;
       }
@@ -22,7 +25,7 @@
 
     <template id="resultList">
       <div>
-        <tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{sortHandler}}">
+        <tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{searchHandler}}">
           <tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>
           <tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>
         </tt-table-flexbox>
@@ -31,7 +34,7 @@
         <tt-paginator range="{{rangeSize}}"
                       from="{{searchOpt.from}}" size="{{searchOpt.size}}"
                       total="{{data.hits.total}}"
-                      on-change="{{pagingHandler}}">
+                      on-change="{{searchHandler}}">
         </tt-paginator>
       </div>
     </template>
@@ -78,7 +81,7 @@
           "from": 0,
           "size": 20,
           "_source": ["firstname", "lastname", "email"],
-          "sort": ["_score"]
+          "sort": []
         };
         this.searchOpt = _.cloneDeep(this.searchOptDefault);
 
@@ -121,24 +124,8 @@
 
       // --- Search Event
       // ------------------
-      sortHandler: function (event, data, sender) {
-        var sort = data.column + ":" + data.order;
-        // compute merging sort
-        if (Array.isArray(this.searchOpt.sort)) {
-          var filterSort = this.searchOpt.sort.filter(function (elt) {
-            var eltColSortSep = elt.lastIndexOf(':');
-            var eltColSort = eltColSortSep > -1 ? elt.slice(0, eltColSortSep) : elt;
-            return eltColSort !== data.column;
-          });
-          sort = [sort].concat(filterSort);
-        }
-        // Do search
-
-        this.search({sort: sort});
-      },
-
-      pagingHandler: function (event, data, sender) {
-        //console.log("----- pagingHandler", detail);
+      searchHandler: function (event, data, sender) {
+        console.log("----- searchHandler", data);
         this.search();
       },
 
@@ -228,15 +215,6 @@
         return body.toJSON();
       }
 
-
-
-//      handleVoiceRecognition: function (event, data) {
-//        this.searchText = data.result;
-//        _id.log('voice-recognition', data.result);
-//      },
-//      startVoiceRecognition: function () {
-//        this.$.voiceRecognition.start();
-//      }
 
     });
 

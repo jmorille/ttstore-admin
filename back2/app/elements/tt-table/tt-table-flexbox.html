@@ -54,7 +54,8 @@
             <template repeat="{{col in columns}}" class="{{col.classNames}}">
               <div class="Table-row-item {{col.classNames}}" data-header="{{col.title}}"
                    on-tap="{{tapColumnHandler}}"
-                   entity-id="{{item._id}}" entity-column="{{col.column}}">{{item._source[col.column]}}</div>
+                   entity-id="{{item._id}}" entity-column="{{col.column}}">{{item._source[col.column]}}
+              </div>
             </template>
             <!-- Line Action -->
             <template bind ref="taction" if="{{isAction}}"></template>
@@ -129,6 +130,88 @@
         var entityColumn = this.getLineEntityColumn(event, data, sender);
         this.fire('tap-line-column', {_id: entityId});
         console.log('---- on Tap on Column Line : ', entityId, 'on column', entityColumn);
+      },
+      sortHandler: function (event, data, sender) {
+        event.stopPropagation();
+//        var sortColumn = this.sortCriteriaOrderPreserve(data);
+//        var sortColumn = this.sortCriteriaAccumulative(data);
+        var sortColumn = this.sortCriteriaSingle(data);
+
+        // Change Active Sort
+        this.sort = sortColumn;
+        console.log('New Sort Computing for column');
+        this.fire('sort', {
+          order: this.order,
+          column: this.column,
+          sorts: sortColumn
+        });
+      },
+
+
+      parseColumnName: function (elt) {
+        var eltColSortSep = elt.lastIndexOf(':');
+        var eltColSort = eltColSortSep > -1 ? elt.slice(0, eltColSortSep) : elt;
+        return eltColSort;
+      },
+
+      /**
+       * Compute the sort order with keeping only the event sort
+       * eg: 'col2:desc' Sort Event in  ['col1:asc', 'col2:asc', 'col3:asc'] ==> ['col2:desc']
+       * @param data String in format column:order
+       * @returns {string} The sort order in format  ['col:asc']
+       */
+      sortCriteriaSingle: function (data) {
+        return [data.column + ':' + data.order];
+      },
+
+
+      /**
+       * Compute the sort order with the last criteria in first
+       * eg: 'col2:desc' Sort Event in  ['col1:asc', 'col2:asc', 'col3:asc'] ==> ['col2:desc','col1:asc',  'col3:asc']
+       * @param data String in format column:order
+       * @returns {string} The sort order in format  ['col1:asc', 'col2:desc', 'col3:asc']
+       */
+      sortCriteriaAccumulative: function (data) {
+        var  that = this,
+          sortColumn = data.column + ':' + data.order;
+        // compute merging sort
+        if (Array.isArray(this.sort)) {
+          var filterSort = this.sort.filter(function (elt) {
+            return that.parseColumnName(elt) !== data.column;
+          });
+          sortColumn = [sortColumn].concat(filterSort);
+        }
+        return sortColumn;
+      },
+
+      /**
+       * Compute the sort order with order preserve
+       * eg: 'col2:desc' Sort Event in  ['col1:asc', 'col2:asc', 'col3:asc'] ==> ['col1:asc', 'col2:desc', 'col3:asc']
+       * eg: 'col2:desc' Sort Event in  ['col1:asc'] ==> ['col1:asc', 'col2:desc' ]
+       * @param data String in format column:order
+       * @returns {string} The sort order in format  ['col1:asc', 'col2:desc', 'col3:asc']
+       */
+      sortCriteriaOrderPreserve: function (data) {
+        var that = this,
+          sortColumn = data.column + ':' + data.order,
+          sorts = this.sort;
+        if (Array.isArray(sorts)) {
+          var indexOfSortColumn = sorts.reduce(function (acc, elt, index) {
+            return that.parseColumnName(elt) === data.column ? index : acc;
+          }, -1);
+          console.log('Prepare re-order IndexOf ', indexOfSortColumn);
+          if (indexOfSortColumn > -1) {
+            // Replace sort column
+            var first =  sorts.slice(0, indexOfSortColumn);
+            var second = sorts.slice(indexOfSortColumn+1, sorts.length);
+            console.log('Prepare re-order', first, second);
+            sortColumn =[].concat(first, sortColumn, second);
+          } else {
+            // Add New sort at the End
+            sortColumn = sorts.concat(sortColumn);
+          }
+        }
+        return sortColumn;
       }
 
     }, ttColumnUtilsMixin));
