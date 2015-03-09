@@ -17,7 +17,7 @@
 
       <app-route path="/home" element="ttadmin-home"></app-route>
       <app-route path="/user"  element="admin-search"></app-route>
-      <app-route path="/user/:entityid"  element="admin-user-edit"></app-route>
+      <app-route path="/user/:entityid"  element="admin-user-edit" menu-selected="/user" ></app-route>
 
       <app-route path="/portfolio" element="ttadmin-page-portfolio"></app-route>
       <app-route path="/contact" element="yo-greeting"></app-route>
@@ -40,7 +40,10 @@
 
       activateRouteHandler: function (event, detail) {
         console.log('Activate Route Beding ', detail);
-        this.selected = detail.path;
+        var menuSelectedAttr = detail.route.attributes['menu-selected'];
+        var menuSelected = menuSelectedAttr?menuSelectedAttr.value : detail.path;
+        console.log("Menu selected active route", menuSelected);
+        this.selected = menuSelected;
       },
       selectContentHandler: function (event, detail) {
         console.log('selectContentHandler event : ', event);

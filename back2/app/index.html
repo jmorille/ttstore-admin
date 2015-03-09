@@ -17,11 +17,26 @@
   <!-- endbuild-->
 
   <!-- build:js scripts/vendor/webcomponents.js -->
-  <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+  <!--<script src="bower_components/webcomponentsjs/webcomponents.js"></script>-->
   <!-- endbuild -->
 
+  <!-- Conditionally load WC polyfills -->
+  <script>
+    if ('registerElement' in document
+      && 'createShadowRoot' in HTMLElement.prototype
+      && 'import' in document.createElement('link')
+      && 'content' in document.createElement('template')) {
+      // We're using a browser with native WC support!
+    } else {
+      document.write('<script src="/bower_components/webcomponentsjs/webcomponents.js"><\/script>');
+    }
+  </script>
+
+
   <link rel="import" href="bower_components/font-roboto/roboto.html">
+  <!-- build:vulcanized /elements/elements.critical.vulcanized.html -->
   <link rel="import" href="elements/elements.html">
+  <!-- endbuild-->
 
 </head>
 <body unresolved fullbleed layout vertical>

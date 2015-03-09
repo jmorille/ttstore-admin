@@ -23,7 +23,7 @@
     <core-menu selected="{{selected}}" valueattr="data-category">
       <template repeat="{{menu in menus}}">
         <core-item icon="{{menu.icon}}" data-category="{{menu.route}}" label="{{menu.label}}">
-          <a is="pushstate-anchor" href="/{{menu.route}}"></a>
+          <a is="pushstate-anchor" href="#{{menu.route}}"></a>
         </core-item>
       </template>
     </core-menu>
