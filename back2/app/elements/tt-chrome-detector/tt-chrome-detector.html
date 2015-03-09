@@ -71,7 +71,9 @@
       ready: function () {
         this.async(function () {
           if (!this.isChrome()) {
-            this.displayToastChrome();
+            if (!this.isChromeToastChecked()) {
+              this.displayToastChrome();
+            }
           }
         }, null, 5000);
       },
@@ -85,8 +87,19 @@
         return (isChromium !== null && isChromium !== undefined && vendorName === 'Google Inc.');
       },
 
+
       // --- Chrome Toast ---
       // --------------------
+
+
+      displayToastChrome: function () {
+        this.$.chromeToast.style.display = 'block';
+        this.async(function () {
+          this.$.chromeToast.style.opacity = '1';
+          this.$.chromeToast.style.bottom = '10px';
+        }, null, 20);
+      },
+
       hideToastChrome: function () {
         var that = this;
         this.$.chromeToast.style.opacity = '0';
@@ -97,30 +110,39 @@
           that.$.chromeToast.style.display = 'none';
         };
         this.$.chromeToast.addEventListener('transitionend', displayNoneListener);
-      },
-
-      displayToastChrome: function () {
-        this.$.chromeToast.style.display = 'block';
         this.async(function () {
-          this.$.chromeToast.style.opacity = '1';
-          this.$.chromeToast.style.bottom = '10px';
-        }, null, 20);
+          this.incChromeToastChecked();
+        });
       },
-
+      // --- Chrome Toast Logic ---
+      // --------------------------
+      isChromeToastChecked: function () {
+        var chromeTestCount = this.readCookie('chromeToastChecked');
+        return  chromeTestCount  && parseInt(chromeTestCount,10)  > 0;
+      },
+      incChromeToastChecked: function () {
+        var cookieKeyChromeToastChecked = 'chromeToastChecked';
+        var chromeTestCount = this.readCookie(cookieKeyChromeToastChecked);
+        console.log('readCookie', chromeTestCount , chromeTestCount > 0);
+        chromeTestCount = !chromeTestCount ? 1 : parseInt(chromeTestCount,10) + 1;
+        this.writeCookie(cookieKeyChromeToastChecked, chromeTestCount, 7);
+        return chromeTestCount;
+      },
       // --- Cookies ---
       // ----------------
-      createCookie: function (name, value, days) {
-        if (days) {
-          var date = new Date();
-          date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-          var expires = "; expires=" + date.toGMTString();
+      writeCookie: function (name, value, expires, path, domain, secure) {
+        if ('number' === typeof expires) {
+          expires = new Date(new Date().getTime() + (expires * 24 * 60 * 60 * 1000));
         }
-        else var expires = "";
-        document.cookie = name + "=" + value + expires + "; path=/";
+        document.cookie = name + '=' + escape(value) +
+        ((expires) ? '; expires=' + expires.toUTCString() : '') +
+        ((path) ? '; path=' + path : '/') +
+        ((domain) ? '; domain=' + domain : '') +
+        ((secure) ? '; secure' : '');
       },
 
       readCookie: function (name) {
-        var nameEQ = name + "=";
+        var nameEQ = name + '=';
         var ca = document.cookie.split(';');
         for (var i = 0; i < ca.length; i++) {
           var c = ca[i];
@@ -131,8 +153,9 @@
       },
 
       eraseCookie: function (name) {
-        createCookie(name, "", -1);
+        this.writeCookie(name, '', -1);
       }
+
 
       // --- End ---
       // ------------
