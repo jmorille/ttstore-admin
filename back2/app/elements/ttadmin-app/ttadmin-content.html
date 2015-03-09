@@ -1,147 +1,57 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html">
 <link rel="import" href="../../bower_components/core-animated-pages/transitions/slide-from-right.html">
+
+<link rel="import" href="ttadmin-notfound.html">
+<link rel="import" href="ttadmin-page-portfolio.html">
+<link rel="import" href="ttadmin-home.html">
 
 <polymer-element name="ttadmin-content" attributes="selected">
 
   <template>
 
-    <core-animated-pages selected="{{selected}}" on-core-select="{{selectContentHandler}}" transitions="slide-from-right cross-fade"
-                         valueattr="data-category">
-      <section data-category="home">
-        <div cross-fade>
-          <h1>Home</h1>
+    <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
+    <app-router mode="hash" on-activate-route-end="{{selectContentHandler}}" on-activate-route-start="{{activateRouteHandler}}"
+                core-animated-pages transitions="slide-from-right cross-fade-all">
 
-          <div>Home content</div>
-        </div>
-      </section>
-      <section data-category="user">
-        <div cross-fade>
-          <h1>User</h1>
-          <admin-user></admin-user>
-        </div>
-      </section>
-      <section data-category="portfolio">
-        <div cross-fade>
-          <h1>Portfolio</h1>
+      <app-route path="/home" element="ttadmin-home"></app-route>
+      <app-route path="/user"  element="admin-search"></app-route>
+      <app-route path="/user/:entityid"  element="admin-user-edit"></app-route>
 
-          <div>Portfolio content
+      <app-route path="/portfolio" element="ttadmin-page-portfolio"></app-route>
+      <app-route path="/contact" element="yo-greeting"></app-route>
+
+      <app-route path="/order/:orderId">
+        <template>
+          <p>Your order number is {{orderId}}</p>
+        </template>
+      </app-route>
 
 
-            <div>User content</div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-              id est
-              laborum.</p>
+      <app-route path="*" element="ttadmin-notfound"></app-route>
 
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-              id est
-              laborum.</p>
-
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-              id est
-              laborum.</p>
-
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-              id est
-              laborum.</p>
-
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-              id est
-              laborum.</p>
-
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-              id est
-              laborum.</p>
-
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-              id est
-              laborum.</p>
-
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-              id est
-              laborum.</p>
-
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-              id est
-              laborum.</p>
-
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-              id est
-              laborum.</p>
-
-          </div>
-        </div>
-      </section>
-      <section data-category="contact">
-        <div cross-fade>
-          <h1>Contact</h1>
-          <yo-greeting></yo-greeting>
-        </div>
-      </section>
-    </core-animated-pages>
+    </app-router>
 
   </template>
   <script>
     'use strict';
     Polymer('ttadmin-content', {
 
+      activateRouteHandler: function (event, detail) {
+        console.log('Activate Route Beding ', detail);
+        this.selected = detail.path;
+      },
       selectContentHandler: function (event, detail) {
-        var item = detail.item;
-        if (detail.isSelected) {
-          this.callNodesWithFunction(item, 'pageSelected');
-        } else {
-          this.async( function() {
-              this.callNodesWithFunction(item, 'pageUnselected');
+        console.log('selectContentHandler event : ', event);
+        console.log('selectContentHandler detail : ', detail);
+        // New Route
+        var item = detail.route;
+        this.callNodesWithFunction(item, 'pageSelected');
+        // Old Route
+        if (detail.oldRoute) {
+          this.async(function () {
+              this.callNodesWithFunction(detail.oldRoute, 'pageUnselected');
             }
           );
         }

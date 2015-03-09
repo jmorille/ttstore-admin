@@ -13,7 +13,9 @@
     "flatiron-director": "PolymerLabs/flatiron-director#~0.5.0",
     "google-signin": "~0.2.1",
     "elastic.js": "~1.2.0",
-    "lodash": "~3.3.1"
+    "lodash": "~3.3.1",
+    "app-router": "~2.6.0",
+    "pushstate-anchor": "~0.3.0"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^2.0.0"

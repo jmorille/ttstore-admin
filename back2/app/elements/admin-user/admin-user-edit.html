@@ -8,7 +8,8 @@
         display: block;
       }
     </style>
-    <tt-crud data="{{data}}" entityid="{{entityid}}" index="users" autosave >
+
+    <tt-crud   data="{{data}}" entityid="{{entityid}}" endpoint="/s/users"  >
       <section>
         <paper-input-decorator floatingLabel label="First name" autoValidate>
           <input is="core-input" value="{{ data._source.firstname}}" required>
@@ -29,7 +30,6 @@
   <script>
     'use strict';
     Polymer('admin-user-edit', {
-
 
 
     });
