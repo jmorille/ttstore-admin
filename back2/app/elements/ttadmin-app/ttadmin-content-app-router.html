@@ -14,34 +14,68 @@
     <core-media-query query="min-width: 640px" queryMatches="{{largeScreen}}">
     </core-media-query>
 
+    <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
+    <app-router mode="hash" on-activate-route-end="{{selectContentHandler}}"
+                on-activate-route-start="{{activateRouteHandler}}"
+                core-animated-pages transitions="slide-from-right cross-fade-all">
 
-    <more-route-selector selectedParams="{{params}}">
-      <core-pages>
-        <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
-        <section route="home">
-          <ttadmin-home></ttadmin-home>
-        </section>
-        <section route="user">
-          <admin-search></admin-search>
-        </section>
-        <!--<section route="user-edit">-->
-        <!--<admin-user-edit entityid="{{entityid}}"></admin-user-edit>-->
-        <!--</section>-->
+      <app-route path="/home">
+        <template>
+          <ttadmin-layout>
+            <ttadmin-home  cross-fade?="{{largeScreen}}"
+                           fade-scale?="{{!largeScreen}}"
+                           flex ></ttadmin-home>
+          </ttadmin-layout>
+        </template>
+      </app-route>
+      <app-route path="/user">
+        <template>
+          <ttadmin-layout>
+            <admin-search cross-fade?="{{largeScreen}}"
+                          fade-scale?="{{!largeScreen}}"
+                          flex></admin-search>
+          </ttadmin-layout>
+        </template>
+      </app-route>
+      <app-route path="/user/:entityid" menu-selected="/user">
+        <template>
+          <ttadmin-layout>
+            <admin-user-edit entityid="{{entityid}}"></admin-user-edit>
+          </ttadmin-layout>
+        </template>
+      </app-route>
 
-        <section route="portfolio">
-          <ttadmin-page-portfolio></ttadmin-page-portfolio>
-        </section>
-        <section route="contact">
-          <yo-greeting></yo-greeting>
-        </section>
+      <app-route path="/portfolio">
+        <template>
+          <ttadmin-layout>
+            <ttadmin-page-portfolio cross-fade?="{{largeScreen}}"
+                                    fade-scale?="{{!largeScreen}}"
+                                    flex ></ttadmin-page-portfolio>
+          </ttadmin-layout>
+        </template>
+      </app-route>
+      <app-route path="/contact">
+        <template>
+          <ttadmin-layout>
+            <yo-greeting></yo-greeting>
+          </ttadmin-layout>
+        </template>
+      </app-route>
 
-        <section layout vertical route="order">
+      <app-route path="/order/:orderId">
+        <template>
           <p>Your order number is {{orderId}}</p>
-        </section>
-      </core-pages>
+        </template>
+      </app-route>
 
-    </more-route-selector>
 
+      <app-route path="*" element="ttadmin-notfound">
+        <template>
+          <ttadmin-notfound></ttadmin-notfound>
+        </template>
+      </app-route>
+
+    </app-router>
 
   </template>
   <script>

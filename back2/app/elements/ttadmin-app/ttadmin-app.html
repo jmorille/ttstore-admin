@@ -1,15 +1,30 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-
-
-<polymer-element name="ttadmin-app" attributes="selected progress">
+<polymer-element name="ttadmin-app" attributes="progress">
 
   <template>
-    <!--<ttadmin-layout>-->
-          <ttadmin-content selected="{{selected}}"></ttadmin-content>
-    <!--</ttadmin-layout>-->
 
+
+
+    <!--<more-route name="order" path="/order/:orderId"></more-route>-->
+
+    <ttadmin-layout>
+      <ttadmin-content></ttadmin-content>
+    </ttadmin-layout>
+
+    <!--<ttadmin-layout>-->
+      <!--<more-route-selector>-->
+        <!--<core-animated-pages>-->
+          <!--<section route="home">-->
+            <!--<h1>Home</h1>-->
+          <!--</section>-->
+          <!--<section route="user">-->
+            <!--<h1>User</h1>-->
+          <!--</section>-->
+        <!--</core-animated-pages>-->
+      <!--</more-route-selector>-->
+    <!--</ttadmin-layout>-->
 
   </template>
   <script>
