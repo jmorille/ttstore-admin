@@ -12,15 +12,46 @@
   <template>
 
     <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
-    <app-router mode="hash" on-activate-route-end="{{selectContentHandler}}" on-activate-route-start="{{activateRouteHandler}}"
+    <app-router mode="hash" on-activate-route-end="{{selectContentHandler}}"
+                on-activate-route-start="{{activateRouteHandler}}"
                 core-animated-pages transitions="slide-from-right cross-fade-all">
 
-      <app-route path="/home" element="ttadmin-home"></app-route>
-      <app-route path="/user"  element="admin-search"></app-route>
-      <app-route path="/user/:entityid"  element="admin-user-edit" menu-selected="/user" ></app-route>
+      <app-route path="/home">
+        <template>
+          <ttadmin-layout>
+            <ttadmin-home></ttadmin-home>
+          </ttadmin-layout>
+        </template>
+      </app-route>
+      <app-route path="/user">
+        <template>
+          <ttadmin-layout>
+            <admin-search></admin-search>
+          </ttadmin-layout>
+        </template>
+      </app-route>
+      <app-route path="/user/:entityid" menu-selected="/user">
+        <template>
+          <ttadmin-layout>
+            <admin-user-edit entityid="{{entityid}}"></admin-user-edit>
+          </ttadmin-layout>
+        </template>
+      </app-route>
 
-      <app-route path="/portfolio" element="ttadmin-page-portfolio"></app-route>
-      <app-route path="/contact" element="yo-greeting"></app-route>
+      <app-route path="/portfolio">
+        <template>
+          <ttadmin-layout>
+            <ttadmin-page-portfolio></ttadmin-page-portfolio>
+          </ttadmin-layout>
+        </template>
+      </app-route>
+      <app-route path="/contact">
+        <template>
+          <ttadmin-layout>
+            <yo-greeting></yo-greeting>
+          </ttadmin-layout>
+        </template>
+      </app-route>
 
       <app-route path="/order/:orderId">
         <template>
@@ -29,7 +60,11 @@
       </app-route>
 
 
-      <app-route path="*" element="ttadmin-notfound"></app-route>
+      <app-route path="*" element="ttadmin-notfound">
+        <template>
+          <ttadmin-notfound></ttadmin-notfound>
+        </template>
+      </app-route>
 
     </app-router>
 
@@ -41,7 +76,7 @@
       activateRouteHandler: function (event, detail) {
         console.log('Activate Route Beding ', detail);
         var menuSelectedAttr = detail.route.attributes['menu-selected'];
-        var menuSelected = menuSelectedAttr?menuSelectedAttr.value : detail.path;
+        var menuSelected = menuSelectedAttr ? menuSelectedAttr.value : detail.path;
         console.log("Menu selected active route", menuSelected);
         this.selected = menuSelected;
       },
