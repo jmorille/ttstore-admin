@@ -16,8 +16,8 @@
 
 
     <more-route-selector selectedParams="{{params}}">
-      <core-pages>
-        <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
+      <core-animated-pages  on-core-select="{{selectContentHandler}}" transitions="slide-from-right cross-fade">
+      <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
         <section route="home">
           <ttadmin-home></ttadmin-home>
         </section>
@@ -38,7 +38,7 @@
         <!--<section layout vertical route="order">-->
           <!--<p>Your order number is {{orderId}}</p>-->
         <!--</section>-->
-      </core-pages>
+      </core-animated-pages>
 
     </more-route-selector>
 
