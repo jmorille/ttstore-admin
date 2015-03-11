@@ -20,32 +20,32 @@
 
 
     <!--view-source:https://erikringsmuth.github.io/app-router/layouts/scaffold-layout.html-->
-    <more-route-selector>
-      <core-menu>
-        <template repeat="{{menu in menus}}">
-          <core-item icon="{{menu.icon}}" label="{{menu.label}}" route="{{menu.route}}">
-            <a href="{{urlFor(menu.route)}}"></a>
-          </core-item>
-        </template>
-      </core-menu>
-    </more-route-selector>
-
     <!--<more-route-selector>-->
       <!--<core-menu>-->
-        <!--<core-item  icon="home"  label="Home" route="home">-->
-          <!--<a href="{{urlFor('home')}}"></a>-->
-        <!--</core-item>-->
-        <!--<core-item icon="supervisor-account"  label="User" route="user">-->
-          <!--<a href="{{urlFor('user')}}"></a>-->
-        <!--</core-item>-->
-        <!--<core-item icon="perm-media" label="Portfolio" route="portfolio">-->
-          <!--<a href="{{urlFor('portfolio')}}"></a>-->
-        <!--</core-item>-->
-        <!--<core-item icon="perm-contact-cal" label="Contact" route="contact">-->
-          <!--<a href="{{urlFor('contact')}}"></a>-->
-        <!--</core-item>-->
+        <!--<template repeat="{{menu in menus}}">-->
+          <!--<core-item icon="{{menu.icon}}" label="{{menu.label}}" route="{{menu.route}}">-->
+            <!--<a href="{{urlFor(menu.route)}}"></a>-->
+          <!--</core-item>-->
+        <!--</template>-->
       <!--</core-menu>-->
     <!--</more-route-selector>-->
+
+    <more-route-selector>
+      <core-menu>
+        <core-item  icon="home"  label="Home" route="home">
+          <a href="{{urlFor('home')}}"></a>
+        </core-item>
+        <core-item icon="supervisor-account"  label="User" route="user">
+          <a href="{{urlFor('user')}}"></a>
+        </core-item>
+        <core-item icon="perm-media" label="Portfolio" route="portfolio">
+          <a href="{{urlFor('portfolio')}}"></a>
+        </core-item>
+        <core-item icon="perm-contact-cal" label="Contact" route="contact">
+          <a href="{{urlFor('contact')}}"></a>
+        </core-item>
+      </core-menu>
+    </more-route-selector>
 
   </template>
   <script>

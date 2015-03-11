@@ -10,7 +10,7 @@
     </style>
     <div>Entity Id  {{entityid}}</div>
     <tt-crud   data="{{data}}" entityid="{{entityid}}" endpoint="/s/users"  >
-      <section>
+      <section id="formContainer">
         <paper-input-decorator floatingLabel label="First name" autoValidate>
           <input is="core-input" value="{{ data._source.firstname}}" required>
         </paper-input-decorator>
@@ -22,6 +22,13 @@
         <paper-input-decorator floatingLabel label="Email" autoValidate>
           <input is="core-input" id="input2" value="{{ data._source.email}}" type="email">
         </paper-input-decorator>
+
+        <div on-tap="{{displayPhone}}">---- Phones ---</div>
+        <template if="{{doDisplay}}">
+          <paper-input-decorator floatingLabel label="Phone" autoValidate>
+            <input is="core-input"   value="{{ data._source.phone}}" type="phone">
+          </paper-input-decorator>
+        </template>
       </section>
     </tt-crud>
 
@@ -30,7 +37,11 @@
   <script>
     'use strict';
     Polymer('admin-user-edit', {
+      doDisplay: false,
 
+      displayPhone: function () {
+        this.doDisplay = ! this.doDisplay;
+      }
 
     });
 

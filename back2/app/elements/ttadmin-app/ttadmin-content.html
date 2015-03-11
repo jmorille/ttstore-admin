@@ -14,34 +14,38 @@
     <core-media-query query="min-width: 640px" queryMatches="{{largeScreen}}">
     </core-media-query>
 
+    <ttadmin-layout>
+      <more-route-selector selectedParams="{{params}}">
+        <core-animated-pages on-core-select="{{selectContentHandler}}" transitions="slide-from-right cross-fade">
+          <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
+          <section route="home">
+            <ttadmin-home></ttadmin-home>
+          </section>
+          <section route="user">
+            <admin-search></admin-search>
+          </section>
+          <section route="user-edit">
+            <admin-user-edit entityid="{{params.entityid}}"></admin-user-edit>
+          </section>
+          <!--<section route="user-edit">-->
+          <!--<admin-user-edit entityid="{{entityid}}"></admin-user-edit>-->
+          <!--</section>-->
 
-    <more-route-selector selectedParams="{{params}}">
-      <core-animated-pages  on-core-select="{{selectContentHandler}}" transitions="slide-from-right cross-fade">
-      <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
-        <section route="home">
-          <ttadmin-home></ttadmin-home>
-        </section>
-        <section route="user">
-          <admin-search></admin-search>
-        </section>
-        <!--<section route="user-edit">-->
-        <!--<admin-user-edit entityid="{{entityid}}"></admin-user-edit>-->
-        <!--</section>-->
+          <section route="portfolio">
+            <ttadmin-page-portfolio></ttadmin-page-portfolio>
+          </section>
+          <section route="contact">
+            <yo-greeting></yo-greeting>
+          </section>
 
-        <section route="portfolio">
-          <ttadmin-page-portfolio></ttadmin-page-portfolio>
-        </section>
-        <section route="contact">
-          <yo-greeting></yo-greeting>
-        </section>
-
-        <!--<section layout vertical route="order">-->
+          <!--<section layout vertical route="order">-->
           <!--<p>Your order number is {{orderId}}</p>-->
-        <!--</section>-->
-      </core-animated-pages>
+          <!--</section>-->
+        </core-animated-pages>
 
-    </more-route-selector>
+      </more-route-selector>
 
+    </ttadmin-layout>
 
   </template>
   <script>
@@ -50,16 +54,16 @@
 
       activateRouteHandler: function (event, detail) {
         console.log('Activate Route Beding ', detail);
-        var menuSelectedAttr = detail.route.attributes['menu-selected'];
-        var menuSelected = menuSelectedAttr ? menuSelectedAttr.value : detail.path;
-        console.log("Menu selected active route", menuSelected);
-       // this.selected = menuSelected;
+//        var menuSelectedAttr = detail.route.attributes['menu-selected'];
+//        var menuSelected = menuSelectedAttr ? menuSelectedAttr.value : detail.path;
+//        console.log("Menu selected active route", menuSelected);
+        // this.selected = menuSelected;
       },
       selectContentHandler: function (event, detail) {
-        console.log('selectContentHandler event : ', event);
-        console.log('selectContentHandler detail : ', detail);
+//        console.log('selectContentHandler event : ', event);
+//        console.log('selectContentHandler detail : ', detail);
         // New Route
-        var item = detail.route;
+        var item = detail.item;
         this.callNodesWithFunction(item, 'pageSelected');
         // Old Route
         if (detail.oldRoute) {
