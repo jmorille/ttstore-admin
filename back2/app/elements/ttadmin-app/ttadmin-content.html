@@ -7,7 +7,7 @@
 <link rel="import" href="ttadmin-page-portfolio.html">
 <link rel="import" href="ttadmin-home.html">
 
-<polymer-element name="ttadmin-content" attributes="selected">
+<polymer-element name="ttadmin-content" attributes="">
 
   <template>
 
@@ -53,7 +53,7 @@
         var menuSelectedAttr = detail.route.attributes['menu-selected'];
         var menuSelected = menuSelectedAttr ? menuSelectedAttr.value : detail.path;
         console.log("Menu selected active route", menuSelected);
-        this.selected = menuSelected;
+       // this.selected = menuSelected;
       },
       selectContentHandler: function (event, detail) {
         console.log('selectContentHandler event : ', event);
