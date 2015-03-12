@@ -34,7 +34,8 @@ server {
     # http://www.bsdnow.tv/tutorials/nginx
     # https://mozilla.github.io/server-side-tls/ssl-config-generator/
     # Intermediate cypersuite :https://wiki.mozilla.org/Security/Server_Side_TLS#Intermediate_compatibility_.28default.29
-    # ##################
+    ## TODO Test Session https://www.ssllabs.com/ssltest/index.html
+    # ###############################################################
     ssl_session_timeout 10m;
     ssl_session_cache shared:SSL:50m;
 
