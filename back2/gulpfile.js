@@ -33,6 +33,7 @@ var gutil = require('gulp-util'),
 var livereload = require('gulp-livereload');
 var filter = require('gulp-filter');
 var browserSync = require('browser-sync');
+var browserSyncReload = browserSync.reload;
 
 //var source = require('vinyl-source-stream');
 //var buffer = require('vinyl-buffer');
@@ -139,7 +140,7 @@ var isErrorEatByWatch = false;
 
 
 // Watch all files changes
-gulp.task('watch',['sass:watch', 'cp:watch', 'images:watch', 'vulcanize:watch'],  function (cb) {
+gulp.task('watch', ['sass:watch', 'cp:watch', 'images:watch', 'vulcanize:watch'], function (cb) {
   isErrorEatByWatch = true;
   livereload.listen();
   cb();
@@ -207,7 +208,7 @@ gulp.task('cp', function () {
     .pipe($.useref())
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(browserSync.reload({stream: true}));
+    .pipe(browserSyncReload({stream: true}));
 });
 
 
@@ -276,7 +277,7 @@ gulp.task('sass', function () {
     }))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(browserSync.reload({stream: true}));
+    .pipe(browserSyncReload({stream: true}));
 });
 
 // Watch for Sass generation
@@ -309,7 +310,7 @@ gulp.task('vulcanize', function (cb) {
     }))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(browserSync.reload({stream: true}));
+    .pipe(browserSyncReload({stream: true}));
 });
 
 // Watch for Vulcanize html files
@@ -403,9 +404,9 @@ gulp.task('connect', function () {
 
   // Connect Configuration
   var app = require('connect')()
-  //  .use(require('connect-modrewrite')(['^/s/(.*)$ http://localhost:8000/s/$1 [P]']))
-    .use(  require('proxy-middleware')(proxyOptions) )
-    .use(require('cors')({ origin: 'http://127.0.0.1:8000', methods: ['HEAD', 'GET', 'POST'] }))
+    //  .use(require('connect-modrewrite')(['^/s/(.*)$ http://localhost:8000/s/$1 [P]']))
+    .use(require('proxy-middleware')(proxyOptions))
+    .use(require('cors')({origin: 'http://127.0.0.1:8000', methods: ['HEAD', 'GET', 'POST']}))
     .use(require('connect-livereload')({port: 35729}))
 //    .use(serveStatic('.tmp'))
     .use(serveStatic(srcApp))
@@ -415,10 +416,10 @@ gulp.task('connect', function () {
 
   // Https Option
   var tlsOptions = {
-    key:    fs.readFileSync('../docker/nginx-spdy/build/ssl/server.key', 'utf8'),
-    cert:   fs.readFileSync('../docker/nginx-spdy/build/ssl/server.crt', 'utf8')
+    key: fs.readFileSync('../docker/nginx-spdy/build/ssl/server.key', 'utf8'),
+    cert: fs.readFileSync('../docker/nginx-spdy/build/ssl/server.crt', 'utf8')
   };
-  require('https').createServer(tlsOptions,app).listen(server.httpsPort)   .on('listening', function () {
+  require('https').createServer(tlsOptions, app).listen(server.httpsPort).on('listening', function () {
     console.log('Started connect web server on https://' + server.httpsHost + ':' + server.httpsPort + ' on directory ' + srcApp);
   });
   // Http Server
@@ -450,6 +451,11 @@ gulp.task('serveBS', ['watch'], function () {
       server: {
         baseDir: './',
         middleware: [proxy(proxyOptions)]
+      },
+      ghostMode: {
+        clicks: true,
+        forms: true,
+        scroll: true
       },
       logLevel: 'info'
     }
@@ -616,7 +622,7 @@ gulp.task('deploy', function () {
             'groupId': 'fr.generali.ccj.test',
             'artifactId': fileParsed.name,
             'type': fileParsed.extname,
-            'classifier' : 'android',
+            'classifier': 'android',
             'repositories': [{
               'id': 'artifacts-server',
               'url': 'http://maven-proxy.groupe.generali.fr/nexus/content/repositories/socles-releases/'

@@ -115,7 +115,10 @@ function createTlsCertificate {
 
 }
 
-
+function createDHECertificate {
+  cd  ssl
+  openssl dhparam -out dhparam.pem 4096
+}
 
 function setup {
 
