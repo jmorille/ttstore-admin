@@ -76,6 +76,17 @@ var withNotGlob = function (include, excludes) {
   return [].concat.apply([], [].concat.call([], include, notGlob(excludes)));
 };
 
+var AUTOPREFIXER_BROWSERS = [
+  'ie >= 10',
+  'ie_mob >= 10',
+  'ff >= 30',
+  'chrome >= 34',
+  'safari >= 7',
+  'opera >= 23',
+  'ios >= 7',
+  'android >= 4.4',
+  'bb >= 10'
+];
 
 // Config
 var path = {
@@ -269,9 +280,10 @@ gulp.task('sass', function () {
     .pipe($.sass(SASS_OPTS))
     // Pass the compiled sass through the prefixer with defined
     .pipe($.autoprefixer({
-      browsers: ['last 2 versions', 'Firefox > 20'],
+      browsers: AUTOPREFIXER_BROWSERS,
       cascade: !prod
     }))
+    .pipe($.if('*.css', $.cssmin()))
     .pipe($.sourcemaps.write('../' + path.buildMap, {
       includeContent: true
     }))
@@ -297,6 +309,7 @@ gulp.task('vulcanize', function (cb) {
   return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
     .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
     .pipe(debug({title: 'vulcanize :'}))
+  //  .pipe($.rename('elements.vulcanized.html'))
     .pipe($.vulcanize({
       dest: DEST_DIR,
       abspath: path.app,
