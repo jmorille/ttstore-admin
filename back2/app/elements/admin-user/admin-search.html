@@ -15,13 +15,12 @@
 
       paper-fab {
         position: fixed;
-        bottom: 16px;
         right: 16px;
+        bottom: 16px;
+        z-index: 200;
       }
 
     </style>
-
-    <paper-fab icon="add" title="Add" on-tap="{{addButtonHandler}}"></paper-fab>
 
 
 
@@ -29,13 +28,14 @@
     <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}"></tt-es-search>
 
 
+
+
+
     <template id="request_query">
       <section horizontal layout>
         <tt-input-search class="searchBox" value="{{searchText}}" on-search-input={{searchReset}}"></tt-input-search>
 
-        <paper-icon-button icon="add" label="Add" on-tap="{{addButtonHandler}}"></paper-icon-button>
-        <paper-icon-button id="filter_panel_button" icon="filter-list" label="Filters"
-                           on-tap="{{toggleFilter}}"></paper-icon-button>
+        <paper-fab icon="add" title="Add"   on-tap="{{addButtonHandler}}" ></paper-fab>
       </section>
     </template>
 
@@ -72,6 +72,8 @@
       </div>
       <template bind ref="resultList"></template>
     </div>
+
+
 
   </template>
 
