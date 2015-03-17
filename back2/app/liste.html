@@ -14,9 +14,9 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-touch-fullscreen" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" >
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
@@ -38,24 +38,66 @@
   </script>
 
 
-
   <!-- build:vulcanized /elements/elements.html -->
   <!-- endbuild-->
   <link rel="import" href="elements/elements.html">
 
+  <style>
+    html, body {
+      margin: 0;
+      -webkit-tap-highlight-color: transparent;
+      overflow: hidden;
+    }
+
+
+
+  </style>
+
+
 </head>
 <body unresolved fullbleed layout vertical>
 
-<template is="auto-binding">
-
-  <ttadmin-content selected="{{selected}}"></ttadmin-content>
+<list-test flex></list-test>
 
 
-</template>
+
+<polymer-element name="list-test" layout vertical>
+  <template>
+    <style>
+
+      .message {
+        padding-left: 77px;
+        line-height: 167%;
+        background-color: #ffffff;
+      }
 
 
-<!-- build:js scripts/app.js -->
-<script src="scripts/app.js"></script>
-<!-- endbuild-->
+
+    </style>
+
+    <core-list id="list" data="{{data}}"  height="80" flex  >
+      <template>
+        <div  >
+          <div class="message"  >
+    {{model.name}}
+          </div>
+        </div>
+      </template>
+    </core-list>
+
+  </template>
+  <script>
+
+      Polymer('list-test', {
+        data: [
+          {name: 'Bob', checked: true},
+          {name: 'Tim', checked: false}
+      ]
+
+      });
+
+  </script>
+</polymer-element>
+
 </body>
 </html>
