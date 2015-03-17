@@ -23,56 +23,61 @@
     </style>
 
 
-
     <tt-lodash></tt-lodash>
     <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}"></tt-es-search>
 
 
 
-
-
-    <template id="request_query">
+    <div main flex>
+      <!-- Request Form -->
       <section horizontal layout>
         <tt-input-search class="searchBox" value="{{searchText}}" on-search-input={{searchReset}}"></tt-input-search>
 
-        <paper-fab icon="add" title="Add"   on-tap="{{addButtonHandler}}" ></paper-fab>
+        <paper-fab icon="add" title="Add" on-tap="{{addButtonHandler}}"></paper-fab>
       </section>
-    </template>
-
-
-    <template id="resultList">
-      <div>
-        <tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{searchHandler}}">
-          <tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>
-          <tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>
-        </tt-table-flexbox>
-      </div>
-      <div>
-        <tt-paginator range="{{rangeSize}}"
-                      from="{{searchOpt.from}}" size="{{searchOpt.size}}"
-                      total="{{data.hits.total}}"
-                      on-change="{{searchHandler}}">
-        </tt-paginator>
-      </div>
-    </template>
-
-
-    <div main flex>
-      <template bind ref="request_query"></template>
       <template if="{{data.hits.total}}">
         <div><em>{{data.hits.total}} records found in {{data.took}} ms</em></div>
       </template>
-      <div>
+      <!-- Request Aggs -->
+      <section>
         <tt-es-aggs-selected aggs="{{searchOptAggs}}" on-agg-delete="{{handleAggDelete}}"
                              filterLabel="{{searchOptAggLabels}}"></tt-es-aggs-selected>
-      </div>
-      <div>
+
         <tt-es-aggs aggs="{{data.aggregations}}" on-agg-select="{{handleAggAdd}}"
                     filterLabel="{{searchOptAggLabels}}"></tt-es-aggs>
-      </div>
-      <template bind ref="resultList"></template>
-    </div>
+      </section>
+      <!-- Result List-->
+      <section class="list">
+        <!--<div>-->
+          <!--<tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{searchHandler}}"-->
+                            <!--scrollTarget="{{}}">-->
+            <!--<tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>-->
+            <!--<tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>-->
+          <!--</tt-table-flexbox>-->
+        <!--</div>-->
+        <div on-tap="{{handleUpdateSizeList}}">--- Update Size ---</div>
+        <div id="listContainer" style="height: 100%;  ">
+<div>&nbsp;</div>
+          <core-list id="list" data="{{data.hits.hits}}" scrollTarget="{{$.listContainer}}"b style="height: inherit">
+            <template>
+                <article>
+                <div style="height: 50px; border: solid 1px;">  {{model._source['lastname']}} </div>
 
+                </article>
+
+            </template>
+          </core-list>
+
+        </div>
+        <div>
+          <tt-paginator range="{{rangeSize}}"
+                        from="{{searchOpt.from}}" size="{{searchOpt.size}}"
+                        total="{{data.hits.total}}"
+                        on-change="{{searchHandler}}">
+          </tt-paginator>
+        </div>
+      </section>
+    </div>
 
 
   </template>
@@ -126,7 +131,9 @@
         console.log('Life Cycle : pageUnselected');
         this.data = undefined;
       },
-
+      handleUpdateSizeList: function () {
+        this.$.list.updateSize();
+      },
       // --- List Action
       // ------------------
       entityAddHandler: function (event, data, sender) {

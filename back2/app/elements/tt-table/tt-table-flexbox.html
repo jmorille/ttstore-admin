@@ -39,33 +39,44 @@
 
 <link rel="import" href="tt-column-utils.html">
 
-<polymer-element name='tt-table-flexbox' attributes='data columns sort'>
+<polymer-element name="tt-table-flexbox" attributes="data columns sort scrollTarget">
   <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+    </style>
     <link rel="stylesheet" href="tt-table-flexbox.css">
 
-    <template if="{{data}}">
+    <!--<template if="{{data}}">-->
 
-      <div class="Table">
-        <!-- Header -->
-        <template bind ref="theader"></template>
-        <!-- Body -->
-        <template repeat='{{item in data}}'>
-          <div class="Table-row" on-tap="{{tapLineHandler}}" entity-id="{{item._id}}">
-            <template repeat="{{col in columns}}" class="{{col.classNames}}">
-              <div class="Table-row-item {{col.classNames}}" data-header="{{col.title}}"
-                   on-tap="{{tapColumnHandler}}"
-                   entity-id="{{item._id}}" entity-column="{{col.column}}">{{item._source[col.column]}}
-              </div>
-            </template>
-            <!-- Line Action -->
-            <template bind ref="taction" if="{{isAction}}"></template>
-          </div>
-        </template>
-        <!-- Footer -->
-        <!--<template bind ref="tfooter"  if="{{isFooter}}"></template>-->
+    <div class="Table">
+      <!-- Header -->
+      <template bind ref="theader"></template>
+      <!-- Body -->
 
-      </div>
-    </template>
+        <div on-tap="{{handleUpdateSizeList}}">--- Update Size ---</div>
+        <core-list id="list" data="{{data}}" scrollTarget="{{scrollTarget}}">
+          <template>
+            <div class="Table-row" on-tap="{{tapLineHandler}}" entity-id="{{model._id}}">
+              <template repeat="{{col in columns}}" class="{{col.classNames}}">
+                <div class="Table-row-item {{col.classNames}}" data-header="{{col.title}}"
+                     on-tap="{{tapColumnHandler}}"
+                     entity-id="{{model._id}}" entity-column="{{col.column}}">{{model._source[col.column]}}
+                </div>
+              </template>
+              <!-- Line Action -->
+              <template bind ref="taction" if="{{isAction}}"></template>
+            </div>
+          </template>
+        </core-list>
+
+      <!-- Footer -->
+      <!--<template bind ref="tfooter"  if="{{isFooter}}"></template>-->
+
+    </div>
+    <!--</template>-->
 
 
     <template id="theader">
@@ -111,6 +122,9 @@
       isAction: false,
       ready: function () {
         this.columns = this.rebuildColumns(this) || this.columns;
+      },
+      handleUpdateSizeList: function () {
+        this.$.list.updateSize();
       },
       getLineEntityId: function (e, data, sender) {
         var toEdit = sender.attributes['entity-id'].value;
@@ -172,7 +186,7 @@
        * @returns {string} The sort order in format  ['col1:asc', 'col2:desc', 'col3:asc']
        */
       sortCriteriaAccumulative: function (data) {
-        var  that = this,
+        var that = this,
           sortColumn = data.column + ':' + data.order;
         // compute merging sort
         if (Array.isArray(this.sort)) {
@@ -202,10 +216,10 @@
           console.log('Prepare re-order IndexOf ', indexOfSortColumn);
           if (indexOfSortColumn > -1) {
             // Replace sort column
-            var first =  sorts.slice(0, indexOfSortColumn);
-            var second = sorts.slice(indexOfSortColumn+1, sorts.length);
+            var first = sorts.slice(0, indexOfSortColumn);
+            var second = sorts.slice(indexOfSortColumn + 1, sorts.length);
             console.log('Prepare re-order', first, second);
-            sortColumn =[].concat(first, sortColumn, second);
+            sortColumn = [].concat(first, sortColumn, second);
           } else {
             // Add New sort at the End
             sortColumn = sorts.concat(sortColumn);

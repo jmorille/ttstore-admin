@@ -22,19 +22,17 @@
     <core-media-query query="min-width: 640px" queryMatches="{{largeScreen}}">
     </core-media-query>
 
-
+    <ttadmin-layout>
       <more-route-selector selectedParams="{{params}}">
         <core-animated-pages on-core-select="{{selectContentHandler}}" transitions="slide-from-right cross-fade" flex>
           <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
           <section route="home" slide-from-right>
-            <ttadmin-layout>
+
               <ttadmin-home></ttadmin-home>
-            </ttadmin-layout>
+
           </section>
           <section route="user" slide-from-right>
-            <ttadmin-layout>
             <admin-search></admin-search>
-              </ttadmin-layout>
           </section>
           <section route="user-edit">
             <admin-user-edit entityid="{{params.entityid}}"></admin-user-edit>
@@ -56,7 +54,7 @@
         </core-animated-pages>
 
       </more-route-selector>
-
+    </ttadmin-layout>
 
   </template>
   <script>
@@ -72,17 +70,18 @@
       },
       selectContentHandler: function (event, detail) {
 //        console.log('selectContentHandler event : ', event);
-//        console.log('selectContentHandler detail : ', detail);
+        console.log('selectContentHandler detail : ', detail);
         // New Route
         var item = detail.item;
-        this.callNodesWithFunction(item, 'pageSelected');
-        // Old Route
-        if (detail.oldRoute) {
+        if (detail.isSelected) {
+          this.callNodesWithFunction(item, 'pageSelected');
+        } else {
           this.async(function () {
-              this.callNodesWithFunction(detail.oldRoute, 'pageUnselected');
+              this.callNodesWithFunction(item, 'pageUnselected');
             }
           );
         }
+
       },
 
       callNodesWithFunction: function (item, searchFunc) {
