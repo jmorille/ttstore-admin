@@ -9,7 +9,7 @@
       }
     </style>
     <div>Entity Id  {{entityid}}</div>
-    <tt-crud   data="{{data}}" entityid="{{entityid}}" endpoint="/s/users"  >
+    <tt-crud   data="{{data}}" entityid="{{entityid}}" endpoint="/s/users"  autosave >
       <section id="formContainer">
         <paper-input-decorator floatingLabel label="First name" autoValidate>
           <input is="core-input" value="{{ data._source.firstname}}" required>
