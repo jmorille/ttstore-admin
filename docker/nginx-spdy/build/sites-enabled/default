@@ -64,7 +64,7 @@ server {
 
 
        root /data/wwww;
-       index index.html;
+       index index.html index.html;
        expires 0;
        etag on;
        add_header Cache-Control "private";

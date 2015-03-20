@@ -86,6 +86,9 @@
       },
 
       callNodesWithFunction: function (item, searchFunc) {
+        if (!item) {
+          return;
+        }
         var childNodes = item;
         if (!Array.isArray(childNodes)) {
           childNodes = childNodes.querySelectorAll('*');

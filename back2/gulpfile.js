@@ -309,7 +309,7 @@ gulp.task('vulcanize', function (cb) {
   return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
     .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
     .pipe(debug({title: 'vulcanize :'}))
-  //  .pipe($.rename('elements.vulcanized.html'))
+    //  .pipe($.rename('elements.vulcanized.html'))
     .pipe($.vulcanize({
       dest: DEST_DIR,
       abspath: path.app,
@@ -601,6 +601,40 @@ gulp.task('dist:cordova', ['cordova:dist-generated'], function (cb) {
 });
 
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Dokcer TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+var dockerNamespace = 'jmorille';
+var dockerProjectName = 'nginx-webapp';
+var dockerRegistryUrl = 'docker-registry.groupe.generali.fr:5000';
+
+gulp.task('build:docker', function () {
+  var DEST_DIR = path.dist;
+  gulp.src('docker/Dockerfile')
+    .pipe(cache('Dockerfile'))
+    .pipe(debug({title: 'docker :'}))
+    .pipe(gulp.dest(DEST_DIR))
+    .pipe($.shell(['docker build --rm -t ' + dockerNamespace + '/' + dockerProjectName + ' .'], {
+      cwd: path.dist,
+      ignoreErrors: false
+    }));
+});
+
+
+gulp.task('dist:docker', ['build:docker'], function () {
+  // Config Tag
+  var fs = require('fs');
+  var packageJson = JSON.parse(fs.readFileSync('package.json'));
+  var dockerLocalName = dockerNamespace + '/' + dockerProjectName;
+  var dockerRegistryName = dockerRegistryUrl + '/' + dockerProjectName;
+  var dockerVersion = packageJson.version;
+  // Call Docker Cmd
+  gulp.src('Dockerfile', {read: false, cwd: path.dist})
+ //   .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':latest'], {cwd: path.dist}))
+    .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':'+ dockerVersion], {cwd: path.dist}))
+    .pipe($.shell(['docker push ' + dockerRegistryName], {cwd: path.dist, ignoreErrors: false}));
+
+});
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Maven TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
