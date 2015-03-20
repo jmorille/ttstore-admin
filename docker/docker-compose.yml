@@ -1,0 +1,32 @@
+es:
+  image: jmorille/es
+  ports:
+   - "9200:9200"
+  expose:
+   - "9200"
+  volumes:
+   - /data/ttstore/logs:/logs
+   - /data/ttstore/data:/data
+   - /data/ttstore/work:/work
+   - /data/ttstore/tmp:/tmp
+ttserver:
+  image: jmorille/ttserver
+  ports:
+   - "8000:8000"
+  expose:
+   - "8000"
+  volumes:
+   - /home/a000cqp/project/ttstore-admin/server:/opt/ttserver
+  links:
+   - "es:es"
+web:
+  image: jmorille/nginx-spdy
+  ports:
+   - "443:443"
+   - "80:80"
+  volumes:
+   - /home/a000cqp/project/ttstore-admin/back2:/data/wwww
+   - /data/ttsore-ngnix/logs:/etc/nginx/logs
+  links:
+   - "es:es"
+   - "ttserver:ttserver"
