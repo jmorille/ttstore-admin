@@ -6,7 +6,7 @@ FROM ubuntu:14.04
 ENV HOME /root
 
 # Set the env variable DEBIAN_FRONTEND to noninteractive
-# ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND noninteractive
 
 
 
