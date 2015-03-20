@@ -29,8 +29,12 @@ ENV NGINX_VERSION 1.7.10
 
 # Install dependencies
 # #######################
-RUN apt-get update -qq
-RUN apt-get install -yqq build-essential zlib1g-dev libpcre3 libpcre3-dev openssl libssl-dev libperl-dev wget zip ca-certificates
+RUN apt-get update -qq && apt-get install -yqq \
+  build-essential \
+  libpcre3 libpcre3-dev libssl-dev libperl-dev \
+  zlib1g-dev \
+  openssl \
+  wget zip ca-certificates
 
 
 # From instructions here: https://github.com/pagespeed/ngx_pagespeed
@@ -49,17 +53,17 @@ RUN cd /tmp && wget -q -O - http://nginx.org/download/nginx-${NGINX_VERSION}.tar
 # Secure Ngnix version
 # #######################
 # http://www.cyberciti.biz/tips/linux-unix-bsd-nginx-webserver-security.html
-RUN sed -i'' 's/static char ngx_http_server_string\[\] = "Server: nginx" CRLF;/static char ngx_http_server_string\[\] = "Server: Microsoft-IIS\/7\.5" CRLF;/' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c
-RUN  sed -i'' 's/static char ngx_http_server_full_string\[\] = "Server: " NGINX_VER CRLF;/static char ngx_http_server_full_string\[\] = "Server: Microsoft-IIS\/7\.5" CRLF;/' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c
-RUN  grep 'static char ngx_http_server' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c
+RUN sed -i'' 's/static char ngx_http_server_string\[\] = "Server: nginx" CRLF;/static char ngx_http_server_string\[\] = "Server: Microsoft-IIS\/7\.5" CRLF;/' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c \
+&&  sed -i'' 's/static char ngx_http_server_full_string\[\] = "Server: " NGINX_VER CRLF;/static char ngx_http_server_full_string\[\] = "Server: Microsoft-IIS\/7\.5" CRLF;/' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c \
+&&  grep 'static char ngx_http_server' /tmp/nginx-${NGINX_VERSION}/src/http/ngx_http_header_filter_module.c
 
-RUN  sed -i'' 's/\#define NGINX_VER          "nginx\/" NGINX_VERSION/#define NGINX_VER          "Microsoft-IIS\/7\.5"/' /tmp/nginx-${NGINX_VERSION}/src/core/nginx.h
-RUN  grep 'NGINX_VER' /tmp/nginx-${NGINX_VERSION}/src/core/nginx.h
+RUN  sed -i'' 's/\#define NGINX_VER          "nginx\/" NGINX_VERSION/#define NGINX_VER          "Microsoft-IIS\/7\.5"/' /tmp/nginx-${NGINX_VERSION}/src/core/nginx.h \
+&&  grep 'NGINX_VER' /tmp/nginx-${NGINX_VERSION}/src/core/nginx.h
 
 # Compile Ngnix
 # #######################
 RUN cd /tmp/nginx-${NGINX_VERSION} \
-	&& ./configure --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx \
+&& ./configure --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx \
 	  --http-client-body-temp-path=/var/lib/nginx/body_temp \
       --http-proxy-temp-path=/var/lib/nginx/proxy_temp \
       --http-fastcgi-temp-path=/var/lib/nginx/fastcgi_temp  \
