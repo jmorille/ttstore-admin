@@ -18,7 +18,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # Config NodeJS env
 # #######################
 ENV NODE_VERSION="v0.12.0"
-ENV  NODE_HOME="/opt/nodejs/node-$NODE_VERSION-linux-x64"
+ENV NODE_HOME="/opt/nodejs/node-$NODE_VERSION-linux-x64"
 ENV PATH="$PATH:$NODE_HOME/bin"
 
 
