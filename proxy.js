@@ -24,8 +24,8 @@ var url = require('url');
 var http = require('http');
 
 // Model
-var users = require('./server/models/users');
-var oauth2 = require('./server/models/oauth2');
+var users = require('./server/src/models/users');
+var oauth2 = require('./server/src/models/oauth2');
 
 var oneDay = 86400000;
 var favicon = require('serve-favicon');

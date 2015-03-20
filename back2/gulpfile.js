@@ -602,7 +602,7 @@ gulp.task('dist:cordova', ['cordova:dist-generated'], function (cb) {
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Dokcer TASKS
+// Docker TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var dockerNamespace = 'jmorille';
 var dockerProjectName = 'nginx-webapp';

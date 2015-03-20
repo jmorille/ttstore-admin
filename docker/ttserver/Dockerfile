@@ -36,4 +36,4 @@ VOLUME ["/opt/ttserver", "/log"]
 
 # Start Command
 # #######################
-CMD [ "node", "/opt/ttserver/server.js" ]
+CMD [ "node", "/opt/ttserver/src/server.js" ]
