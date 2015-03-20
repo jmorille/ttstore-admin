@@ -27,8 +27,8 @@ RUN apt-get update -qq && apt-get install -yqq \
   build-essential \
   libpcre3 libpcre3-dev libssl-dev libperl-dev \
   zlib1g-dev \
-  openssl \
-  wget zip ca-certificates
+  wget zip \
+  openssl ca-certificates
 
 
 # From instructions here: https://github.com/pagespeed/ngx_pagespeed
@@ -80,8 +80,14 @@ RUN cd /tmp/nginx-${NGINX_VERSION} \
 # Cleanup
 # #######################
 #RUN rm -Rf /tmp/ngx_pagespeed-1.8.31.3-beta
-RUN rm -Rf /tmp/nginx-${NGINX_VERSION}
-
+RUN rm -Rf /tmp/nginx-${NGINX_VERSION} \
+    apt-get purge \
+      build-essential \
+      libpcre3 libpcre3-dev libssl-dev libperl-dev \
+      zlib1g-dev \
+      wget zip \
+    apt-get autoremove \
+    apt-get clean
 
 # TLS Certificat
 # #######################
