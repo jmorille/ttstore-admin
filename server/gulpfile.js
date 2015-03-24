@@ -74,7 +74,7 @@ gulp.task('cp:package', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var dockerNamespace = 'jmorille';
 var dockerProjectName = 'ttstore-back-server';
-var dockerRegistryUrl = 'jmorille';
+var dockerRegistryUrl = '127.0.0.1:5001';
 
 gulp.task('build:docker', ['cp:package', 'cp:src'], function () {
   var DEST_DIR = path.dist;
