@@ -1,0 +1,27 @@
+common:
+   loglevel: _env:LOGLEVEL:debug
+   storage_redirect: _env:STORAGE_REDIRECT
+   secret_key: zajejamp564da56d1f8a
+   standalone: true
+   index_endpoint: _env:INDEX_ENDPOINT:http://127.0.0.1:5000
+   disable_token_auth: _env:DISABLE_TOKEN_AUTH:true
+   privileged_key: _env:PRIVILEGED_KEY
+   search_backend: _env:SEARCH_BACKEND:sqlalchemy
+   sqlalchemy_index_database: _env:SQLALCHEMY_INDEX_DATABASE:sqlite:////tmp/docker-registry.db
+
+
+
+local: 
+   storage: file
+   storage_path: /tmp/registry
+
+# This is the default configuration when no flavor is specified
+dev: &dev
+   storage: file
+   storage_path: _env:STORAGE_PATH:/tmp/registry
+   search_backend: _env:SEARCH_BACKEND:sqlalchemy
+
+# This flavor is automatically used by unit tests
+test:
+   <<: *dev
+   storage_path: _env:STORAGE_PATH:/tmp/test

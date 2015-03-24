@@ -1,0 +1,21 @@
+registry:
+ image: registry:0.9.1
+ ports:
+  - "5001:5000"
+ volumes:
+  - ~/project/docker-registry/registry-conf:/registry-conf
+  - ~/project/data/docker-registry:/tmp
+ environment:
+  - SETTINGS_FLAVOR=local
+  - DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml
+ui:
+ image: atcol/docker-registry-ui
+ ports:
+  - "81:8080"
+ volumes:
+  - ~/project/log/docker-ui/tomcat:/tomcat7/logs
+  - ~/project/data/docker-ui/tmp-tomcat:/tomcat7/temp
+  - ~/project/data/docker-ui/tmp:/tmp
+  - ~/project/data/docker-ui/h2:/var/lib/h2
+ environment:
+  - REG1=http://178.255.97.203:5001/v1/
