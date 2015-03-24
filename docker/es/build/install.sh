@@ -2,7 +2,7 @@
 
 ES_HOME=/opt/elasticsearch
 
-INSTALL_ES_VERSION=elasticsearch-1.4.4
+INSTALL_ES_VERSION=elasticsearch-1.5.0
 
 function installTools {
   echo ""
@@ -16,7 +16,7 @@ function installAddAptRepositor {
   echo ""
   echo "### Install  add-apt-repositor"
   echo "### ########################################################"
-  apt-get install -q -y software-properties-common
+  apt-get install -q -y software-properties-common python-software-properties
 }
 
 function installJDK7 {
@@ -29,6 +29,23 @@ function installJDK7 {
     echo "debconf shared/accepted-oracle-license-v1-1 seen true" | debconf-set-selections
     apt-get install -q -y oracle-java7-installer
 }
+
+
+function installJDK8Debian {
+    echo ""
+    echo "### Install Java 8 Debian"
+    echo "### ########################################################"
+    echo "### http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html"
+    echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list
+    echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+    apt-get update
+    echo "debconf shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
+    echo "debconf shared/accepted-oracle-license-v1-1 seen true" | debconf-set-selections
+    apt-get install  -q -y  oracle-java8-installer
+    #apt-get install -q -y oracle-java7-installer
+}
+
 
 function installJDK8 {
     echo ""
@@ -116,16 +133,24 @@ function cleanBuildInstall {
   echo ""
   echo "### Clean Docker Image"
   echo "### ########################################################"
-   apt-get -y autoremove
-   apt-get clean
-   rm -rf /build
+  apt-get purge -y software-properties-common python-software-properties  curl
+  apt-get -y autoremove
+  apt-get clean
+  # Clean Local cache
+  rm -rf /var/cache/*
+  rm /usr/lib/jvm/java-*-oracle/src.zip
+  rm /usr/lib/jvm/java-*-oracle/javafx-src.zip
+  rm -rf /usr/lib/jvm/java-*-oracle/db
+  # Remove build
+  rm -rf /build
 }
 
 function setupJdk8 {
   installTools || exit 1
   installAddAptRepositor || exit 1
   # installJDK7 || exit 1
-  installJDK8 || exit 1
+  # installJDK8 || exit 1
+  installJDK8Debian || exit 1
 }
 
 

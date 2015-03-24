@@ -9,20 +9,22 @@ es:
    - /data/ttstore/data:/data
    - /data/ttstore/work:/work
    - /data/ttstore/tmp:/tmp
+ttserverData:
+  image: jmorille/ttstore-back-server
 ttserver:
   image: jmorille/ttserver
   ports:
    - "8000:8000"
   expose:
    - "8000"
-  volumes:
-   - /home/a000cqp/project/ttstore-admin/server:/opt/ttserver
+  volumes_from:
+   - ttserverData
   links:
    - "es:es"
 webapp:
   image: jmorille/nginx-webapp
 web:
-  image: jmorille/nginx-app
+  image: jmorille/nginx-spdy
   ports:
    - "443:443"
    - "80:80"

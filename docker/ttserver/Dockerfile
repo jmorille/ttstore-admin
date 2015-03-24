@@ -1,17 +1,16 @@
 #jmorille/ttserver
-FROM ubuntu:14.04
+#FROM ubuntu:14.04
+FROM debian:latest
 
 # Set correct environment variables.
-ENV HOME /root
-
 # Set the env variable DEBIAN_FRONTEND to noninteractive
-ENV DEBIAN_FRONTEND noninteractive
-
+ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 
 
 # Config proxy env
 # #######################
-# ENV http_proxy="http://webcache.groupe.generali.fr:3128" https_proxy="$http_proxy" no_proxy="*.groupe.generali.fr" HTTP_PROXY="$http_proxy" HTTPS_PROXY="$http_proxy" NO_PROXY="$no_proxy"
+ENV http_proxy="http://webcache.groupe.generali.fr:3128" https_proxy="http://webcache.groupe.generali.fr:3128" no_proxy="*.groupe.generali.fr" HTTP_PROXY="http://webcache.groupe.generali.fr:3128" HTTPS_PROXY="http://webcache.groupe.generali.fr:3128" NO_PROXY="*.groupe.generali.fr"
+
 
 
 
@@ -20,13 +19,6 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV NODE_VERSION="v0.12.0"
 ENV NODE_HOME="/opt/nodejs/node-$NODE_VERSION-linux-x64"
 ENV PATH="$PATH:$NODE_HOME/bin"
-
-
-# Install NodeJS env
-# #######################
-ADD build build
-RUN exec /build/install.sh
-
 
 # Expose
 # #######################
@@ -37,3 +29,11 @@ VOLUME ["/opt/ttserver", "/log"]
 # Start Command
 # #######################
 CMD [ "node", "/opt/ttserver/src/server.js" ]
+
+# Install NodeJS env
+# #######################
+ADD build build
+RUN exec /build/install.sh
+
+
+

@@ -1,32 +1,21 @@
 #jmorille/elasticsearch
 
-FROM ubuntu:14.04
+#FROM ubuntu:14.04
+FROM debian:latest
 
 # Set correct environment variables.
-ENV HOME /root
-
 # Set the env variable DEBIAN_FRONTEND to noninteractive
-ENV DEBIAN_FRONTEND noninteractive
-
+ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 
 
 # Config proxy env
 # #######################
-#ENV http_proxy="http://webcache.groupe.generali.fr:3128" https_proxy="$http_proxy" no_proxy="*.groupe.generali.fr" HTTP_PROXY="$http_proxy" HTTPS_PROXY="$http_proxy" NO_PROXY="$no_proxy"
+ENV http_proxy="http://webcache.groupe.generali.fr:3128" https_proxy="http://webcache.groupe.generali.fr:3128" no_proxy="*.groupe.generali.fr" HTTP_PROXY="http://webcache.groupe.generali.fr:3128" HTTPS_PROXY="http://webcache.groupe.generali.fr:3128" NO_PROXY="*.groupe.generali.fr"
 
 
-ENV ES_HEAP_SIZE 4g
-
-
-# Install build
+# Config Elasticsearch
 # #######################
-ADD build build
-
-RUN [ "/build/install.sh" , "setup" ]
-#RUN [ "/build/install.sh" , "jdk7" ]
-#RUN [ "/build/install.sh" , "es" ]
-
-
+ENV ES_HEAP_SIZE="4g"
 
 # Expose
 # #######################
@@ -38,3 +27,16 @@ VOLUME ["/data", "/logs", "/work", "/tmp"]
 # Start Command
 # #######################
 CMD [ "/opt/elasticsearch/bin/elasticsearch" ]
+
+
+# Install build
+# #######################
+ADD build build
+RUN [ "/build/install.sh" , "setup" ]
+
+#RUN [ "/build/install.sh" , "jdk7" ]
+#RUN [ "/build/install.sh" , "es" ]
+
+
+
+

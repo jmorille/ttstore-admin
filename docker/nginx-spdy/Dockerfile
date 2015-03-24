@@ -1,34 +1,48 @@
 #jmorille/nginx-spdy
 
-FROM ubuntu:14.04
+#FROM ubuntu:14.04
+FROM debian:latest
 
 # Set correct environment variables.
-ENV HOME /root
-
 # Set the env variable DEBIAN_FRONTEND to noninteractive
-ENV DEBIAN_FRONTEND noninteractive
+ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 
 
 
 # Config proxy env
 # #######################
-# ENV http_proxy="http://webcache.groupe.generali.fr:3128" https_proxy="$http_proxy" no_proxy="*.groupe.generali.fr" HTTP_PROXY="$http_proxy" HTTPS_PROXY="$http_proxy" NO_PROXY="$no_proxy"
+ENV http_proxy="http://webcache.groupe.generali.fr:3128" https_proxy="http://webcache.groupe.generali.fr:3128" no_proxy="*.groupe.generali.fr" HTTP_PROXY="http://webcache.groupe.generali.fr:3128" HTTPS_PROXY="http://webcache.groupe.generali.fr:3128" NO_PROXY="*.groupe.generali.fr"
+
 
 
 # #######################
 # Install  NGINX
 # #######################
-ENV NGINX_VERSION 1.7.10
+ENV NGINX_VERSION="1.7.10"
+
+
+# Expose
+# #######################
+EXPOSE 80 443
+VOLUME ["/data/wwww", "/etc/nginx/logs", "/var/lib/nginx", "/etc/nginx/ssl" ]
+
+
+# Start Command
+# #######################
+# WORKDIR /etc/nginx/
+#CMD ["/usr/sbin/nginx"]
+CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
 
 
 # Install dependencies
 # #######################
-RUN apt-get update -qq && apt-get install -yqq \
-  build-essential \
-  libpcre3 libpcre3-dev libssl-dev libperl-dev \
-  zlib1g-dev \
-  wget zip \
-  openssl ca-certificates
+RUN apt-get update -qq && \
+    apt-get install -yqq \
+       build-essential \
+       libpcre3 libpcre3-dev libssl-dev libperl-dev \
+       zlib1g-dev \
+       wget zip \
+       openssl ca-certificates
 
 
 # From instructions here: https://github.com/pagespeed/ngx_pagespeed
@@ -41,8 +55,10 @@ RUN apt-get update -qq && apt-get install -yqq \
 # Download and build nginx
 # #######################
 # Modules :  http://wiki.nginx.org/Modules
-RUN mkdir -p /data && mkdir -p /var/lib
-RUN cd /tmp && wget -q -O - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf -
+RUN mkdir -p /data && \
+    mkdir -p /var/lib && \
+    cd /tmp && \
+    wget -q -O - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf -
 
 # Secure Ngnix version
 # #######################
@@ -112,17 +128,6 @@ COPY /build/sites-enabled /etc/nginx/sites-enabled
 #RUN ln -sf /dev/stderr /var/log/nginx/error.log
 
 
-# Expose
-# #######################
 
-EXPOSE 80 443
-VOLUME ["/data/wwww", "/etc/nginx/logs", "/var/lib/nginx", "/etc/nginx/ssl" ]
-
-
-# Start Command
-# #######################
-# WORKDIR /etc/nginx/
-#CMD ["/usr/sbin/nginx"]
-CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
 
 
