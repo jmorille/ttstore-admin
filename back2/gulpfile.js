@@ -8,13 +8,13 @@ require('gulp-task-list')(gulp);
 
 // Cache
 var cache = require('gulp-cached'),
-  remember = require('gulp-remember'),
-// newer = require('gulp-newer'),
+//  remember = require('gulp-remember'),
+  newer = require('gulp-newer'),
   changed = require('gulp-changed');
 
 // Build
 var del = require('del');
-var runSequence = require('run-sequence');
+//var runSequence = require('run-sequence');
 //var usemin = require('gulp-usemin');
 //var imagemin = require('gulp-imagemin');
 //var sass = require('gulp-sass');
@@ -31,7 +31,7 @@ var gutil = require('gulp-util'),
 
 // Browser reload
 var livereload = require('gulp-livereload');
-var filter = require('gulp-filter');
+//var filter = require('gulp-filter');
 var browserSync = require('browser-sync');
 var browserSyncReload = browserSync.reload;
 
@@ -138,8 +138,8 @@ gulp.task('clean:css', function (cb) {
 });
 
 // Build app
-gulp.task('build', ['clean', 'vulcanize'],  function (cb) {
- cb();
+gulp.task('build', ['clean', 'build:vulcanize'], function (cb) {
+  cb();
 });
 
 
@@ -163,16 +163,24 @@ gulp.task('watch', ['sass:watch', 'cp:watch', 'images:watch', 'vulcanize:watch']
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('lint', function () {
   return gulp.src(path.sources)
+    .pipe(cache('appSrc'))
     .pipe($.jshint.extract('auto'))
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'));
 });
+
 gulp.task('lint:gulp', function () {
   return gulp.src('gulpfile.js')
-    .pipe($.jshint.extract('auto'))
     .pipe($.jshint())
+    .pipe(cache('gulpfile'))
     .pipe($.jshint.reporter('jshint-stylish'));
 });
+
+gulp.task('lint:gulp:watch', ['lint:gulp'], function (cb) {
+  gulp.watch('gulpfile.js', ['lint:gulp']);
+  cb();
+});
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Watch Error Notification
@@ -218,18 +226,20 @@ var cpFunc = function () {
     .pipe($.useref())
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(browserSyncReload({stream: true}))
-    ;
+  // .pipe(browserSyncReload({stream: true}));
+
 };
 
 
 // Copy all missing files
-gulp.task('cp', ['clean'], cpFunc);
+gulp.task('build:cp', ['clean'], cpFunc);
+gulp.task('cp', cpFunc);
 
 
 // Watch for Copy files
 gulp.task('cp:watch', ['cp'], function (cb) {
-  gulp.watch(configCp.cpGlob, {cwd: path.app}, cpFunc);
+  gulp.watch(configCp.cpGlob, {cwd: path.app}, cpFunc)
+    .on('change', browserSyncReload);
   cb();
 });
 
@@ -240,8 +250,8 @@ gulp.task('cp:watch', ['cp'], function (cb) {
 var imagesFunc = function (cb) {
   var DEST_DIR = path.buildVulcanized;
   return gulp.src(configCp.imgGlob, {cwd: path.app, base: path.app})
-    .pipe(cache('imaging'))
-    .pipe(changed(DEST_DIR))
+    // .pipe(cache('imaging'))
+    .pipe(newer(DEST_DIR))
     .pipe(debug({title: 'img changed:'}))
     .pipe($.imagemin({
       progressive: true,
@@ -249,17 +259,18 @@ var imagesFunc = function (cb) {
     }))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(browserSyncReload({stream: true}))
-    ;
+   // .pipe(browserSyncReload({stream: true}));
 };
 
 // Copy Images with Optimisation
-gulp.task('images', ['clean'], imagesFunc);
+gulp.task('build:images', ['clean'], imagesFunc);
+gulp.task('images', imagesFunc);
 
 
 // Watch for images copy
 gulp.task('images:watch', ['images'], function (cb) {
-  gulp.watch(configCp.imgGlob, {cwd: path.app}, imagesFunc);
+  gulp.watch(configCp.imgGlob, {cwd: path.app}, imagesFunc)
+    .on('change', browserSyncReload);
   cb();
 });
 
@@ -267,15 +278,7 @@ gulp.task('images:watch', ['images'], function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Saas TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('sass', ['clean' ],  sassFunc );
-
-// Watch for Sass generation
-gulp.task('sass:watch', ['sass'], function (cb) {
-  gulp.watch(src.sass, {cwd: path.sass}, sassFunc);
-  cb();
-});
-
-var sassFunc  =function () {
+var sassFunc = function () {
   var DEST_DIR = path.app;
   var SASS_OPTS = {
     includePaths: [
@@ -303,10 +306,18 @@ var sassFunc  =function () {
     }))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(browserSyncReload({stream: true}))
-    ;
+    .pipe(browserSyncReload({stream: true}));
 };
 
+
+gulp.task('build:sass', ['clean'], sassFunc);
+gulp.task('sass', sassFunc);
+
+// Watch for Sass generation
+gulp.task('sass:watch', ['sass'], function (cb) {
+  gulp.watch(src.sass, {cwd: path.sass}, sassFunc);
+  cb();
+});
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -331,16 +342,17 @@ var vulcanizeFunc = function (cb) {
     }))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(browserSyncReload({stream: true}))
-    ;
+  //  .pipe(browserSyncReload({stream: true}));
 };
 
 // Vulcanize html files
-gulp.task('vulcanize', ['sass', 'cp', 'images'], vulcanizeFunc );
+gulp.task('build:vulcanize', ['build:sass', 'build:cp', 'build:images'], vulcanizeFunc);
+gulp.task('vulcanize', ['sass', 'cp', 'images'], vulcanizeFunc);
 
 // Watch for Vulcanize html files
 gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
-  gulp.watch(src.polymerElements, {cwd: path.app}, vulcanizeFunc);
+  gulp.watch(src.polymerElements, {cwd: path.app}, vulcanizeFunc)
+    .on('change', browserSyncReload);
   cb();
 });
 
@@ -385,19 +397,11 @@ var server = {
   httpsPort: '9001'
 };
 
-gulp.task('webserver', ['watch'], function () {
-  return gulp.src(path.buildVulcanized)
-    .pipe($.webserver({
-      host: server.httpHost,
-      port: server.httpPort,
-      livereload: false,
-      open: true
-    }));
-});
+
 gulp.task('connect2', function () {
   var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
   var connect = require('gulp-connect');
-  var cros = require('connect-cors');
+  // var cros = require('connect-cors');
   connect.server({
     root: srcApp,
     port: 9000,
@@ -465,10 +469,10 @@ gulp.task('serve', ['connect', 'watch'], function () {
 gulp.task('serveBS', ['watch'], function () {
   //http://stackoverflow.com/questions/25410284/gulp-browser-sync-redirect-api-request-via-proxy
   var url = require('url');
-  var proxyOptions = url.parse('http://localhost:3000/secret-api');
-  proxyOptions.route = '/api';
+  var proxyOptions = url.parse('http://localhost:3000/s/');
+  proxyOptions.route = '/s/';
   var proxy = require('proxy-middleware');
-  //
+  // https://github.com/BrowserSync/gulp-browser-sync/issues/16#issuecomment-43597240
   var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
   browserSync({
     server: {
@@ -477,11 +481,7 @@ gulp.task('serveBS', ['watch'], function () {
         baseDir: './',
         middleware: [proxy(proxyOptions)]
       },
-      ghostMode: {
-        clicks: true,
-        forms: true,
-        scroll: true
-      },
+      notify: false,
       logLevel: 'info'
     }
   });
@@ -498,7 +498,7 @@ gulp.task('cca:check', function () {
 });
 
 
-gulp.task('cca:create', ['cca:check'], function () {
+gulp.task('cca:create', ['cca:check', 'build'], function () {
   var ccaAction = ' --link-to=';
   //var ccaAction = ' --copy-from=';
   return gulp.src('.')
@@ -518,7 +518,7 @@ gulp.task('cca:push', function () {
 });
 
 
-gulp.task('cca:dist-generated', ['cca:create'], function () {
+gulp.task('cca:build', ['cca:create'], function () {
   var releaseOpts = prod ? ' --release' : '';
   return gulp.src('*', {read: false, cwd: path.buildCCA})
     .pipe($.shell(['cca build' + releaseOpts], {cwd: path.buildCCA}));
@@ -528,7 +528,7 @@ gulp.task('cca:dist-generated', ['cca:create'], function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
 // Cordova App Mobile TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('cordova:create', function () {
+gulp.task('cordova:create', ['build'], function () {
   var ccaAction = ' --link-to=';
   //var ccaAction = ' --copy-from=';
   return gulp.src('.')
@@ -542,7 +542,7 @@ gulp.task('cordova:config', ['cordova:create'], function () {
 });
 
 
-gulp.task('cordova:dist-generated', ['cordova:config'], function () {
+gulp.task('cordova:build', ['cordova:config'], function () {
   var releaseOpts = prod ? ' --release' : '';
   return gulp.src('*', {read: false, cwd: path.buildCordova})
     .pipe($.shell(['cordova build' + releaseOpts], {cwd: path.buildCordova}));
@@ -553,11 +553,11 @@ gulp.task('cordova:dist-generated', ['cordova:config'], function () {
 // Dist TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-gulp.task('dist', function (cb) {
-  return runSequence('build', ['dist:web', 'dist:ca', 'dist:cca', 'dist:cordova'], cb);
-});
+gulp.task('dist', ['dist:web', 'dist:ca']);
 
-gulp.task('dist:web', function (cb) {
+gulp.task('dist:mobile', ['dist:cca', 'dist:cordova']);
+
+gulp.task('dist:web', ['build'], function (cb) {
   var DEST_DIR = path.distWeb;
   var gzipOptions = {};
 //  var gzipGlob = '**/*.{html,xml,json,css,js}';
@@ -575,7 +575,7 @@ gulp.task('dist:web', function (cb) {
   cb();
 });
 
-gulp.task('dist:ca', function (cb) {
+gulp.task('dist:ca', ['build'], function (cb) {
   var DEST_DIR = path.distCa;
   gulp.src(['**/*.*'], {cwd: path.buildVulcanized, base: path.buildVulcanized})
     .pipe(debug({title: 'ca dist :'}))
@@ -589,7 +589,7 @@ gulp.task('dist:ca', function (cb) {
 });
 
 
-gulp.task('dist:cca', ['cca:dist-generated'], function (cb) {
+gulp.task('dist:cca', ['cca:build'], function (cb) {
   gulp.src('platforms/android/build/outputs/**/*.apk', {cwd: path.buildCCA})
     .pipe(debug({title: 'android dist :'}))
     .pipe($.flatten())
@@ -601,7 +601,7 @@ gulp.task('dist:cca', ['cca:dist-generated'], function (cb) {
 });
 
 
-gulp.task('dist:cordova', ['cordova:dist-generated'], function (cb) {
+gulp.task('dist:cordova', ['cordova:build'], function (cb) {
   gulp.src('platforms/android/ant-build/**/*.apk', {cwd: path.buildCordova})
     .pipe(debug({title: 'android dist :'}))
     .pipe($.flatten())
@@ -616,37 +616,51 @@ gulp.task('dist:cordova', ['cordova:dist-generated'], function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Docker TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-var dockerNamespace = 'jmorille';
-var dockerProjectName = 'nginx-webapp';
-var dockerRegistryUrl = '178.255.97.203:5000';
+var dockerOpt = {
+  namespace: 'jmorille',
+  image: 'nginx-webapp',
+  registryHost: '178.255.97.203:5000'
+};
 
-gulp.task('build:docker', function () {
+gulp.task('build:docker', ['dist:web'], function () {
   var DEST_DIR = path.dist;
   return gulp.src('docker/Dockerfile')
     .pipe(cache('Dockerfile'))
     .pipe(debug({title: 'docker :'}))
     .pipe(gulp.dest(DEST_DIR))
-    .pipe($.shell(['docker build --rm -t ' + dockerNamespace + '/' + dockerProjectName + ' .'], {
+    .pipe($.shell(['docker build --rm -t ' + dockerOpt.namespace + '/' + dockerOpt.image + ' .'], {
+      cwd: path.dist,
+      ignoreErrors: false
+    }));
+});
+
+gulp.task('dist:docker', ['build:docker'], function () {
+  return gulp.src('docker/Dockerfile')
+    .pipe($.shell(['docker save ' + dockerOpt.namespace + '/' + dockerOpt.image + ' > ' + dockerOpt.image + '.tar'], {
       cwd: path.dist,
       ignoreErrors: false
     }));
 });
 
 
-gulp.task('dist:docker', ['build:docker'], function () {
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Release TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+gulp.task('release:docker', ['build:docker'], function () {
   // Config Tag
   var fs = require('fs');
   var packageJson = JSON.parse(fs.readFileSync('package.json'));
-  var dockerLocalName = dockerNamespace + '/' + dockerProjectName;
-  var dockerRegistryName = dockerRegistryUrl + '/' + dockerProjectName;
+  var dockerLocalName = dockerOpt.namespace + '/' + dockerOpt.image;
+  var dockerRegistryName = dockerOpt.registryHost + '/' + dockerOpt.image;
   var dockerVersion = packageJson.version;
   // Call Docker Cmd
   return gulp.src('Dockerfile', {read: false, cwd: path.dist})
- //   .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':latest'], {cwd: path.dist}))
-    .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':'+ dockerVersion], {cwd: path.dist}))
+    .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':latest'], {cwd: path.dist}))
+    .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':' + dockerVersion], {cwd: path.dist}))
     .pipe($.shell(['docker push ' + dockerRegistryName], {cwd: path.dist, ignoreErrors: false}));
-
 });
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Maven TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -668,7 +682,7 @@ gulp.task('deployOne', function () {
           }
         ]
       }
-    }))
+    }));
 });
 
 gulp.task('deploy', function () {
@@ -677,17 +691,17 @@ gulp.task('deploy', function () {
     .pipe(debug({title: 'maven deploy :'}))
     .pipe(maven.deploy(function (fileParsed) {
         return {
-          'config': {
-            'groupId': 'fr.generali.ccj.test',
-            'artifactId': fileParsed.name,
-            'type': fileParsed.extname,
-            'classifier': 'android',
-            'repositories': [{
-              'id': 'artifacts-server',
-              'url': 'http://maven-proxy.groupe.generali.fr/nexus/content/repositories/socles-releases/'
+          config: {
+            groupId: 'fr.generali.ccj.test',
+            artifactId: fileParsed.name,
+            type: fileParsed.extname,
+            classifier: 'android',
+            repositories: [{
+              id: 'artifacts-server',
+              url: 'http://maven-proxy.groupe.generali.fr/nexus/content/repositories/socles-releases/'
             }]
           }
         };
       }
-    ))
+    ));
 });
