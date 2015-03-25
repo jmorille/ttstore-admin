@@ -111,7 +111,7 @@ var src = {
   bowerComponents: ['bower_components{,/**}'],
   images: ['**/*.{gif,jpg,jpeg,png}'],
   sass: ['**/*.{scss,sass}', '!includes/**/*.*'],
-  polymerElements: 'elements{/**/*.html,/**/*.css,/**/*.js}'
+  polymerElements: 'elements/**/*.{html,css,js}'
 };
 
 //TODO in module cf https://github.com/greypants/gulp-starter/tree/master/gulp/tasks
