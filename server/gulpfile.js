@@ -92,6 +92,18 @@ gulp.task('build:docker', ['cp:package', 'cp:src'], function () {
 });
 
 
+gulp.task('dist:docker', ['build:docker'], function () {
+  var DEST_DIR = path.dist + '/docker-server';
+  var DEST_TAR =  dockerOpt.image + '.tar';
+  return gulp.src('docker/README.md')
+    .pipe(gulp.dest(DEST_DIR))
+    .pipe($.shell(['docker save --output ' + DEST_TAR + ' ' + dockerOpt.namespace + '/' + dockerOpt.image], {
+      cwd: DEST_DIR,
+      ignoreErrors: false
+    }));
+});
+
+
 gulp.task('release:docker', ['build:docker'], function () {
   // Config Tag
   var fs = require('fs');
