@@ -657,8 +657,8 @@ gulp.task('release:docker', ['build:docker'], function () {
   var dockerVersion = packageJson.version;
   // Call Docker Cmd
   return gulp.src('Dockerfile', {read: false, cwd: path.dist})
-    .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':latest'], {cwd: path.dist}))
-    .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':' + dockerVersion], {cwd: path.dist}))
+    .pipe($.shell(['docker tag -f ' + dockerLocalName + ' ' + dockerRegistryName + ':latest'], {cwd: path.dist}))
+    .pipe($.shell(['docker tag -f ' + dockerLocalName + ' ' + dockerRegistryName + ':' + dockerVersion], {cwd: path.dist}))
     .pipe($.shell(['docker push ' + dockerRegistryName], {cwd: path.dist, ignoreErrors: false}));
 });
 
