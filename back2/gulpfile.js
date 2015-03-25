@@ -639,7 +639,7 @@ gulp.task('dist:docker', ['build:docker'], function () {
   var DEST =  dockerOpt.image + '.tar';
   return gulp.src('docker/Dockerfile')
     .pipe($.shell(['docker save --output ' + DEST + ' ' + dockerOpt.namespace + '/' + dockerOpt.image], {
-      cwd: path.dist + '/docker',
+      cwd: path.dist ,
       ignoreErrors: false
     }));
 });
