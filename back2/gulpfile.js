@@ -259,7 +259,7 @@ var imagesFunc = function (cb) {
     }))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-   // .pipe(browserSyncReload({stream: true}));
+  // .pipe(browserSyncReload({stream: true}));
 };
 
 // Copy Images with Optimisation
@@ -636,9 +636,10 @@ gulp.task('build:docker', ['dist:web'], function () {
 });
 
 gulp.task('dist:docker', ['build:docker'], function () {
+  var DEST =  dockerOpt.image + '.tar';
   return gulp.src('docker/Dockerfile')
-    .pipe($.shell(['docker save ' + dockerOpt.namespace + '/' + dockerOpt.image + ' > ' + dockerOpt.image + '.tar'], {
-      cwd: path.dist,
+    .pipe($.shell(['docker save --output ' + DEST + ' ' + dockerOpt.namespace + '/' + dockerOpt.image], {
+      cwd: path.dist + '/docker',
       ignoreErrors: false
     }));
 });

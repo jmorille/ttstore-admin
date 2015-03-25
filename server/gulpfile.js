@@ -72,9 +72,12 @@ gulp.task('cp:package', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Docker TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-var dockerNamespace = 'jmorille';
-var dockerProjectName = 'ttstore-back-server';
-var dockerRegistryUrl = '178.255.97.203:5000';
+var dockerOpt = {
+  namespace: 'jmorille',
+  image: 'ttstore-back-server',
+  registryHost: '178.255.97.203:5000'
+};
+
 
 gulp.task('build:docker', ['cp:package', 'cp:src'], function () {
   var DEST_DIR = path.dist;
@@ -82,24 +85,24 @@ gulp.task('build:docker', ['cp:package', 'cp:src'], function () {
     .pipe(cache('Dockerfile'))
     .pipe(debug({title: 'docker :'}))
     .pipe(gulp.dest(DEST_DIR))
-    .pipe($.shell(['docker build --rm -t ' + dockerNamespace + '/' + dockerProjectName + ' .'], {
+    .pipe($.shell(['docker build --rm -t ' + dockerOpt.namespace + '/' + dockerOpt.image + ' .'], {
       cwd: path.dist,
       ignoreErrors: false
     }));
 });
 
 
-gulp.task('dist:docker', ['build:docker'], function () {
+gulp.task('release:docker', ['build:docker'], function () {
   // Config Tag
   var fs = require('fs');
   var packageJson = JSON.parse(fs.readFileSync('package.json'));
-  var dockerLocalName = dockerNamespace + '/' + dockerProjectName;
-  var dockerRegistryName = dockerRegistryUrl + '/' + dockerProjectName;
+  var dockerLocalName = dockerOpt.namespace + '/' + dockerOpt.image;
+  var dockerRegistryName = dockerOpt.registryHost + '/' + dockerOpt.image;
   var dockerVersion = packageJson.version;
   // Call Docker Cmd
   return gulp.src('Dockerfile', {read: false, cwd: path.dist})
-    //   .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':latest'], {cwd: path.dist}))
-    .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':' + dockerVersion], {cwd: path.dist}))
+    .pipe($.shell(['docker tag -f ' + dockerLocalName + ' ' + dockerRegistryName + ':latest'], {cwd: path.dist}))
+    .pipe($.shell(['docker tag -f ' + dockerLocalName + ' ' + dockerRegistryName + ':' + dockerVersion], {cwd: path.dist}))
     .pipe($.shell(['docker push ' + dockerRegistryName], {cwd: path.dist, ignoreErrors: false}));
 
 });
