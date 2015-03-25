@@ -58,7 +58,7 @@ function tagDockerImages {
 function buildAndTagDockerImages {
   #buildDockerRegistryImages
   buildDockerImages || exit 1
-  #tagDockerImages || exit 1
+  tagDockerImages || exit 1
 }
 
 

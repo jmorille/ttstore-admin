@@ -610,7 +610,7 @@ var dockerRegistryUrl = '178.255.97.203:5000';
 
 gulp.task('build:docker', function () {
   var DEST_DIR = path.dist;
-  gulp.src('docker/Dockerfile')
+  return gulp.src('docker/Dockerfile')
     .pipe(cache('Dockerfile'))
     .pipe(debug({title: 'docker :'}))
     .pipe(gulp.dest(DEST_DIR))
@@ -629,7 +629,7 @@ gulp.task('dist:docker', ['build:docker'], function () {
   var dockerRegistryName = dockerRegistryUrl + '/' + dockerProjectName;
   var dockerVersion = packageJson.version;
   // Call Docker Cmd
-  gulp.src('Dockerfile', {read: false, cwd: path.dist})
+  return gulp.src('Dockerfile', {read: false, cwd: path.dist})
  //   .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':latest'], {cwd: path.dist}))
     .pipe($.shell(['docker tag ' + dockerLocalName + ' ' + dockerRegistryName + ':'+ dockerVersion], {cwd: path.dist}))
     .pipe($.shell(['docker push ' + dockerRegistryName], {cwd: path.dist, ignoreErrors: false}));

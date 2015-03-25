@@ -1,12 +1,13 @@
 registry:
  image: registry:0.9.1
  ports:
-  - "5001:5000"
+  - "5000:5000"
  volumes:
   - ~/project/docker-registry/registry-conf:/registry-conf
   - ~/project/data/docker-registry:/tmp
  environment:
   - SETTINGS_FLAVOR=local
+  - SEARCH_BACKEND=sqlalchemy  
   - DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml
 ui:
  image: atcol/docker-registry-ui
@@ -18,4 +19,4 @@ ui:
   - ~/project/data/docker-ui/tmp:/tmp
   - ~/project/data/docker-ui/h2:/var/lib/h2
  environment:
-  - REG1=http://178.255.97.203:5001/v1/
+  - REG1=http://178.255.97.203:5000/v1/
