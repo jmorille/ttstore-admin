@@ -566,6 +566,7 @@ gulp.task('dist:web', ['build'], function (cb) {
     .pipe(debug({title: 'web dist :'}))
 //    .pipe($.rev())
 //    .pipe($.revReplace())
+    .pipe(gulp.dest(DEST_DIR))
     .pipe($.gzip(gzipOptions))
     .pipe(gulp.dest(DEST_DIR));
   //gulp.src(['**', notGlob(gzipGlob)], {cwd: path.buildVulcanized, base: path.buildVulcanized})
