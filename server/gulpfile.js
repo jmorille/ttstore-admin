@@ -55,7 +55,7 @@ gulp.task('cp:src', function () {
     .pipe(cache('source', {optimizeMemory: true}))
     .pipe(changed(DEST_DIR))
     .pipe(debug({title: 'source :'}))
-    .pipe(gulp.dest(DEST_DIR))
+    .pipe(gulp.dest(DEST_DIR));
 });
 
 gulp.task('cp:package', function () {
@@ -74,7 +74,7 @@ gulp.task('cp:package', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var dockerNamespace = 'jmorille';
 var dockerProjectName = 'ttstore-back-server';
-var dockerRegistryUrl = '127.0.0.1:5001';
+var dockerRegistryUrl = '178.255.97.203:5000';
 
 gulp.task('build:docker', ['cp:package', 'cp:src'], function () {
   var DEST_DIR = path.dist;

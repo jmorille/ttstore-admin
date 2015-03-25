@@ -606,7 +606,7 @@ gulp.task('dist:cordova', ['cordova:dist-generated'], function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var dockerNamespace = 'jmorille';
 var dockerProjectName = 'nginx-webapp';
-var dockerRegistryUrl = '127.0.0.1:5001';
+var dockerRegistryUrl = '178.255.97.203:5000';
 
 gulp.task('build:docker', function () {
   var DEST_DIR = path.dist;
