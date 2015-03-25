@@ -111,7 +111,7 @@ var src = {
   bowerComponents: ['bower_components{,/**}'],
   images: ['**/*.{gif,jpg,jpeg,png}'],
   sass: ['**/*.{scss,sass}', '!includes/**/*.*'],
-  polymerElements: 'elements{,/*,/**/*.html,/**/*.css,/**/*.js}'
+  polymerElements: 'elements{/**/*.html,/**/*.css,/**/*.js}'
 };
 
 //TODO in module cf https://github.com/greypants/gulp-starter/tree/master/gulp/tasks
@@ -138,8 +138,8 @@ gulp.task('clean:css', function (cb) {
 });
 
 // Build app
-gulp.task('build', function (cb) {
-  return runSequence('clean', ['cp', 'images'], 'vulcanize', cb);
+gulp.task('build', ['clean', 'vulcanize'],  function (cb) {
+ cb();
 });
 
 
@@ -204,8 +204,7 @@ var configCp = {
   imgGlob: withNotGlob([src.images], [src.bowerComponents])
 };
 
-// Copy all missing files
-gulp.task('cp', function () {
+var cpFunc = function () {
   var DEST_DIR = path.buildVulcanized;
   var assets = $.useref.assets();
   return gulp.src(configCp.cpGlob, {cwd: path.app, base: path.app})
@@ -219,13 +218,18 @@ gulp.task('cp', function () {
     .pipe($.useref())
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(browserSyncReload({stream: true}));
-});
+    .pipe(browserSyncReload({stream: true}))
+    ;
+};
+
+
+// Copy all missing files
+gulp.task('cp', ['clean'], cpFunc);
 
 
 // Watch for Copy files
 gulp.task('cp:watch', ['cp'], function (cb) {
-  gulp.watch(configCp.cpGlob, {cwd: path.app}, ['cp']);
+  gulp.watch(configCp.cpGlob, {cwd: path.app}, cpFunc);
   cb();
 });
 
@@ -233,8 +237,7 @@ gulp.task('cp:watch', ['cp'], function (cb) {
 // Images TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// Copy Images with Optimisation
-gulp.task('images', function (cb) {
+var imagesFunc = function (cb) {
   var DEST_DIR = path.buildVulcanized;
   return gulp.src(configCp.imgGlob, {cwd: path.app, base: path.app})
     .pipe(cache('imaging'))
@@ -245,13 +248,18 @@ gulp.task('images', function (cb) {
       interlaced: true
     }))
     .pipe(gulp.dest(DEST_DIR))
-    .pipe(livereload());
-});
+    .pipe(livereload())
+    .pipe(browserSyncReload({stream: true}))
+    ;
+};
+
+// Copy Images with Optimisation
+gulp.task('images', ['clean'], imagesFunc);
 
 
 // Watch for images copy
 gulp.task('images:watch', ['images'], function (cb) {
-  gulp.watch(configCp.imgGlob, {cwd: path.app}, ['images']);
+  gulp.watch(configCp.imgGlob, {cwd: path.app}, imagesFunc);
   cb();
 });
 
@@ -259,9 +267,15 @@ gulp.task('images:watch', ['images'], function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Saas TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gulp.task('sass', ['clean' ],  sassFunc );
 
-// Sass generation
-gulp.task('sass', function () {
+// Watch for Sass generation
+gulp.task('sass:watch', ['sass'], function (cb) {
+  gulp.watch(src.sass, {cwd: path.sass}, sassFunc);
+  cb();
+});
+
+var sassFunc  =function () {
   var DEST_DIR = path.app;
   var SASS_OPTS = {
     includePaths: [
@@ -289,22 +303,16 @@ gulp.task('sass', function () {
     }))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(browserSyncReload({stream: true}));
-});
+    .pipe(browserSyncReload({stream: true}))
+    ;
+};
 
-// Watch for Sass generation
-gulp.task('sass:watch', ['sass'], function (cb) {
-  gulp.watch(src.sass, {cwd: path.sass}, ['sass']);
-  cb();
-});
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Vulcanize TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// Vulcanize html files
-gulp.task('vulcanize', function (cb) {
+var vulcanizeFunc = function (cb) {
   var DEST_DIR = path.buildVulcanized + '/elements';
   return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
     .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
@@ -323,12 +331,16 @@ gulp.task('vulcanize', function (cb) {
     }))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(livereload())
-    .pipe(browserSyncReload({stream: true}));
-});
+    .pipe(browserSyncReload({stream: true}))
+    ;
+};
+
+// Vulcanize html files
+gulp.task('vulcanize', ['sass', 'cp', 'images'], vulcanizeFunc );
 
 // Watch for Vulcanize html files
 gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
-  gulp.watch(src.polymerElements, {cwd: path.app}, ['vulcanize']);
+  gulp.watch(src.polymerElements, {cwd: path.app}, vulcanizeFunc);
   cb();
 });
 
