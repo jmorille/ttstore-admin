@@ -636,10 +636,12 @@ gulp.task('build:docker', ['dist:web'], function () {
 });
 
 gulp.task('dist:docker', ['build:docker'], function () {
-  var DEST =  'docker/' + dockerOpt.image + '.tar';
-  return gulp.src('docker/Dockerfile')
+  var DEST_DIR = path.dist + '/docker';
+  var DEST =  dockerOpt.image + '.tar';
+  return gulp.src('docker/README.md')
+    .pipe(gulp.dest(DEST_DIR))
     .pipe($.shell(['docker save --output ' + DEST + ' ' + dockerOpt.namespace + '/' + dockerOpt.image], {
-      cwd: path.dist,
+      cwd: DEST_DIR,
       ignoreErrors: false
     }));
 });
