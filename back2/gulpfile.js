@@ -310,7 +310,10 @@ var sassFunc = function () {
 };
 
 
+// Sass - Build
 gulp.task('build:sass', ['clean'], sassFunc);
+
+// Sass - Task
 gulp.task('sass', sassFunc);
 
 // Watch for Sass generation
@@ -347,6 +350,7 @@ var vulcanizeFunc = function (cb) {
 
 // Vulcanize html files
 gulp.task('build:vulcanize', ['build:sass', 'build:cp', 'build:images'], vulcanizeFunc);
+// Vulcanize
 gulp.task('vulcanize', ['sass', 'cp', 'images'], vulcanizeFunc);
 
 // Watch for Vulcanize html files
@@ -492,12 +496,14 @@ gulp.task('serveBS', ['watch'], function () {
 // Chrome App Mobile TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// ChromeApp Mobile - Check Env configuration
 gulp.task('cca:check', function () {
   return gulp.src('.', {read: false})
     .pipe($.shell(['cca checkenv']));
 });
 
 
+// ChromeApp Mobile - Create Project
 gulp.task('cca:create', ['cca:check', 'build'], function () {
   var ccaAction = ' --link-to=';
   //var ccaAction = ' --copy-from=';
@@ -506,18 +512,20 @@ gulp.task('cca:create', ['cca:check', 'build'], function () {
     .pipe($.shell(['cca checkenv', 'cca create ' + path.buildCCA + ccaAction + path.buildVulcanized + '/manifest.json'], {ignoreErrors: true}));
 });
 
+// ChromeApp Mobile - Prepare for Build
 gulp.task('cca:prepare', function () {
   return gulp.src('*', {read: false, cwd: path.buildCCA})
     .pipe($.shell(['cca prepare'], {cwd: path.buildCCA}));
 });
 
 
+// ChromeApp Mobile - Push to Mobile Device
 gulp.task('cca:push', function () {
   return gulp.src('*', {read: false, cwd: path.buildCCA})
     .pipe($.shell(['cca push --watch'], {cwd: path.buildCCA}));
 });
 
-
+// ChromeApp Mobile - Build (in ./build folder)
 gulp.task('cca:build', ['cca:create'], function () {
   var releaseOpts = prod ? ' --release' : '';
   return gulp.src('*', {read: false, cwd: path.buildCCA})
@@ -525,9 +533,11 @@ gulp.task('cca:build', ['cca:create'], function () {
 });
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Cordova App Mobile TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// Cordova Mobile - Create Project
 gulp.task('cordova:create', ['build'], function () {
   var ccaAction = ' --link-to=';
   //var ccaAction = ' --copy-from=';
@@ -535,6 +545,7 @@ gulp.task('cordova:create', ['build'], function () {
     .pipe($.shell(['cordova create ' + path.buildCordova + ccaAction + path.buildVulcanized], {ignoreErrors: true}));
 });
 
+// Cordova Mobile - Config Project
 gulp.task('cordova:config', ['cordova:create'], function () {
   var configPlateform = 'android';
   return gulp.src('*', {read: false, cwd: path.buildCordova})
@@ -542,6 +553,7 @@ gulp.task('cordova:config', ['cordova:create'], function () {
 });
 
 
+// Cordova Mobile - Build (in ./build folder)
 gulp.task('cordova:build', ['cordova:config'], function () {
   var releaseOpts = prod ? ' --release' : '';
   return gulp.src('*', {read: false, cwd: path.buildCordova})
@@ -549,14 +561,17 @@ gulp.task('cordova:build', ['cordova:config'], function () {
 });
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Dist TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// All Desktop 's Distribution in ./dist folder
 gulp.task('dist', ['dist:web', 'dist:ca']);
 
+// Mobile 's Distribution in ./dist folder
 gulp.task('dist:mobile', ['dist:cca', 'dist:cordova']);
 
+// Web 's Distribution in ./dist folder
 gulp.task('dist:web', ['build'], function (cb) {
   var DEST_DIR = path.distWeb;
   var gzipOptions = {};
@@ -576,6 +591,7 @@ gulp.task('dist:web', ['build'], function (cb) {
   cb();
 });
 
+// ChromeApp - Distribution (in ./dist folder)
 gulp.task('dist:ca', ['build'], function (cb) {
   var DEST_DIR = path.distCa;
   gulp.src(['**/*.*'], {cwd: path.buildVulcanized, base: path.buildVulcanized})
@@ -589,7 +605,7 @@ gulp.task('dist:ca', ['build'], function (cb) {
   cb();
 });
 
-
+// Chrome App Mobile - Distribution (in ./dist folder)
 gulp.task('dist:cca', ['cca:build'], function (cb) {
   gulp.src('platforms/android/build/outputs/**/*.apk', {cwd: path.buildCCA})
     .pipe(debug({title: 'android dist :'}))
@@ -601,7 +617,7 @@ gulp.task('dist:cca', ['cca:build'], function (cb) {
   cb();
 });
 
-
+// Cordova Mobile - Distribution (in ./dist folder)
 gulp.task('dist:cordova', ['cordova:build'], function (cb) {
   gulp.src('platforms/android/ant-build/**/*.apk', {cwd: path.buildCordova})
     .pipe(debug({title: 'android dist :'}))
@@ -623,6 +639,7 @@ var dockerOpt = {
   registryHost: '178.255.97.203:5000'
 };
 
+// Docker Web - Build Image
 gulp.task('build:docker', ['dist:web'], function () {
   var DEST_DIR = path.dist;
   return gulp.src('docker/Dockerfile')
@@ -635,6 +652,7 @@ gulp.task('build:docker', ['dist:web'], function () {
     }));
 });
 
+// Docker Web - Distribution (in ./dist folder)
 gulp.task('dist:docker', ['build:docker'], function () {
   var DEST_DIR = path.dist + '/docker-web';
   var DEST_TAR =  dockerOpt.image + '.tar';
@@ -651,6 +669,7 @@ gulp.task('dist:docker', ['build:docker'], function () {
 // Release TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// Docker Web - Tag and Push Image (to Docker Registry)
 gulp.task('release:docker', ['build:docker'], function () {
   // Config Tag
   var fs = require('fs');
@@ -669,6 +688,7 @@ gulp.task('release:docker', ['build:docker'], function () {
 // Maven TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// Test Maven Deploy
 gulp.task('deployOne', function () {
   var maven = require('gulp-maven-deploy');
   gulp.src('dist/cca_android/**/*armv7*.apk', {base: '.'})
@@ -689,6 +709,7 @@ gulp.task('deployOne', function () {
     }));
 });
 
+// Test Maven Deploy
 gulp.task('deploy', function () {
   var maven = require('gulp-maven-deploy');
   gulp.src('dist/cca_android/**/*.apk', {base: '.'})
