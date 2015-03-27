@@ -1,7 +1,11 @@
 'use strict';
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
+
+// Help
 require('gulp-task-list')(gulp);
+var taskListing = require('gulp-task-listing');
+
 // Lint
 //var jshint = require('gulp-jshint');
 //var stylish = require('jshint-stylish');
@@ -72,6 +76,7 @@ var notGlob = function (elt) {
     }, []);
   }
 };
+
 var withNotGlob = function (include, excludes) {
   return [].concat.apply([], [].concat.call([], include, notGlob(excludes)));
 };
@@ -119,12 +124,13 @@ var src = {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // DEFAULT FOR 'gulp' COMMAND
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('default', ['lint']);
+gulp.task('default', ['help']);
 
 // Help like command gulp --tasks
-gulp.task('help', function () {
-  return gulp.run('task-list');
-});
+gulp.task('help',['task-list']);
+
+// Add a task to render the output
+gulp.task('help2', taskListing);
 
 
 // Clean all files
@@ -151,7 +157,7 @@ var isErrorEatByWatch = false;
 
 
 // Watch all files changes
-gulp.task('watch', ['sass:watch', 'cp:watch', 'images:watch', 'vulcanize:watch'], function (cb) {
+gulp.task('watch', ['watch:sass', 'cp:watch', 'watch:images', 'watch:vulcanize'], function (cb) {
   isErrorEatByWatch = true;
   livereload.listen();
   cb();
@@ -161,6 +167,8 @@ gulp.task('watch', ['sass:watch', 'cp:watch', 'images:watch', 'vulcanize:watch']
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Lint TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// Lint - the sources App
 gulp.task('lint', function () {
   return gulp.src(path.sources)
     .pipe(cache('appSrc'))
@@ -169,6 +177,13 @@ gulp.task('lint', function () {
     .pipe($.jshint.reporter('jshint-stylish'));
 });
 
+gulp.task('watch:lint', ['lint'], function (cb) {
+  gulp.watch(path.sources, ['lint']);
+  cb();
+});
+
+
+// Lint - the build script
 gulp.task('lint:gulp', function () {
   return gulp.src('gulpfile.js')
     .pipe($.jshint())
@@ -176,7 +191,7 @@ gulp.task('lint:gulp', function () {
     .pipe($.jshint.reporter('jshint-stylish'));
 });
 
-gulp.task('lint:gulp:watch', ['lint:gulp'], function (cb) {
+gulp.task('watch:lint:gulp', ['lint:gulp'], function (cb) {
   gulp.watch('gulpfile.js', ['lint:gulp']);
   cb();
 });
@@ -207,11 +222,13 @@ var errorNotif = function (title) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Copy COMMAND to Generated
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 var configCp = {
   cpGlob: withNotGlob(['**/**.*'], [src.sass, src.bowerComponents, src.polymerElements, src.images]),
   imgGlob: withNotGlob([src.images], [src.bowerComponents])
 };
 
+// Copy - Internal
 var cpFunc = function () {
   var DEST_DIR = path.buildVulcanized;
   var assets = $.useref.assets();
@@ -225,18 +242,20 @@ var cpFunc = function () {
     .pipe(assets.restore())
     .pipe($.useref())
     .pipe(gulp.dest(DEST_DIR))
-    .pipe(livereload())
+    .pipe(livereload());
   // .pipe(browserSyncReload({stream: true}));
 
 };
 
 
-// Copy all missing files
+// Copy - Build
 gulp.task('build:cp', ['clean'], cpFunc);
+
+// Copy - Task
 gulp.task('cp', cpFunc);
 
 
-// Watch for Copy files
+// Copy - Watch for Copy files
 gulp.task('cp:watch', ['cp'], function (cb) {
   gulp.watch(configCp.cpGlob, {cwd: path.app}, cpFunc)
     .on('change', browserSyncReload);
@@ -247,6 +266,7 @@ gulp.task('cp:watch', ['cp'], function (cb) {
 // Images TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// images - Internal
 var imagesFunc = function (cb) {
   var DEST_DIR = path.buildVulcanized;
   return gulp.src(configCp.imgGlob, {cwd: path.app, base: path.app})
@@ -258,17 +278,20 @@ var imagesFunc = function (cb) {
       interlaced: true
     }))
     .pipe(gulp.dest(DEST_DIR))
-    .pipe(livereload())
+    .pipe(livereload());
   // .pipe(browserSyncReload({stream: true}));
 };
 
-// Copy Images with Optimisation
+
+// Images Optimization - Build
 gulp.task('build:images', ['clean'], imagesFunc);
+
+// Images Optimization - Tasks
 gulp.task('images', imagesFunc);
 
 
-// Watch for images copy
-gulp.task('images:watch', ['images'], function (cb) {
+// Images Optimization - Watch for images copy
+gulp.task('watch:images', ['images'], function (cb) {
   gulp.watch(configCp.imgGlob, {cwd: path.app}, imagesFunc)
     .on('change', browserSyncReload);
   cb();
@@ -278,6 +301,8 @@ gulp.task('images:watch', ['images'], function (cb) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Saas TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// Sass - Internal
 var sassFunc = function () {
   var DEST_DIR = path.app;
   var SASS_OPTS = {
@@ -316,16 +341,19 @@ gulp.task('build:sass', ['clean'], sassFunc);
 // Sass - Task
 gulp.task('sass', sassFunc);
 
-// Watch for Sass generation
-gulp.task('sass:watch', ['sass'], function (cb) {
+// Sass - Watch for Sass generation
+gulp.task('watch:sass', ['sass'], function (cb) {
   gulp.watch(src.sass, {cwd: path.sass}, sassFunc);
   cb();
 });
 
+/**
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Vulcanize TASKS
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Vulcanize TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Vulcanize - Internal
 var vulcanizeFunc = function (cb) {
   var DEST_DIR = path.buildVulcanized + '/elements';
   return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
@@ -344,17 +372,19 @@ var vulcanizeFunc = function (cb) {
       }
     }))
     .pipe(gulp.dest(DEST_DIR))
-    .pipe(livereload())
+    .pipe(livereload());
   //  .pipe(browserSyncReload({stream: true}));
 };
 
-// Vulcanize html files
-gulp.task('build:vulcanize', ['build:sass', 'build:cp', 'build:images'], vulcanizeFunc);
-// Vulcanize
+
+// Vulcanize - build
+gulp.task('build:vulcanize', ['build:sass', 'build:cp', 'build:images'],  vulcanizeFunc);
+
+// Vulcanize - Tasks
 gulp.task('vulcanize', ['sass', 'cp', 'images'], vulcanizeFunc);
 
-// Watch for Vulcanize html files
-gulp.task('vulcanize:watch', ['vulcanize'], function (cb) {
+// Vulcanize - Watch for html files
+gulp.task('watch:vulcanize', ['vulcanize'], function (cb) {
   gulp.watch(src.polymerElements, {cwd: path.app}, vulcanizeFunc)
     .on('change', browserSyncReload);
   cb();
@@ -401,7 +431,7 @@ var server = {
   httpsPort: '9001'
 };
 
-
+// Server Livereload - Test
 gulp.task('connect2', function () {
   var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
   var connect = require('gulp-connect');
@@ -423,6 +453,7 @@ gulp.task('connect2', function () {
   });
 });
 
+// Server Livereload
 gulp.task('connect', function () {
   // http://stackoverflow.com/questions/24546450/use-proxy-middleware-with-gulp-connect
   var serveStatic = require('serve-static');
@@ -439,7 +470,7 @@ gulp.task('connect', function () {
   var app = require('connect')()
     //  .use(require('connect-modrewrite')(['^/s/(.*)$ http://localhost:8000/s/$1 [P]']))
     .use(require('proxy-middleware')(proxyOptions))
-    .use(require('cors')({origin: 'http://127.0.0.1:8000', methods: ['HEAD', 'GET', 'POST']}))
+   // .use(require('cors')({origin: 'http://127.0.0.1:8000', methods: ['HEAD', 'GET', 'POST']}))
     .use(require('connect-livereload')({port: 35729}))
 //    .use(serveStatic('.tmp'))
     .use(serveStatic(srcApp))
@@ -473,9 +504,10 @@ gulp.task('serve', ['connect', 'watch'], function () {
 gulp.task('serveBS', ['watch'], function () {
   //http://stackoverflow.com/questions/25410284/gulp-browser-sync-redirect-api-request-via-proxy
   var url = require('url');
-  var proxyOptions = url.parse('http://localhost:3000/s/');
-  proxyOptions.route = '/s/';
   var proxy = require('proxy-middleware');
+  var proxyOptions = url.parse('http://127.0.0.1:8000/s/');
+  proxyOptions.route = '/s/';
+
   // https://github.com/BrowserSync/gulp-browser-sync/issues/16#issuecomment-43597240
   var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
   browserSync({
