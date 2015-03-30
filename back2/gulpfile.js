@@ -127,7 +127,7 @@ var src = {
 gulp.task('default', ['help']);
 
 // Help like command gulp --tasks
-gulp.task('help',['task-list']);
+gulp.task('help', ['task-list']);
 
 // Add a task to render the output
 gulp.task('help2', taskListing);
@@ -356,7 +356,8 @@ gulp.task('watch:sass', ['sass'], function (cb) {
 // Vulcanize - Internal
 var vulcanizeFunc = function (cb) {
   var DEST_DIR = path.buildVulcanized + '/elements';
-  return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
+  return gulp.src('elements/elements.html', {cwd: path.app, base: path.app })
+    //.pipe(cache('vulcanizingDD')) // NOT WORKING BUT WHY ?
     .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
     .pipe(debug({title: 'vulcanize :'}))
     //  .pipe($.rename('elements.vulcanized.html'))
@@ -372,13 +373,13 @@ var vulcanizeFunc = function (cb) {
       }
     }))
     .pipe(gulp.dest(DEST_DIR))
-    .pipe(livereload());
+    //.pipe(livereload());
   //  .pipe(browserSyncReload({stream: true}));
 };
 
 
 // Vulcanize - build
-gulp.task('build:vulcanize', ['build:sass', 'build:cp', 'build:images'],  vulcanizeFunc);
+gulp.task('build:vulcanize', ['build:sass', 'build:cp', 'build:images'], vulcanizeFunc);
 
 // Vulcanize - Tasks
 gulp.task('vulcanize', ['sass', 'cp', 'images'], vulcanizeFunc);
@@ -470,7 +471,7 @@ gulp.task('connect', function () {
   var app = require('connect')()
     //  .use(require('connect-modrewrite')(['^/s/(.*)$ http://localhost:8000/s/$1 [P]']))
     .use(require('proxy-middleware')(proxyOptions))
-   // .use(require('cors')({origin: 'http://127.0.0.1:8000', methods: ['HEAD', 'GET', 'POST']}))
+    // .use(require('cors')({origin: 'http://127.0.0.1:8000', methods: ['HEAD', 'GET', 'POST']}))
     .use(require('connect-livereload')({port: 35729}))
 //    .use(serveStatic('.tmp'))
     .use(serveStatic(srcApp))
@@ -505,9 +506,13 @@ gulp.task('serveBS', ['watch'], function () {
   //http://stackoverflow.com/questions/25410284/gulp-browser-sync-redirect-api-request-via-proxy
   var url = require('url');
   var proxy = require('proxy-middleware');
-  var proxyOptions = url.parse('http://127.0.0.1:8000/s/');
-  proxyOptions.route = '/s/';
-
+  var proxyOptions = url.parse('http://127.0.0.1:8000/s');
+  proxyOptions.route = '/s';
+  var debugProxy = function (req, res, next) {
+    console.log("Proxy Request path : ", url.parse(req.url).path);
+    next();
+  };
+  var proxies = [debugProxy, proxy(proxyOptions)];
   // https://github.com/BrowserSync/gulp-browser-sync/issues/16#issuecomment-43597240
   var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
   browserSync({
@@ -515,7 +520,7 @@ gulp.task('serveBS', ['watch'], function () {
       baseDir: srcApp,
       server: {
         baseDir: './',
-        middleware: [proxy(proxyOptions)]
+        middleware: proxies
       },
       notify: false,
       logLevel: 'info'
@@ -687,7 +692,7 @@ gulp.task('build:docker', ['dist:web'], function () {
 // Docker Web - Distribution (in ./dist folder)
 gulp.task('dist:docker', ['build:docker'], function () {
   var DEST_DIR = path.dist + '/docker-web';
-  var DEST_TAR =  dockerOpt.image + '.tar';
+  var DEST_TAR = dockerOpt.image + '.tar';
   return gulp.src('docker/README.md')
     .pipe(gulp.dest(DEST_DIR))
     .pipe($.shell(['docker save --output ' + DEST_TAR + ' ' + dockerOpt.namespace + '/' + dockerOpt.image], {

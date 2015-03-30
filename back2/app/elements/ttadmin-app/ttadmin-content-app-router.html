@@ -80,13 +80,13 @@
   </template>
   <script>
     'use strict';
-    Polymer('ttadmin-content', {
+    Polymer('ttadmin-content', {  // jshint ignore:line
 
       activateRouteHandler: function (event, detail) {
         console.log('Activate Route Beding ', detail);
         var menuSelectedAttr = detail.route.attributes['menu-selected'];
         var menuSelected = menuSelectedAttr ? menuSelectedAttr.value : detail.path;
-        console.log("Menu selected active route", menuSelected);
+        console.log('Menu selected active route', menuSelected);
         this.selected = menuSelected;
       },
       selectContentHandler: function (event, detail) {

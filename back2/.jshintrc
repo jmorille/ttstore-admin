@@ -13,10 +13,14 @@
   "quotmark": "single",
   "undef": true,
   "unused": "vars",
+
   "globals": {
     "wrap": true,
     "unwrap": true,
     "Polymer": true,
+    "ejs": true,
+    "chrome": true,
+    "_": true,
     "Platform": true
   }
 }
