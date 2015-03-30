@@ -373,7 +373,7 @@ var vulcanizeFunc = function (cb) {
       }
     }))
     .pipe(gulp.dest(DEST_DIR))
-    //.pipe(livereload());
+    .pipe(livereload());
   //  .pipe(browserSyncReload({stream: true}));
 };
 
@@ -503,25 +503,22 @@ gulp.task('serve', ['connect', 'watch'], function () {
 
 // Start CSS Injection Server. Options : --build
 gulp.task('serveBS', ['watch'], function () {
-  //http://stackoverflow.com/questions/25410284/gulp-browser-sync-redirect-api-request-via-proxy
+  // Proxy Server
+  // -------------
   var url = require('url');
   var proxy = require('proxy-middleware');
-  var proxyOptions = url.parse('http://127.0.0.1:8000/s');
-  proxyOptions.route = '/s';
-  var debugProxy = function (req, res, next) {
-    console.log("Proxy Request path : ", url.parse(req.url).path);
-    next();
-  };
-  var proxies = [debugProxy, proxy(proxyOptions)];
-  // https://github.com/BrowserSync/gulp-browser-sync/issues/16#issuecomment-43597240
+  var proxyOptions = url.parse('http://127.0.0.1:8000/s/');
+  proxyOptions.route = '/s/';
+   var proxies = [ proxy(proxyOptions)];
+  // browserSync Server
+  // ------------------
   var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
+  // https://github.com/BrowserSync/gulp-browser-sync/issues/16#issuecomment-43597240
   browserSync({
     server: {
       baseDir: srcApp,
-      server: {
-        baseDir: './',
-        middleware: proxies
-      },
+      online: false,
+      middleware: proxies,
       notify: false,
       logLevel: 'info'
     }

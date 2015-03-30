@@ -90,7 +90,7 @@
           return;
         }
         var childNodes = item;
-        if (!Array.isArray(childNodes)) {
+        if (!Array.isArray(childNodes) && (typeof childNodes.querySelectorAll === 'function') ) {
           childNodes = childNodes.querySelectorAll('*');
         }
         if (childNodes) {
