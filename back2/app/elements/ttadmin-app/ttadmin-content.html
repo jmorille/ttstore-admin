@@ -11,9 +11,10 @@
 
   <template>
     <style>
-      :host{
+      :host {
         display: block;
       }
+
       core-animated-pages {
         height: 100vh;
         width: 100vw;
@@ -23,39 +24,39 @@
     <core-media-query query="min-width: 640px" queryMatches="{{largeScreen}}">
     </core-media-query>
 
-    <ttadmin-layout>
-      <more-route-selector selectedParams="{{params}}">
-        <core-animated-pages on-core-select="{{selectContentHandler}}" transitions="slide-from-right cross-fade" flex>
-          <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
-          <section route="home" slide-from-right>
+    <more-route-selector selectedParams="{{params}}">
+      <core-animated-pages on-core-select="{{selectContentHandler}}" transitions="slide-from-right cross-fade" flex>
+        <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
+        <ttadmin-layout route="home" slide-from-right>
+          <ttadmin-home></ttadmin-home>
+        </ttadmin-layout>
 
-              <ttadmin-home></ttadmin-home>
+        <ttadmin-layout route="user" slide-from-right>
+          <admin-search></admin-search>
+        </ttadmin-layout>
 
-          </section>
-          <section route="user" slide-from-right>
-            <admin-search></admin-search>
-          </section>
-          <section route="user-edit">
-            <admin-user-edit entityid="{{params.entityid}}"></admin-user-edit>
-          </section>
-          <!--<section route="user-edit">-->
-          <!--<admin-user-edit entityid="{{entityid}}"></admin-user-edit>-->
-          <!--</section>-->
+        <ttadmin-layout route="user-edit">
+          <admin-user-edit entityid="{{params.entityid}}"></admin-user-edit>
+        </ttadmin-layout>
+        <!--<section route="user-edit">-->
+        <!--<admin-user-edit entityid="{{entityid}}"></admin-user-edit>-->
+        <!--</section>-->
 
-          <section route="portfolio">
-            <ttadmin-page-portfolio></ttadmin-page-portfolio>
-          </section>
-          <section route="contact">
-            <yo-greeting></yo-greeting>
-          </section>
+        <ttadmin-layout route="portfolio">
+          <ttadmin-page-portfolio></ttadmin-page-portfolio>
+        </ttadmin-layout>
 
-          <!--<section layout vertical route="order">-->
-          <!--<p>Your order number is {{orderId}}</p>-->
-          <!--</section>-->
-        </core-animated-pages>
+        <ttadmin-layout route="contact">
+          <yo-greeting></yo-greeting>
+        </ttadmin-layout>
 
-      </more-route-selector>
-    </ttadmin-layout>
+        <!--<section layout vertical route="order">-->
+        <!--<p>Your order number is {{orderId}}</p>-->
+        <!--</section>-->
+      </core-animated-pages>
+
+    </more-route-selector>
+
 
   </template>
   <script>
@@ -90,7 +91,7 @@
           return;
         }
         var childNodes = item;
-        if (!Array.isArray(childNodes) && (typeof childNodes.querySelectorAll === 'function') ) {
+        if (!Array.isArray(childNodes) && (typeof childNodes.querySelectorAll === 'function')) {
           childNodes = childNodes.querySelectorAll('*');
         }
         if (childNodes) {
