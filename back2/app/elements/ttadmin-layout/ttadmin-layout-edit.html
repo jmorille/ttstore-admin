@@ -1,0 +1,77 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+
+<polymer-element name="ttadmin-layout-edit" attributes="selected progress">
+
+  <template>
+    <style>
+      :host{
+        display: block;
+      }
+
+      core-header-panel {
+        background-color: #F9F9F9;
+      }
+
+      core-toolbar [icon="more-vert"] {
+        padding-right: 0;
+      }
+
+      core-toolbar [icon="arrow-back"] {
+        padding-left: 0;
+      }
+      
+      paper-menu-button paper-item {
+        color: #000000;
+      }
+
+      .menu-icon {
+        height: 32px;
+        width: 48px;
+        margin: 6px;
+      }
+
+      .site-banner {
+        background-color: #7986cb;
+        color: white;
+      }
+
+    </style>
+
+
+    <core-header-panel fit mode="waterfall-tall" tallclass="medium-tall">
+        <!-- Site Banner -->
+        <core-toolbar class="site-banner">
+          <paper-icon-button icon="arrow-back"></paper-icon-button>
+          <div class="bottom indent">Cordova App Killer</div>
+          <span flex></span>
+          <paper-icon-button icon="info-outline" on-tap="{{openSearchBox}}"></paper-icon-button>
+          <paper-menu-button>
+            <paper-icon-button icon="more-vert"></paper-icon-button>
+            <paper-dropdown class="dropdown" halign="right">
+                <core-menu clas="menu">
+                  <paper-item>Delete</paper-item>
+                </core-menu>
+            </paper-dropdown>
+          </paper-menu-button>
+          <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
+        </core-toolbar>
+        <!-- Content -->
+        <div class="content">
+          <content></content>
+        </div>
+      </core-header-panel>
+
+
+
+  </template>
+  <script>
+    'use strict';
+    Polymer('ttadmin-layout-edit', {  // jshint ignore:line
+
+      progress: undefined
+    });
+
+  </script>
+</polymer-element>
