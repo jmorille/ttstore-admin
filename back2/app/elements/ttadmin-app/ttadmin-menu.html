@@ -35,7 +35,7 @@
     <!--</more-route-selector>-->
 
     <more-route-selector>
-      <core-menu>
+      <core-menu on-core-select="{{selectAction}}">
         <core-item  icon="home"  label="Home" route="home">
           <a href="{{urlFor('home')}}"></a>
         </core-item>
@@ -63,6 +63,11 @@
           {icon: 'perm-media', label: 'Portfolio', route: 'portfolio'},
           {icon: 'perm-contact-cal', label: 'Contact', route: 'contact'}
         ];
+      },
+      selectAction: function (e, detail) {
+//        if (detail.isSelected) {
+//          console.log('----------------------- selectAction ', detail);
+//        }
       }
     });
 

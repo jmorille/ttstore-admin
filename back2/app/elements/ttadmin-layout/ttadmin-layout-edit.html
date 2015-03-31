@@ -2,7 +2,7 @@
 
 
 
-<polymer-element name="ttadmin-layout-edit" attributes="selected progress">
+<polymer-element name="ttadmin-layout-edit" attributes="">
 
   <template>
     <style>
@@ -21,7 +21,7 @@
       core-toolbar [icon="arrow-back"] {
         padding-left: 0;
       }
-      
+
       paper-menu-button paper-item {
         color: #000000;
       }
@@ -44,22 +44,24 @@
         <!-- Site Banner -->
         <core-toolbar class="site-banner">
           <paper-icon-button icon="arrow-back"></paper-icon-button>
-          <div class="bottom indent">Cordova App Killer</div>
+          <div class="bottom indent"><content select="[title]"></content></div>
           <span flex></span>
-          <paper-icon-button icon="info-outline" on-tap="{{openSearchBox}}"></paper-icon-button>
+
+          <paper-icon-button id="saveButton" icon="check" aria-label="save" disabled?="{{!save}}" on-tap="{{onSave}}"></paper-icon-button>
           <paper-menu-button>
             <paper-icon-button icon="more-vert"></paper-icon-button>
             <paper-dropdown class="dropdown" halign="right">
                 <core-menu clas="menu">
-                  <paper-item>Delete</paper-item>
+                  <paper-item  icon="delete">Delete</paper-item>
                 </core-menu>
             </paper-dropdown>
           </paper-menu-button>
           <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
+
         </core-toolbar>
         <!-- Content -->
         <div class="content">
-          <content></content>
+          <content select="[main]"></content>
         </div>
       </core-header-panel>
 
@@ -70,7 +72,6 @@
     'use strict';
     Polymer('ttadmin-layout-edit', {  // jshint ignore:line
 
-      progress: undefined
     });
 
   </script>

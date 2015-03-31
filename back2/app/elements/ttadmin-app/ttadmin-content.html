@@ -24,32 +24,38 @@
     <core-media-query query="min-width: 640px" queryMatches="{{largeScreen}}">
     </core-media-query>
 
+
     <more-route-selector selectedParams="{{params}}">
-      <core-animated-pages on-core-select="{{selectContentHandler}}" transitions="slide-from-right cross-fade" flex>
+      <core-animated-pages on-core-select="{{selectContentHandler}}"   flex> <!-- transitions="cross-fade"  -->
         <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
-        <ttadmin-layout route="home" slide-from-right>
-          <ttadmin-home></ttadmin-home>
-        </ttadmin-layout>
+        <section route="home">
+          <ttadmin-layout cross-fade?="{{!largeScreen}}">
+            <ttadmin-home></ttadmin-home>
+          </ttadmin-layout>
+        </section>
+        <section route="user">
+          <div cross-fade?="{{!largeScreen}}">
+          <ttadmin-layout >
+            <admin-search></admin-search>
+          </ttadmin-layout>
+          </div>
+        </section>
+        <section route="user-edit">
+          <div cross-fade?="{{!largeScreen}}">
+            <admin-user-edit entityid="{{params.entityid}}"></admin-user-edit>
+          </div>
 
-        <ttadmin-layout route="user" slide-from-right>
-          <admin-search></admin-search>
-        </ttadmin-layout>
-
-        <ttadmin-layout-edit route="user-edit">
-          <admin-user-edit entityid="{{params.entityid}}"></admin-user-edit>
-        </ttadmin-layout-edit>
-        <!--<section route="user-edit">-->
-        <!--<admin-user-edit entityid="{{entityid}}"></admin-user-edit>-->
-        <!--</section>-->
-
-        <ttadmin-layout route="portfolio">
-          <ttadmin-page-portfolio></ttadmin-page-portfolio>
-        </ttadmin-layout>
-
-        <ttadmin-layout route="contact">
-          <yo-greeting></yo-greeting>
-        </ttadmin-layout>
-
+        </section>
+        <section route="portfolio">
+          <ttadmin-layout cross-fade?="{{!largeScreen}}">
+            <ttadmin-page-portfolio></ttadmin-page-portfolio>
+          </ttadmin-layout>
+        </section>
+        <section route="contact">
+          <ttadmin-layout cross-fade?="{{!largeScreen}}">
+            <yo-greeting></yo-greeting>
+          </ttadmin-layout>
+        </section>
         <!--<section layout vertical route="order">-->
         <!--<p>Your order number is {{orderId}}</p>-->
         <!--</section>-->
@@ -72,7 +78,7 @@
       },
       selectContentHandler: function (event, detail) {
 //        console.log('selectContentHandler event : ', event);
-        console.log('selectContentHandler detail : ', detail);
+        //console.log('selectContentHandler detail : ', detail);
         // New Route
         var item = detail.item;
         if (detail.isSelected) {

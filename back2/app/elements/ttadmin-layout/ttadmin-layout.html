@@ -179,11 +179,13 @@
 
       progress: undefined,
       menuSelectHandler: function (event, detail) {
+
         if (event) { // comes first
           event.stopPropagation();
         }
         if (detail.isSelected) {
-          this.$.menuBody.togglePanel();
+//          this.$.menuBody.togglePanel();
+          this.$.menuBody.closeDrawer();
         }
       },
       siteMenuHeaderTapHandler: function () {

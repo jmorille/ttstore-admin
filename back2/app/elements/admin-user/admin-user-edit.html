@@ -8,30 +8,36 @@
         display: block;
       }
     </style>
-    <div>Entity Id  {{entityid}}</div>
-    <tt-crud   data="{{data}}" entityid="{{entityid}}" endpoint="/s/users"  autosave >
-      <section id="formContainer">
-        <paper-input-decorator floatingLabel label="First name" autoValidate>
-          <input is="core-input" value="{{ data._source.firstname}}" required>
-        </paper-input-decorator>
+    <ttadmin-layout-edit>
 
-        <paper-input-decorator floatingLabel label="Last name" autoValidate>
-          <input is="core-input" value="{{ data._source.lastname}}" required>
-        </paper-input-decorator>
+      <!--  -->
+      <div title>{{ data._source.firstname}} {{ data._source.lastname}}</div>
 
-        <paper-input-decorator floatingLabel label="Email" autoValidate>
-          <input is="core-input" id="input2" value="{{ data._source.email}}" type="email">
-        </paper-input-decorator>
-
-        <div on-tap="{{displayPhone}}">---- Phones ---</div>
-        <template if="{{doDisplay}}">
-          <paper-input-decorator floatingLabel label="Phone" autoValidate>
-            <input is="core-input"   value="{{ data._source.phone}}" type="phone">
+      <tt-crud data="{{data}}" entityid="{{entityid}}" endpoint="/s/users" autosave main>
+        <section id="formContainer">
+          <paper-input-decorator floatingLabel label="First name" autoValidate>
+            <input is="core-input" value="{{ data._source.firstname}}" required>
           </paper-input-decorator>
-        </template>
-      </section>
-    </tt-crud>
 
+          <paper-input-decorator floatingLabel label="Last name" autoValidate>
+            <input is="core-input" value="{{ data._source.lastname}}" required>
+          </paper-input-decorator>
+
+          <paper-input-decorator floatingLabel label="Email" autoValidate>
+            <input is="core-input" id="input2" value="{{ data._source.email}}" type="email">
+          </paper-input-decorator>
+
+          <div on-tap="{{displayPhone}}">---- Phones ---</div>
+          <template if="{{doDisplay}}">
+            <paper-input-decorator floatingLabel label="Phone" autoValidate>
+              <input is="core-input" value="{{ data._source.phone}}" type="phone">
+            </paper-input-decorator>
+          </template>
+        </section>
+      </tt-crud>
+
+
+    </ttadmin-layout-edit>
   </template>
 
   <script>
@@ -40,7 +46,7 @@
       doDisplay: false,
 
       displayPhone: function () {
-        this.doDisplay = ! this.doDisplay;
+        this.doDisplay = !this.doDisplay;
       }
 
     });
