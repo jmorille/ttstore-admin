@@ -20,6 +20,18 @@
         z-index: 200;
       }
 
+      .row {
+        height: 80px;
+        padding: 16px 16px;
+        cursor: pointer;
+      }
+
+      .row core-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+
     </style>
 
 
@@ -60,14 +72,10 @@
           <div>&nbsp;</div>
           <core-list id="list" data="{{data.hits.hits}}" on-core-activate="{{entityEditHandler}}" scrollTarget="{{$.listContainer}}" style="height: inherit">
             <template>
-                <article>
-
-                <div style="height: 50px; border: solid 1px;">
-                  <div>{{model._id}} </div>
-
-                  <div>{{model._source['lastname']}} </div>
-                </div>
-
+                <article class="row" layout horizontal center>
+                  <core-image src="{{model._source.avatar}}"  data-index="{{index}}" preload sizing="cover">
+                  </core-image>
+                  <div  data-index="{{index}}" flex>{{model._source.firstname}} {{model._source.lastname}} </div>
                 </article>
 
             </template>
