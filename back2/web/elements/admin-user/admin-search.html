@@ -45,7 +45,7 @@
       <section horizontal layout>
         <tt-input-search class="searchBox" value="{{searchText}}" on-search-input={{searchReset}}"></tt-input-search>
 
-        <paper-fab icon="add" title="Add" on-tap="{{addButtonHandler}}"></paper-fab>
+        <paper-fab icon="add" title="Add" on-tap="{{entityAddHandler}}"></paper-fab>
       </section>
       <template if="{{data.hits.total}}">
         <div><em>{{data.hits.total}} records found in {{data.took}} ms</em></div>
@@ -151,6 +151,7 @@
       // ------------------
       entityAddHandler: function (event, detail, sender) {
         console.log('entityAddHandler', detail);
+        MoreRouting.navigateTo('user-edit');
       },
 
       entityEditHandler: function (event, detail, sender) {
