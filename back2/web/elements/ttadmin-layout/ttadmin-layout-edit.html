@@ -1,12 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-
-<polymer-element name="ttadmin-layout-edit" attributes="">
+<polymer-element name="ttadmin-layout-edit" attributes="save status">
 
   <template>
     <style>
-      :host{
+      :host {
         display: block;
       }
 
@@ -25,6 +24,9 @@
       paper-menu-button paper-item {
         color: #000000;
       }
+      core-icon {
+        margin-right: 0.5em;
+      }
 
       .menu-icon {
         height: 32px;
@@ -41,37 +43,51 @@
 
 
     <core-header-panel fit mode="waterfall-tall" tallclass="medium-tall">
-        <!-- Site Banner -->
-        <core-toolbar class="site-banner">
-          <paper-icon-button icon="arrow-back"></paper-icon-button>
-          <div class="bottom indent"><content select="[title]"></content></div>
-          <span flex></span>
-
-          <paper-icon-button id="saveButton" icon="check" aria-label="save" disabled?="{{!save}}" on-tap="{{onSave}}"></paper-icon-button>
-          <paper-menu-button>
-            <paper-icon-button icon="more-vert"></paper-icon-button>
-            <paper-dropdown class="dropdown" halign="right">
-                <core-menu clas="menu">
-                  <paper-item  icon="delete">Delete</paper-item>
-                </core-menu>
-            </paper-dropdown>
-          </paper-menu-button>
-          <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
-
-        </core-toolbar>
-        <!-- Content -->
-        <div class="content">
-          <content select="[main]"></content>
+      <!-- Site Banner -->
+      <core-toolbar class="site-banner">
+        <paper-icon-button icon="arrow-back"  on-tap="{{onBack}}"></paper-icon-button>
+        <div class="bottom indent">
+          <content select="[title]"></content>
         </div>
-      </core-header-panel>
+        <span flex></span>
 
+        <paper-icon-button id="saveButton" icon="check" aria-label="save" disabled?="{{!status.toSave}}"
+                           on-tap="{{onSave}}"></paper-icon-button>
+        <paper-menu-button>
+          <paper-icon-button icon="more-vert"></paper-icon-button>
+          <paper-dropdown class="dropdown" halign="right">
+            <core-menu class="menu">
+              <paper-item icon="delete"  disabled?="{{!status.toDelete}}"   on-tap="{{onDelete}}">
+                <core-icon icon="delete"></core-icon>
+                Delete
+              </paper-item>
+            </core-menu>
+          </paper-dropdown>
+        </paper-menu-button>
+        <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
+
+      </core-toolbar>
+      <!-- Content -->
+      <div class="content">
+        <content select="[main]"></content>
+      </div>
+    </core-header-panel>
 
 
   </template>
   <script>
     'use strict';
     Polymer('ttadmin-layout-edit', {  // jshint ignore:line
-
+      save: true,
+      onSave: function () {
+        this.fire('tap-save');
+      },
+      onDelete: function () {
+        this.fire('tap-delete');
+      },
+      onBack: function () {
+        this.fire('tap-back');
+      }
     });
 
   </script>

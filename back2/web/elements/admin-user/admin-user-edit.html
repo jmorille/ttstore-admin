@@ -8,12 +8,12 @@
         display: block;
       }
     </style>
-    <ttadmin-layout-edit>
 
+    <ttadmin-layout-edit  status="{{saveStatus}}" on-tap-save="{{}}" on-tap-back="{{onBack}}">
       <!--  -->
       <div title>{{ data._source.firstname}} {{ data._source.lastname}}</div>
 
-      <tt-crud data="{{data}}" entityid="{{entityid}}" endpoint="/s/users" autosave main>
+      <tt-crud data="{{data}}" entityid="{{entityid}}" status="{{saveStatus}}" endpoint="/s/users" autosave main>
         <section id="formContainer">
           <paper-input-decorator floatingLabel label="First name" autoValidate>
             <input is="core-input" value="{{ data._source.firstname}}" required>
@@ -44,9 +44,12 @@
     'use strict';
     Polymer('admin-user-edit', {  // jshint ignore:line
       doDisplay: false,
-
+      saveStatus: null,
       displayPhone: function () {
         this.doDisplay = !this.doDisplay;
+      },
+      onBack: function () {
+        MoreRouting.navigateTo('user' );
       }
 
     });

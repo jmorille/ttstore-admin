@@ -13,15 +13,13 @@
     "google-signin": "~0.2.1",
     "elastic.js": "~1.2.0",
     "lodash": "~3.3.1",
-    "app-router": "~2.6.0",
-    "pushstate-anchor": "~0.3.0",
     "more-routing": "Polymore/more-routing#~0.5.0"
   },
   "devDependencies": {
-    "web-component-tester": "Polymer/web-component-tester#^2.0.0"
+    "web-component-tester": "Polymer/web-component-tester#^2.2.6"
   },
   "resolutions": {
     "polymer": "^0.5.5",
-    "core-component-page": "^0.5"
+    "core-component-page": "^0.5.5"
   }
 }
