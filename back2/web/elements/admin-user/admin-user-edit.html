@@ -11,7 +11,7 @@
 
     <ttadmin-layout-edit  status="{{saveStatus}}" on-tap-save="{{}}" on-tap-back="{{onBack}}">
       <!--  -->
-      <div title>{{ data._source.firstname}} {{ data._source.lastname}}</div>
+      <div title>{{ data._source.firstname}} {{ data._source.lastname}} - {{entityid}}</div>
 
       <tt-crud data="{{data}}" entityid="{{entityid}}" status="{{saveStatus}}" endpoint="/s/users" autosave main>
         <section id="formContainer">
