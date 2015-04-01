@@ -13,7 +13,9 @@
       <!--  -->
       <div title>{{ data._source.firstname}} {{ data._source.lastname}} - {{entityid}}</div>
 
-      <tt-crud data="{{data}}" entityid="{{entityid}}" status="{{saveStatus}}" endpoint="/s/users" autosave main>
+      <tt-crud data="{{data}}" entityid="{{entityid}}" status="{{saveStatus}}"
+               on-save-response="{{}}" on-delete-response="{{}}"
+               endpoint="/s/users" autosave main>
         <section id="formContainer">
           <paper-input-decorator floatingLabel label="First name" autoValidate>
             <input is="core-input" value="{{ data._source.firstname}}" required>

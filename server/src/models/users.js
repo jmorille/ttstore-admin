@@ -35,6 +35,7 @@ function users(app, client) {
   app.post('/s/' + index + '/_search', crudapi.search);
   app.get('/s/' + index + '/:id', crudapi.findById);
   app.post('/s/' + index + '/', crudapi.create);
+  app.post('/s/' + index + '/new', crudapi.create);
   app.put('/s/' + index + '/:id', crudapi.update);
   app.delete('/s/' + index + '/:id', crudapi.delete);
 
