@@ -95,7 +95,7 @@ var AUTOPREFIXER_BROWSERS = [
 
 // Config
 var path = {
-  app: 'app',
+  app: 'web',
   sass: 'sass',
   build: 'build',
   buildMap: 'build/maps',
@@ -108,7 +108,7 @@ var path = {
   distCcaAndroid: 'dist/cca_android',
   distCordovaAndroid: 'dist/cordova_android',
   distCcaIOS: 'dist/cca_ios',
-  sources: ['app/elements/**/*.html', 'app/scripts/{,*/}*.js']
+  sources: ['elements/**/*.html', 'scripts/{,*/}*.js']
 };
 
 //bower_components: ['bower_components{,/**/*}', '!bower_components{,/**/package.json,/**/bower.json,/**/index.html,/**/metadata.html,/**/*.md,/**/demo*,/**/demo**/**,/**/test,/**/test/**}'],
@@ -170,7 +170,7 @@ gulp.task('watch', ['watch:sass', 'cp:watch', 'watch:images', 'watch:vulcanize']
 
 // Lint - the sources App
 gulp.task('lint', function () {
-  return gulp.src(path.sources)
+  return gulp.src(path.sources, {cwd: path.app})
     .pipe(cache('appSrc'))
     .pipe($.jshint.extract('auto'))
     .pipe($.jshint())
@@ -178,7 +178,7 @@ gulp.task('lint', function () {
 });
 
 gulp.task('watch:lint', ['lint'], function (cb) {
-  gulp.watch(path.sources, ['lint']);
+  gulp.watch(path.sources, {cwd: path.app}, ['lint']);
   cb();
 });
 
