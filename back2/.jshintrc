@@ -21,6 +21,7 @@
     "ejs": true,
     "chrome": true,
     "_": true,
+    "MoreRouting": true,
     "Platform": true
   }
 }

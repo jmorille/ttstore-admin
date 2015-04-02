@@ -47,7 +47,7 @@
       <core-toolbar class="site-banner">
         <paper-icon-button icon="arrow-back"  on-tap="{{onBack}}"></paper-icon-button>
         <div class="bottom indent">
-          <content select="[title]"></content>
+          <content id="contentTitle" select="[title]"></content>
         </div>
         <span flex></span>
 
@@ -69,7 +69,7 @@
       </core-toolbar>
       <!-- Content -->
       <div class="content">
-        <content select="[main]"></content>
+        <content id="contentMain" select="[main]"></content>
       </div>
     </core-header-panel>
 
@@ -79,14 +79,80 @@
     'use strict';
     Polymer('ttadmin-layout-edit', {  // jshint ignore:line
       save: true,
+      // --- Life Cycle
+      // --- ---------------
+      created: function () {
+
+      },
+      ready: function () {
+        // Search Response Status
+
+        // TODO element.removeEventListener
+        // Find Status
+        var crudStatus = this.crudLocatorCallFunction('getCrudStatus');
+        if (crudStatus && crudStatus.length>0) {
+          this.status = crudStatus[0];
+        }
+      },
+      attached: function () {
+        this.$.contentMain.addEventListener('cancel', this.onCrudBack.bind(this));
+        this.$.contentMain.addEventListener('delete', this.onCrudDelete.bind(this));
+
+      //  this.$.contentMain.removeEventListener('cancel'); // , this.onCrudBack.bind(this)
+      },
+      detached: function () {
+        this.$.contentMain.removeEventListener('cancel'); // , this.onCrudBack.bind(this)
+        this.$.contentMain.removeEventListener('delete');
+      },
+      // --- Service Locator
+      // --- ---------------
+      crudLocator: function (funcName) {
+        var childNodes = this.$.contentMain ? this.$.contentMain.getDistributedNodes() : undefined;
+        console.log('search crudLocator', childNodes);
+        var crudServices = Array.prototype.reduce.call(childNodes, function (acc, childNode) {
+            if (typeof childNode[funcName] === 'function') {
+              acc.push(childNode);
+            }
+          return acc;
+        }, []);
+        return crudServices;
+      },
+      crudLocatorCallFunction: function (funcName) {
+        var closeServices = this.crudLocator(funcName);
+        return Array.prototype.reduce.call(closeServices, function (acc,childNode) {
+          var callResult = childNode[funcName]();
+          console.log('Call Function '+ funcName + ' on  crudLocator', childNode);
+          if (callResult) {
+            acc.push(callResult);
+          }
+          return acc;
+        }, []);
+      },
+
+
+      // --- Header Button
+      // --- ---------------
       onSave: function () {
+        this.crudLocatorCallFunction('onDeleteButton');
         this.fire('tap-save');
       },
       onDelete: function () {
+        this.crudLocatorCallFunction('onDeleteButton');
         this.fire('tap-delete');
       },
       onBack: function () {
-        this.fire('tap-back');
+       this.crudLocatorCallFunction('onClose');
+       this.fire('tap-back');
+      },
+      // --- Crud Event
+      // --- ---------------
+      onCrudBack: function () {
+        console.log('onBack call onCLose on ', 'tap fire');
+        this.fire('crud-close');
+      },
+      onCrudDelete: function () {
+        console.log('onCrudDelete call onCLose on ', 'tap fire');
+        this.fire('crud-delete');
       }
     });
 
