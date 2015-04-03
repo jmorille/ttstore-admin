@@ -9,9 +9,9 @@
       }
     </style>
 
-    <ttadmin-layout-edit>
+    <ttadmin-layout-edit routeback="user">
       <!--  -->
-      <div title>{{ data._source.firstname}} {{ data._source.lastname}}</div>
+      <div title>{{data._source.firstname}} {{data._source.lastname}}</div>
 
       <tt-crud data="{{data}}" entityid="{{entityid}}"  endpoint="/s/users" autosave main>
         <section id="formContainer">
@@ -24,7 +24,7 @@
           </paper-input-decorator>
 
           <paper-input-decorator floatingLabel label="Email" autoValidate>
-            <input is="core-input" id="input2" value="{{ data._source.email}}" type="email">
+            <input is="core-input" id="input2" value="{{data._source.email}}" type="email">
           </paper-input-decorator>
 
           <div on-tap="{{displayPhone}}">---- Phones ---</div>
@@ -47,11 +47,7 @@
       saveStatus: null,
       displayPhone: function () {
         this.doDisplay = !this.doDisplay;
-      },
-      onBack: function () {
-        console.log('MoreRouting.navigateTo user');
-        MoreRouting.navigateTo('user' );
-      }
+      } 
 
     });
 

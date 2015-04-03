@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-<polymer-element name="ttadmin-layout-edit" attributes="save status">
+<polymer-element name="ttadmin-layout-edit" attributes="save status routeback">
 
   <template>
     <style>
@@ -144,11 +144,15 @@
       // --- Crud Event
       // --- ---------------
       onCrudBack: function () {
-        console.log('onBack call onCLose on ', 'tap fire');
+        if (this.routeback) {
+          MoreRouting.navigateTo(this.routeback);
+        }
         this.fire('crud-close');
       },
       onCrudDelete: function () {
-        console.log('onCrudDelete call onCLose on ', 'tap fire');
+        if (this.routeback) {
+          MoreRouting.navigateTo(this.routeback);
+        }
         this.fire('crud-delete');
       }
     });
