@@ -9,7 +9,7 @@
       }
     </style>
 
-    <ttadmin-layout-edit on-crud-close="{{onBack}}">
+    <ttadmin-layout-edit routeback="user">
       <!--  -->
       <div title>{{data._source.firstname}} {{data._source.lastname}}</div>
 
@@ -47,11 +47,7 @@
       saveStatus: null,
       displayPhone: function () {
         this.doDisplay = !this.doDisplay;
-      },
-      onBack: function () {
-        console.log('----------- MoreRouting.navigateTo user');
-        MoreRouting.navigateTo('user' );
-      }
+      } 
 
     });
 
