@@ -47,12 +47,12 @@
     </style>
 
 
-    <core-drawer-panel id="menuBody" rightDrawer>
+    <core-drawer-panel id="menuBody" drawerWidth="306px" toggleAttribute="core-drawer-toggle-filter" rightDrawer>
       <core-header-panel class="site-menu" drawer mode="waterfall-tall" tallclass="medium-tall">
         <!-- Side Menu Header -->
         <core-toolbar class="site-banner">
           <div id="siteMenuHeaderContent" on-tap="{{siteMenuHeaderTapHandler}}" layout horizontal center>
-            <core-icon icon="home" class="menu-icon"></core-icon>
+            <core-icon icon="filter-list" class="menu-icon"></core-icon>
             <span>Filter</span>
           </div>
         </core-toolbar>
@@ -65,7 +65,8 @@
       <ttadmin-layout responsiveWidth="{{responsiveWidth}}" title="{{title}}" main>
 
         <div banner-menu>
-          <content id="contentBannrMenu"  class="bannerMenuInput" select="[banner-menu]"></content>
+          <content id="contentBannerMenu"  class="bannerMenuInput" select="[banner-menu]"></content>
+          <paper-icon-button icon="filter-list" core-drawer-toggle-filter></paper-icon-button>
         </div>
         <!-- Content -->
         <div class="content">
@@ -83,6 +84,11 @@
 
 
       responsiveWidth: '2048px',
+
+      ready: function () {
+        this.$.menuBody.toggleAttribute = 'core-drawer-toggle-filter';
+      },
+
       menuSelectHandler: function (event, detail) {
         if (event) { // comes first
           event.stopPropagation();
