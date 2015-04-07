@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-<polymer-element name="admin-search" selected="user" attributes="selected searchText">
+<polymer-element name="admin-user-search" selected="user" attributes="selected searchtext">
   <template>
 
     <style>
@@ -36,13 +36,13 @@
 
 
     <tt-lodash></tt-lodash>
-    <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}"></tt-es-search>
+    <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}" ></tt-es-search>
 
 
     <ttadmin-layout-search title="Utilisateur">
 
       <div banner-menu>
-        <tt-input-search class="searchBox" value="{{searchText}}" on-search-input={{searchReset}}"></tt-input-search>
+        <tt-input-search class="searchBox" value="{{searchtext}}" on-search-input={{searchReset}}"></tt-input-search>
       </div>
       <div facet>
         <section vertical layout>
@@ -57,8 +57,6 @@
       <div main flex>
         <!-- Request Form -->
         <section horizontal layout>
-
-
           <paper-fab icon="add" title="Add" on-tap="{{entityAddHandler}}"></paper-fab>
         </section>
         <template if="{{data.hits.total}}">
@@ -108,14 +106,14 @@
 
   <script>
     'use strict';
-    Polymer({  // jshint ignore:line
+    Polymer('admin-user-search', {  // jshint ignore:line
       // Search Datas
       data: undefined,
       searchOptDefault: undefined,
 
       // Search Option
       searchOpt: undefined,
-      searchText: undefined,
+      searchtext: undefined,
       searchOptAggs: undefined,
       searchOptAggLabels: undefined,
       rangeSize: 10,
@@ -150,6 +148,7 @@
       pageSelected: function () {
         console.log('Life Cycle : pageSelected');
         this.search();
+
       },
       pageUnselected: function () {
         console.log('Life Cycle : pageUnselected');
@@ -215,8 +214,8 @@
         var query = undefined;
         var body = undefined;
         // Query : http://docs.fullscale.co/elasticjs/
-        if (this.searchText) {
-          query = ejs.QueryStringQuery(this.searchText).defaultOperator('and');
+        if (this.searchtext) {
+          query = ejs.QueryStringQuery(this.searchtext).defaultOperator('and');
         } else {
           query = ejs.MatchAllQuery();
         }

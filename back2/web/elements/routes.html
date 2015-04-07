@@ -4,7 +4,9 @@
 
 <more-route name="home" path="/"></more-route>
 
-<more-route name="user" path="/users"></more-route>
+<more-route name="user" path="/users">
+  <more-route   path="/:searchtext"></more-route>
+</more-route>
 <more-route name="user-edit" path="/user/:entityid"></more-route>
 
 <more-route name="portfolio" path="/portfolio"></more-route>
