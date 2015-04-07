@@ -1,12 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-
 <polymer-element name="ttadmin-layout-search" attributes="selected title">
 
   <template>
     <style>
-      :host{
+      :host {
         display: block;
       }
 
@@ -43,20 +42,16 @@
         padding: 0px;
       }
 
-      .site-menu-tb {
 
-      }
 
     </style>
-
-
 
 
     <core-drawer-panel id="menuBody" rightDrawer>
       <core-header-panel class="site-menu" drawer mode="waterfall-tall" tallclass="medium-tall">
         <!-- Side Menu Header -->
         <core-toolbar class="site-banner">
-          <div id="siteMenuHeaderContent" on-tap="{{siteMenuHeaderTapHandler}}"  layout horizontal center>
+          <div id="siteMenuHeaderContent" on-tap="{{siteMenuHeaderTapHandler}}" layout horizontal center>
             <core-icon icon="home" class="menu-icon"></core-icon>
             <span>Filter</span>
           </div>
@@ -68,6 +63,10 @@
       </core-header-panel>
 
       <ttadmin-layout responsiveWidth="{{responsiveWidth}}" title="{{title}}" main>
+
+        <div banner-menu>
+          <content id="contentBannrMenu"  class="bannerMenuInput" select="[banner-menu]"></content>
+        </div>
         <!-- Content -->
         <div class="content">
           <content id="contentMain" select="[main]"></content>

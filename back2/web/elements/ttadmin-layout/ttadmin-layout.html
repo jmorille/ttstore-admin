@@ -84,17 +84,8 @@
           <div class="bottom indent">{{title}}</div>
           <tt-chrome-detector></tt-chrome-detector>
           <span flex></span>
-          <paper-icon-button icon="info-outline" on-tap="{{openSearchBox}}"></paper-icon-button>
-          <paper-menu-button>
-            <paper-icon-button icon="more-vert"></paper-icon-button>
-            <paper-dropdown class="dropdown" halign="right">
-                <core-menu clas="menu">
-                  <paper-item>Setting</paper-item>
-                  <paper-item>Help</paper-item>
-                  <paper-item>Feedback</paper-item>
-                </core-menu>
-            </paper-dropdown>
-          </paper-menu-button>
+          <template bind ref="siteBannerMenu" if="{{!isContentSiteBannerMenu}}"></template>
+          <content id="contentSiteBannerMenu" select="[banner-menu]"></content>
           <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
         </core-toolbar>
         <!-- Content -->
@@ -105,6 +96,19 @@
     </core-drawer-panel>
 
 
+    <template id="siteBannerMenu">
+      <paper-icon-button icon="info-outline" on-tap="{{openSearchBox}}"></paper-icon-button>
+      <paper-menu-button>
+        <paper-icon-button icon="more-vert"></paper-icon-button>
+        <paper-dropdown class="dropdown" halign="right">
+          <core-menu clas="menu">
+            <paper-item>Setting</paper-item>
+            <paper-item>Help</paper-item>
+            <paper-item>Feedback</paper-item>
+          </core-menu>
+        </paper-dropdown>
+      </paper-menu-button>
+    </template>
 
     <paper-action-dialog id="searchDialog" heading="Dialog Title"
                          class="scrolling"
@@ -180,9 +184,21 @@
     Polymer('ttadmin-layout', {  // jshint ignore:line
 
       progress: undefined,
+      isContentSiteBannerMenu: false,
       created: function () {
         this.title = this.title || 'Cordova App Killer';
         this.responsiveWidth = this.responsiveWidth ||  '640px';
+      },
+      ready: function () {
+        this.computeIsContentSiteBannerMenu();
+      },
+
+      computeIsContentSiteBannerMenu: function () {
+        var bannerNodes = this.$.contentSiteBannerMenu.getDistributedNodes();
+      //  console.log('--------------------- contentSiteBannerMenu',bannerNodes, '--> ', bannerNodes.length);
+        if (bannerNodes && bannerNodes.length >0) {
+          this.isContentSiteBannerMenu= true;
+        }
       },
 
       menuSelectHandler: function (event, detail) {

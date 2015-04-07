@@ -41,8 +41,8 @@
 
     <ttadmin-layout-search title="Utilisateur">
 
-      <div menu>
-        Recherche
+      <div banner-menu>
+        <tt-input-search class="searchBox" value="{{searchText}}" on-search-input={{searchReset}}"></tt-input-search>
       </div>
       <div facet>
         <section vertical layout>
@@ -57,7 +57,7 @@
       <div main flex>
         <!-- Request Form -->
         <section horizontal layout>
-          <tt-input-search class="searchBox" value="{{searchText}}" on-search-input={{searchReset}}"></tt-input-search>
+
 
           <paper-fab icon="add" title="Add" on-tap="{{entityAddHandler}}"></paper-fab>
         </section>

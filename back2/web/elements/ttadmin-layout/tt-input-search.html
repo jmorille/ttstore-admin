@@ -1,0 +1,94 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+<polymer-element name="tt-input-search" attributes="value">
+  <template>
+    <style>
+      :host{
+        display: block;
+      }
+
+      .bannerMenuInput /deep/ ::-webkit-input-placeholder {
+        color: white;
+      }
+
+      .bannerMenuInput /deep/ ::-moz-placeholder {
+        color: white;
+      }
+
+      .bannerMenuInput /deep/ :-ms-input-placeholder {
+        color: white;
+      }
+
+      .bannerMenuInput /deep/ .label-text,
+      .bannerMenuInput /deep/ .error {
+        color: white;
+      }
+
+      .bannerMenuInput /deep/ .unfocused-underline {
+        background-color: white;
+      }
+
+      .bannerMenuInput[focused] /deep/ .floated-label .label-text {
+        color: white;
+      }
+
+      .bannerMenuInput /deep/ .focused-underline {
+        background-color: white;
+      }
+
+      .bannerMenuInput.invalid /deep/ .floated-label .label-text,
+      .bannerMenuInput /deep/ .error {
+        color: #f06292;
+      }
+
+      .bannerMenuInput.invalid /deep/ .focused-underline {
+        background-color: #f06292;
+      }
+
+      .bannerMenuInput {
+        color: #1a237e;
+      }
+
+    </style>
+
+    <core-field class="searchBox">
+      <paper-input-decorator floatingLabel label="Zone de Recherche"  class="bannerMenuInput" flex>
+        <input id="search" is="core-input" type="search" value="{{value}}"
+               on-keypress="{{searchKeypressHandler}}" class="searchBox"/>
+      </paper-input-decorator>
+      <paper-icon-button icon="search" class="bannerMenuInput" on-tap="{{fireInputSearch}}"></paper-icon-button>
+    </core-field>
+
+  </template>
+
+  <script>
+
+    'use strict';
+    Polymer('tt-input-search', {  // jshint ignore:line
+
+      searchKeypressHandler: function (event, data, sender) {
+        var key = event.keyCode;
+        if (key === 13) {
+          this.fireInputSearch();
+        }
+      },
+      fireInputSearch: function () {
+        this.fire('search-input', {
+          value: this.value
+        });
+      }
+
+
+//      handleVoiceRecognition: function (event, data) {
+//        this.searchText = data.result;
+//        _id.log('voice-recognition', data.result);
+//      },
+//      startVoiceRecognition: function () {
+//        this.$.voiceRecognition.start();
+//      }
+
+    });
+
+  </script>
+</polymer-element>
