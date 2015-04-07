@@ -2,7 +2,7 @@
 
 
 
-<polymer-element name="ttadmin-layout" attributes="selected progress">
+<polymer-element name="ttadmin-layout" attributes="selected progress responsiveWidth">
 
   <template>
     <style>
@@ -64,7 +64,7 @@
     </core-animation-group>
 
 
-    <core-drawer-panel id="menuBody">
+    <core-drawer-panel responsiveWidth="{{responsiveWidth}}" id="menuBody">
       <core-header-panel class="site-menu" drawer  mode="waterfall">
         <!-- Side Menu Header -->
         <core-toolbar class="site-menu-tb">
@@ -103,6 +103,8 @@
         </div>
       </core-header-panel>
     </core-drawer-panel>
+
+
 
     <paper-action-dialog id="searchDialog" heading="Dialog Title"
                          class="scrolling"
@@ -178,6 +180,7 @@
     Polymer('ttadmin-layout', {  // jshint ignore:line
 
       progress: undefined,
+
       menuSelectHandler: function (event, detail) {
 
         if (event) { // comes first

@@ -51,25 +51,26 @@
 
 
 
+
     <core-drawer-panel id="menuBody" rightDrawer>
-      <core-header-panel class="site-menu" drawer  mode="waterfall">
+      <core-header-panel class="site-menu" drawer mode="waterfall-tall" tallclass="medium-tall">
         <!-- Side Menu Header -->
-        <core-toolbar class="site-menu-tb">
+        <core-toolbar class="site-banner">
           <div id="siteMenuHeaderContent" on-tap="{{siteMenuHeaderTapHandler}}"  layout horizontal center>
-            <core-icon src="/images/polymer-logo.svg" class="menu-icon"></core-icon>
-            <span>Menu</span>
+            <core-icon icon="home" class="menu-icon"></core-icon>
+            <span>Filter</span>
           </div>
         </core-toolbar>
         <!-- Side Menu -->
         <div>
-          Les facettes
+          <content id="contentFacet" select="[facet]"></content>
         </div>
       </core-header-panel>
 
-      <ttadmin-layout main>
+      <ttadmin-layout responsiveWidth="{{responsiveWidth}}" main>
         <!-- Content -->
         <div class="content">
-          <content></content>
+          <content id="contentMain" select="[main]"></content>
         </div>
       </ttadmin-layout>
 
@@ -82,6 +83,7 @@
     Polymer('ttadmin-layout-search', {  // jshint ignore:line
 
 
+      responsiveWidth: '2048px',
       menuSelectHandler: function (event, detail) {
         if (event) { // comes first
           event.stopPropagation();
