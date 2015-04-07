@@ -2,7 +2,7 @@
 
 
 
-<polymer-element name="ttadmin-layout" attributes="selected progress responsiveWidth">
+<polymer-element name="ttadmin-layout" attributes="title selected progress responsiveWidth">
 
   <template>
     <style>
@@ -81,7 +81,7 @@
         <!-- Site Banner -->
         <core-toolbar class="site-banner">
           <paper-icon-button icon="menu" core-drawer-toggle></paper-icon-button>
-          <div class="bottom indent">Cordova App Killer</div>
+          <div class="bottom indent">{{title}}</div>
           <tt-chrome-detector></tt-chrome-detector>
           <span flex></span>
           <paper-icon-button icon="info-outline" on-tap="{{openSearchBox}}"></paper-icon-button>
@@ -180,6 +180,10 @@
     Polymer('ttadmin-layout', {  // jshint ignore:line
 
       progress: undefined,
+      created: function () {
+        this.title = this.title || 'Cordova App Killer';
+        this.responsiveWidth = this.responsiveWidth ||  '640px';
+      },
 
       menuSelectHandler: function (event, detail) {
 

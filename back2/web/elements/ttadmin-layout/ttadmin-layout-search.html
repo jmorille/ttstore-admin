@@ -2,7 +2,7 @@
 
 
 
-<polymer-element name="ttadmin-layout-search" attributes="selected progress">
+<polymer-element name="ttadmin-layout-search" attributes="selected title">
 
   <template>
     <style>
@@ -67,7 +67,7 @@
         </div>
       </core-header-panel>
 
-      <ttadmin-layout responsiveWidth="{{responsiveWidth}}" main>
+      <ttadmin-layout responsiveWidth="{{responsiveWidth}}" title="{{title}}" main>
         <!-- Content -->
         <div class="content">
           <content id="contentMain" select="[main]"></content>
