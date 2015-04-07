@@ -47,37 +47,34 @@
     </style>
 
 
-    <core-drawer-panel  id="menuBody">
-      <core-header-panel class="site-menu" drawer  mode="waterfall">
+    <core-drawer-panel id="menuBody" drawerWidth="306px" toggleAttribute="core-drawer-toggle-filter" rightDrawer>
+      <core-header-panel class="site-menu" drawer mode="waterfall-tall" tallclass="medium-tall">
         <!-- Side Menu Header -->
-        <core-toolbar class="site-menu-tb">
-          <div id="siteMenuHeaderContent" on-tap="{{siteMenuHeaderTapHandler}}"  layout horizontal center>
-            <core-icon icon="home" class="menu-icon"></core-icon>
-            <span>Home</span>
+        <core-toolbar class="site-banner">
+          <div id="siteMenuHeaderContent" on-tap="{{siteMenuHeaderTapHandler}}" layout horizontal center>
+            <core-icon icon="filter-list" class="menu-icon"></core-icon>
+            <span>Filter</span>
           </div>
         </core-toolbar>
         <!-- Side Menu -->
-        <content id="contentFacet" select="[facet]"></content>
-      </core-header-panel>
-
-      <core-header-panel main mode="waterfall-tall" tallclass="medium-tall">
-        <!-- Site Banner -->
-        <core-toolbar class="site-banner">
-          <paper-icon-button icon="menu" core-drawer-toggle></paper-icon-button>
-          <div class="bottom indent">{{title}}</div>
-          <tt-chrome-detector></tt-chrome-detector>
-          <span flex></span>
-          <template bind ref="siteBannerMenu" if="{{!isContentSiteBannerMenu}}"></template>
-          <content id="contentSiteBannerMenu" select="[banner-menu]"></content>
-          <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
-        </core-toolbar>
-        <!-- Content -->
-        <div class="content">
-          <content></content>
+        <div>
+          <content id="contentFacet" select="[facet]"></content>
         </div>
       </core-header-panel>
-    </core-drawer-panel>
 
+      <ttadmin-layout responsiveWidth="{{responsiveWidth}}" title="{{title}}" main>
+
+        <div banner-menu>
+          <content id="contentBannerMenu"  class="bannerMenuInput" select="[banner-menu]"></content>
+          <paper-icon-button icon="filter-list" core-drawer-toggle-filter></paper-icon-button>
+        </div>
+        <!-- Content -->
+        <div class="content">
+          <content id="contentMain" select="[main]"></content>
+        </div>
+      </ttadmin-layout>
+
+    </core-drawer-panel>
 
 
   </template>
@@ -85,11 +82,12 @@
     'use strict';
     Polymer('ttadmin-layout-search', {  // jshint ignore:line
 
-      siteMenuHeaderTapHandler: function () {
-        MoreRouting.navigateTo('home' );
+
+      responsiveWidth: '2048px',
+
+      ready: function () {
+        this.$.menuBody.toggleAttribute = 'core-drawer-toggle-filter';
       },
-
-
 
       menuSelectHandler: function (event, detail) {
         if (event) { // comes first
