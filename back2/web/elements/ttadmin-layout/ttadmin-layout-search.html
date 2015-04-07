@@ -1,0 +1,98 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+
+<polymer-element name="ttadmin-layout-search" attributes="selected progress">
+
+  <template>
+    <style>
+      :host{
+        display: block;
+      }
+
+      [main] {
+        background-color: #F9F9F9;
+      }
+
+      [drawer] {
+        background-color: #F9F9F9;
+      }
+
+      core-toolbar [icon="more-vert"] {
+        padding-right: 0;
+      }
+
+      paper-menu-button paper-item {
+        color: #000000;
+      }
+
+      .menu-icon {
+        height: 32px;
+        width: 48px;
+        margin: 6px;
+      }
+
+      .site-banner {
+        background-color: #7986cb;
+        color: white;
+      }
+
+      .site-menu {
+        background-color: #EEEEEE;
+        margin: 0px;
+        padding: 0px;
+      }
+
+      .site-menu-tb {
+
+      }
+
+    </style>
+
+
+
+    <core-drawer-panel id="menuBody" rightDrawer>
+      <core-header-panel class="site-menu" drawer  mode="waterfall">
+        <!-- Side Menu Header -->
+        <core-toolbar class="site-menu-tb">
+          <div id="siteMenuHeaderContent" on-tap="{{siteMenuHeaderTapHandler}}"  layout horizontal center>
+            <core-icon src="/images/polymer-logo.svg" class="menu-icon"></core-icon>
+            <span>Menu</span>
+          </div>
+        </core-toolbar>
+        <!-- Side Menu -->
+        <div>
+          Les facettes
+        </div>
+      </core-header-panel>
+
+      <ttadmin-layout main>
+        <!-- Content -->
+        <div class="content">
+          <content></content>
+        </div>
+      </ttadmin-layout>
+
+    </core-drawer-panel>
+
+
+  </template>
+  <script>
+    'use strict';
+    Polymer('ttadmin-layout-search', {  // jshint ignore:line
+
+
+      menuSelectHandler: function (event, detail) {
+        if (event) { // comes first
+          event.stopPropagation();
+        }
+        if (detail.isSelected) {
+//          this.$.menuBody.togglePanel();
+          this.$.menuBody.closeDrawer();
+        }
+      }
+
+    });
+
+  </script>
+</polymer-element>

@@ -20,22 +20,7 @@
     'use strict';
     Polymer('ttadmin-app', {  // jshint ignore:line
 
-      progress: undefined,
-      menuSelectHandler: function (event, detail) {
-        if (event) { // comes first
-          event.stopPropagation();
-        }
-        if (detail.isSelected) {
-          this.$.menuBody.togglePanel();
-        }
-      },
-      siteMenuHeaderTapHandler: function () {
-        this.$.opacityAndScaleAnimation.target = this.$.siteMenuHeaderContent;
-        this.$.opacityAndScaleAnimation.play();
-      },
-      openSearchBox: function () {
-        this.$.searchDialog.toggle();
-      }
+
     });
 
   </script>
