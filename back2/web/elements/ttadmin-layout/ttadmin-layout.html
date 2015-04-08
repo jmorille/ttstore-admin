@@ -2,7 +2,7 @@
 
 
 
-<polymer-element name="ttadmin-layout" attributes="title selected progress responsiveWidth">
+<polymer-element name="ttadmin-layout" attributes="bannertitle selected progress responsiveWidth">
 
   <template>
     <style>
@@ -43,9 +43,7 @@
         padding: 0px;
       }
 
-      .site-menu-tb {
 
-      }
 
     </style>
 
@@ -67,7 +65,7 @@
     <core-drawer-panel responsiveWidth="{{responsiveWidth}}" id="menuBody">
       <core-header-panel class="site-menu" drawer  mode="waterfall">
         <!-- Side Menu Header -->
-        <core-toolbar class="site-menu-tb">
+        <core-toolbar>
           <div id="siteMenuHeaderContent" on-tap="{{siteMenuHeaderTapHandler}}"  layout horizontal center>
             <core-icon src="/images/polymer-logo.svg" class="menu-icon"></core-icon>
             <span>Menu</span>
@@ -81,7 +79,7 @@
         <!-- Site Banner -->
         <core-toolbar class="site-banner">
           <paper-icon-button icon="menu" core-drawer-toggle></paper-icon-button>
-          <div class="bottom indent">{{title}}</div>
+          <div class="bottom indent">{{bannertitle}}</div>
           <tt-chrome-detector></tt-chrome-detector>
           <span flex></span>
           <template bind ref="siteBannerMenu" if="{{!isContentSiteBannerMenu}}"></template>
@@ -186,7 +184,7 @@
       progress: undefined,
       isContentSiteBannerMenu: false,
       created: function () {
-        this.title = this.title || 'Cordova App Killer';
+        this.bannertitle = this.bannertitle || 'Cordova App Killer';
         this.responsiveWidth = this.responsiveWidth ||  '640px';
       },
       ready: function () {

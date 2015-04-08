@@ -39,7 +39,7 @@
     <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}" ></tt-es-search>
 
 
-    <ttadmin-layout-search title="Utilisateur">
+    <ttadmin-layout-search bannertitle="Utilisateur">
 
       <div banner-menu>
         <tt-input-search class="searchBox" value="{{searchtext}}" on-search-input={{searchReset}}"></tt-input-search>
@@ -56,17 +56,13 @@
       </div>
       <div main flex>
         <!-- Request Form -->
-        <section horizontal layout>
-          <paper-fab icon="add" title="Add" on-tap="{{entityAddHandler}}"></paper-fab>
-        </section>
+        <paper-fab icon="add" title="Add" on-tap="{{entityAddHandler}}"></paper-fab>
+
         <template if="{{data.hits.total}}">
           <div><em>{{data.hits.total}} records found in {{data.took}} ms</em></div>
         </template>
 
-        <section>
-
-        </section>
-        <!-- Result List-->
+         <!-- Result List-->
         <section class="list">
           <!--<div>-->
           <!--<tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{searchHandler}}"-->

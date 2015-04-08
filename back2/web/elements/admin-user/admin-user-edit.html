@@ -9,10 +9,14 @@
       }
     </style>
 
-    <ttadmin-layout-edit routeback="user">
-      <!--  -->
-      <div title>{{data._source.firstname}} {{data._source.lastname}}</div>
+    <ttadmin-layout-edit routeback="user" bannertitle="User" bannericon="supervisor-account">
+      <!-- Banner Title -->
+      <div bannertitle>
+        <core-icon icon="supervisor-account"></core-icon>
+        {{data._source.firstname}}, {{data._source.lastname}}
+      </div>
 
+      <!-- Edit From -->
       <tt-crud data="{{data}}" entityid="{{entityid}}"  endpoint="/s/users" autosave main>
         <section id="formContainer">
           <paper-input-decorator floatingLabel label="First name" autoValidate>

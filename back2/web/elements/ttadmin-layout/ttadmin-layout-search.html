@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-<polymer-element name="ttadmin-layout-search" attributes="selected title">
+<polymer-element name="ttadmin-layout-search" attributes="selected bannertitle">
 
   <template>
     <style>
@@ -17,10 +17,12 @@
         background-color: #F9F9F9;
       }
 
-      core-toolbar [icon="more-vert"] {
+      core-toolbar [icon="filter-list"] {
         padding-right: 0;
       }
-
+      core-toolbar [icon="arrow-back"] {
+        padding-left: 0;
+      }
       paper-menu-button paper-item {
         color: #000000;
       }
@@ -36,8 +38,9 @@
         color: white;
       }
 
-      .site-menu {
-        background-color: #EEEEEE;
+      .site-menu-tb {
+        background-color: #7986cb;
+        color: white;
         margin: 0px;
         padding: 0px;
       }
@@ -48,12 +51,11 @@
 
 
     <core-drawer-panel  id="menuBody">
-      <core-header-panel class="site-menu" drawer  mode="waterfall">
+      <core-header-panel class="site-menu" drawer  mode="waterfall-tall" tallclass="medium-tall">
         <!-- Side Menu Header -->
         <core-toolbar class="site-menu-tb">
           <div id="siteMenuHeaderContent" on-tap="{{siteMenuHeaderTapHandler}}"  layout horizontal center>
-            <core-icon icon="home" class="menu-icon"></core-icon>
-            <span>Home</span>
+            <core-icon icon="arrow-back" class="menu-icon"></core-icon>
           </div>
         </core-toolbar>
         <!-- Side Menu -->
@@ -63,8 +65,8 @@
       <core-header-panel main mode="waterfall-tall" tallclass="medium-tall">
         <!-- Site Banner -->
         <core-toolbar class="site-banner">
-          <paper-icon-button icon="menu" core-drawer-toggle></paper-icon-button>
-          <div class="bottom indent">{{title}}</div>
+          <paper-icon-button icon="filter-list" core-drawer-toggle></paper-icon-button>
+          <div class="bottom indent">{{bannertitle}}</div>
           <tt-chrome-detector></tt-chrome-detector>
           <span flex></span>
           <template bind ref="siteBannerMenu" if="{{!isContentSiteBannerMenu}}"></template>
