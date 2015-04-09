@@ -28,7 +28,7 @@
     <more-route-selector selectedParams="{{params}}">
       <core-animated-pages id="pages"
         on-core-animated-pages-transition-prepare="{{onWillPrepare}}"
-        on-core-select="{{selectContentHandler}}"  transitions="cross-fade"  flex> <!-- transitions="cross-fade"  -->
+        on-core-select="{{selectContentHandler}}"     flex> <!-- transitions="cross-fade"  -->
         <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
         <section route="home">
           <ttadmin-layout cross-fade?="{{!largeScreen}}">

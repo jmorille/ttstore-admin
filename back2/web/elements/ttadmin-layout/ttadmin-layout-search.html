@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-<polymer-element name="ttadmin-layout-search" attributes="selected bannertitle">
+<polymer-element name="ttadmin-layout-search" attributes="routeback bannertitle">
 
   <template>
     <style>
@@ -87,8 +87,12 @@
     'use strict';
     Polymer('ttadmin-layout-search', {  // jshint ignore:line
 
+      created: function() {
+        this.routeback = this.routeback || 'home';
+      },
+
       siteMenuHeaderTapHandler: function () {
-        MoreRouting.navigateTo('home' );
+        MoreRouting.navigateTo(this.routeback );
       },
 
 
