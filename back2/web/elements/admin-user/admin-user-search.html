@@ -10,7 +10,7 @@
       }
 
       .searchBox {
-        width: 400px;
+        width: 350px;
       }
 
       paper-fab {
@@ -36,7 +36,8 @@
 
 
     <tt-lodash></tt-lodash>
-    <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}" ></tt-es-search>
+    <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}"
+      on-response="{{handleUpdateSizeList}}"></tt-es-search> <!-- -->
 
 
     <ttadmin-layout-search bannertitle="Utilisateur">
@@ -150,8 +151,16 @@
         console.log('Life Cycle : pageUnselected');
         this.data = undefined;
       },
+//      willPrepare: function () {
+//        console.log('Life Cycle : willPrepare');
+//        this.handleUpdateSizeList();
+//      },
       handleUpdateSizeList: function () {
-        this.$.list.updateSize();
+        this.async(function () {
+          console.log('------------------- handleUpdateSizeList', this.data);
+          this.$.list.updateSize();
+        }, null,1);
+
       },
       // --- List Action
       // ------------------

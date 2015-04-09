@@ -26,7 +26,9 @@
 
 
     <more-route-selector selectedParams="{{params}}">
-      <core-animated-pages on-core-select="{{selectContentHandler}}"    flex> <!-- transitions="cross-fade"  -->
+      <core-animated-pages id="pages"
+        on-core-animated-pages-transition-prepare="{{onWillPrepare}}"
+        on-core-select="{{selectContentHandler}}"  transitions="cross-fade"  flex> <!-- transitions="cross-fade"  -->
         <!-- Doc https://erikringsmuth.github.io/app-router/#/events#polymer-event-mapping-->
         <section route="home">
           <ttadmin-layout cross-fade?="{{!largeScreen}}">
@@ -89,7 +91,12 @@
             }
           );
         }
-
+      },
+      onWillPrepare: function (event, detail) {
+        var item = this.$.pages.selectedItem;
+        if (item) {
+          this.callNodesWithFunction(item, 'willPrepare');
+        }
       },
 
       callNodesWithFunction: function (item, searchFunc) {
