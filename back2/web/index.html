@@ -26,6 +26,7 @@
 
 
   <!-- Conditionally load WC polyfills -->
+  <!-- build:js scripts/vendor/webcomponents.js -->
   <script>
     if ('registerElement' in document
       && 'createShadowRoot' in HTMLElement.prototype
@@ -33,10 +34,14 @@
       && 'content' in document.createElement('template')) {
       // We're using a browser with native WC support!
     } else {
-      document.write('<script src="/bower_components/webcomponentsjs/webcomponents.js"><\/script>');
+      document.write('<script src="bower_components/webcomponentsjs/webcomponents.js"><\/script>');
     }
   </script>
+  <!-- endbuild -->
 
+  <!-- build:js scripts/vendor/webcomponents.js -->
+  <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+  <!-- endbuild -->
 
   <link rel="import" href="elements/elements.html">
 

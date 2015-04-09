@@ -1,45 +1,8 @@
-<!--
-`tt-table-flexbox` provides table emulation with ccs flexbox
-
- Example:
-
-  <tt-table-flexbox data="{{data}}" columns="{{columns}}" sort="{{sort}}"></tt-table-flexbox>
-  <script>
-      created: function () {
-        this.columns = [
-          {column:"firstname", title:"Nom", sortable:'firstname.raw', classNames:"u-Flex-grow2"},
-          {column:"lastname", title: "Prénom", classNames:"u-Flex-grow2"},
-          {column:"email", title:"Email"}
-        ];
-        this.data = {
-          hits: {
-            total: 120,
-            hits: []
-          }
-        };
-        for (n=1; n<=20; n++) {
-          var line =  {_id: ''+n, _source: {firstname: 'Nom '+n, lastname: 'Prénom '+n, email: 'Email-' +n + '@gmail.com'}};
-          this.data.hits.hits.push(line);
-        }
-        this.sort = ['firstname.raw'];
-        this.sort = ['firstname.raw'];
-      }
-  </script>
-
- Example:
-
-  <tt-table-flexbox data="{{data}}" sort="{{sort}}" on-sort="{{sortHandler}}">
-    <tt-column column="firstname" sortable="$.raw">Prénom</tt-column>
-    <tt-column column="lastname" sortable="$.raw">Nom</tt-column>
-    <tt-column column="email" optional sortable>Email</tt-column>
-  </tt-table-flexbox>
-
--->
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 
 <link rel="import" href="tt-column-utils.html">
 
-<polymer-element name="tt-table-flexbox" attributes="data columns sort ">
+<polymer-element name="tt-table-corelist" attributes="data columns sort scrollTarget">
   <template>
     <style>
       :host {
@@ -47,78 +10,29 @@
       }
 
     </style>
-    <link rel="stylesheet" href="tt-table-flexbox.css">
 
-    <!--<template if="{{data}}">-->
-
-    <div class="Table">
-      <!-- Header -->
-      <template bind ref="theader"></template>
-      <!-- Body -->
-
-        <!--<div on-tap="{{handleUpdateSizeList}}">--- Update Size ---</div>-->
-        <!--<core-list id="list" data="{{data}}" scrollTarget="{{scrollTarget}}">-->
-          <template repeat="{{model in data}}">
-            <div class="Table-row" on-tap="{{tapLineHandler}}" entity-id="{{model._id}}">
-              <template repeat="{{col in columns}}" class="{{col.classNames}}">
-                <div class="Table-row-item {{col.classNames}}" data-header="{{col.title}}"
-                     on-tap="{{tapColumnHandler}}"
-                     entity-id="{{model._id}}" entity-column="{{col.column}}">{{model._source[col.column]}}
-                </div>
-              </template>
-              <!-- Line Action -->
-              <template bind ref="taction" if="{{isAction}}"></template>
+    <div on-tap="{{handleUpdateSizeList}}">--- Update Size ---</div>
+    <core-list id="list" data="{{data}}" scrollTarget="{{scrollTarget}}">
+      <template>
+        <div class="Table-row" on-tap="{{tapLineHandler}}" entity-id="{{model._id}}">
+          <template repeat="{{col in columns}}" class="{{col.classNames}}">
+            <div class="Table-row-item {{col.classNames}}" data-header="{{col.title}}"
+                 on-tap="{{tapColumnHandler}}"
+                 entity-id="{{model._id}}" entity-column="{{col.column}}">{{model._source[col.column]}}
             </div>
           </template>
-        <!--</core-list>-->
-
-      <!-- Footer -->
-      <!--<template bind ref="tfooter"  if="{{isFooter}}"></template>-->
-
-    </div>
-    <!--</template>-->
+          <!-- Line Action -->
+          <!--<template bind ref="taction" if="{{isAction}}"></template>-->
+        </div>
+      </template>
+    </core-list>
 
 
-    <template id="theader">
-      <div class="Table-row Table-header">
-        <template repeat="{{col in columns}}" class="{{ col.classNames }}">
-          <div class="Table-row-item {{col.classNames}}">
-            <tt-column column="{{col.column}}" sortable="{{col.sortable}}"
-                       sort="{{sort}}" on-sort="{{sortHandler}}">
-              {{col.title}}
-            </tt-column>
-          </div>
-        </template>
-        <template bind ref="thaction" if="{{isAction}}"></template>
-      </div>
-    </template>
-
-    <template id="thaction">
-      <div class="Table-row-item">
-        <content id="action" select="[action]"></content>
-      </div>
-    </template>
-
-    <template id="taction">
-      <div class="Table-row-item">
-        <paper-icon-button icon="editor:mode-edit" entity-id="{{item._id}}"
-                           on-tap="{{editHandler}}"></paper-icon-button>
-        <paper-icon-button icon="delete" entity-id="{{item._id}}" on-tap="{{deleteHandler}}"></paper-icon-button>
-
-      </div>
-    </template>
-
-
-    <template id="tfooter">
-      <div class="Table-row footer">
-        <content id="footer" select="[footer]"></content>
-      </div>
-    </template>
 
   </template>
   <script>
     'use strict';
-    Polymer('tt-table-flexbox', Polymer.mixin({  // jshint ignore:line
+    Polymer('tt-table-corelist', Polymer.mixin({  // jshint ignore:line
       isAction: false,
       ready: function () {
         this.columns = this.rebuildColumns(this) || this.columns;
