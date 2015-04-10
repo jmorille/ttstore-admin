@@ -7,6 +7,21 @@
         }
     },
     "mappings": {
+      "holding": {
+        "_timestamp": {
+          "enabled": true,
+          "store": true
+        },
+        "_source": {
+          "enabled": true
+        },
+        "properties": {
+          "name" : {
+            "type": "string",
+            "index": "analyzed"
+          }
+        }
+      },
         "user": {
             "_timestamp": {
                 "enabled": true,

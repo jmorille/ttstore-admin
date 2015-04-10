@@ -70,6 +70,16 @@ gulp.task('cp:package', function () {
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Build
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gulp.task('build', ['cp:package', 'cp:src']);
+
+gulp.task('dist', ['clean'], function (cb) {
+  gulp.run('build');
+  cb();
+});
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Docker TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var dockerOpt = {
@@ -79,7 +89,7 @@ var dockerOpt = {
 };
 
 
-gulp.task('build:docker', ['cp:package', 'cp:src'], function () {
+gulp.task('build:docker', ['build'], function () {
   var DEST_DIR = path.dist;
   return gulp.src('docker/Dockerfile')
     .pipe(cache('Dockerfile'))

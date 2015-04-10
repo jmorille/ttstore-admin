@@ -35,14 +35,19 @@
             <ttadmin-home></ttadmin-home>
           </ttadmin-layout>
         </section>
+        <section route="holding">
+          <div cross-fade?="{{!largeScreen}}">
+            <ttadm-holding searchtext="{{params.searchtext}}"></ttadm-holding>
+          </div>
+        </section>
         <section route="user">
           <div cross-fade?="{{!largeScreen}}">
-            <admin-user-search searchtext="{{params.searchtext}}"></admin-user-search>
+            <ttadm-user searchtext="{{params.searchtext}}"></ttadm-user>
           </div>
         </section>
         <section route="user-edit">
           <div cross-fade?="{{!largeScreen}}">
-            <admin-user-edit entityid="{{params.entityid}}"></admin-user-edit>
+            <ttadm-user-edit entityid="{{params.entityid}}"></ttadm-user-edit>
           </div>
        </section>
         <section route="portfolio">

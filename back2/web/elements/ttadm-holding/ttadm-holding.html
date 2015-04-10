@@ -1,0 +1,41 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+<polymer-element name="ttadm-holding" attributes="searchtext">
+  <template>
+
+    <style>
+      :host {
+        display: block;
+      }
+
+      .searchBox {
+        width: 350px;
+      }
+
+      paper-fab {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 200;
+      }
+
+
+    </style>
+    <tt-es-search id="service" endpoint="/s/holdings/_search" options="{{searchOpt}}" response="{{data}}"
+                  on-response="{{handleUpdateSizeList}}"></tt-es-search>
+
+    <ttadmin-layout-search bannertitle="Holding">
+
+    </ttadmin-layout-search>
+
+  </template>
+  <script>
+    'use strict';
+    Polymer('ttadm-holding', {  // jshint ignore:line
+
+    });
+
+  </script>
+</polymer-element>

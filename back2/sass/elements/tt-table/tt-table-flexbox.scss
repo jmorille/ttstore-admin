@@ -51,7 +51,7 @@
       flex-grow: 1;
       flex-basis: 0;
       word-wrap: break-word;
-      padding: 0.5em;
+    //  padding: 0.5em;
       &:before {
         content: attr(data-header);
         width: 30%;
@@ -59,7 +59,7 @@
       }
       @media (min-width: $md) {
         border: 1px solid $light-color;
-        padding: 0.5em;
+       // padding: 0.5em;
         &:before {
           // Bug in IE and Firefox with
           // content: none;

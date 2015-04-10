@@ -10,9 +10,9 @@ var http = require('http');
 var esapi = require('./crud-es');
 
 function registerIndex(payload) {
-  payload.index = 'users';
+  payload.index = 'holding';
   if (!payload.type) {
-    payload.type = 'user';
+    payload.type = 'holding';
   }
   payload._sourceExclude = ['secured'];
   return payload;
@@ -20,7 +20,7 @@ function registerIndex(payload) {
 
 
 function users(app, client) {
-  console.log('Module model users ');
+  console.log('Module model Holding ');
   if (!app) {
     throw new TypeError('app required');
   }

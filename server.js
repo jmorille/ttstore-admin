@@ -46,6 +46,7 @@ var url = require('url');
 var http = require('http');
 
 var users = require('./models/users');
+var holding = require('./models/holding');
 var oauth2 = require('./models/oauth2');
 
 var oneDay = 86400000;

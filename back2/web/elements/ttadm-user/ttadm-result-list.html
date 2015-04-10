@@ -1,0 +1,58 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+<polymer-element name="ttadm-result-list" attributes="data searchOpt rangeSize">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <!-- Result List-->
+    <section class="list">
+      <!--<tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{searchHandler}}" >-->
+      <!--<tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>-->
+      <!--<tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>-->
+      <!--</tt-table-flexbox>-->
+
+      <tt-table-corelist id="list" data="{{data.hits.hits}}" sort="{{searchOpt.sort}}"  columns="{{columns}}"
+                         on-tap-line="{{onTapLine}}" on-sort="{{searchHandler}}" style="height: 100%" >
+
+      </tt-table-corelist>
+
+      <tt-paginator range="{{rangeSize}}"
+                    from="{{searchOpt.from}}" size="{{searchOpt.size}}"
+                    total="{{data.hits.total}}"
+                    on-change="{{searchHandler}}">
+      </tt-paginator>
+
+    </section>
+
+
+  </template>
+
+  <script>
+    'use strict';
+    Polymer('ttadm-result-list',Polymer.mixin({  // jshint ignore:line
+
+      ready: function () {
+        this.columns = this.rebuildColumns(this) || this.columns;
+        console.log('*//*/*//*/*/-* Table columns',  this.columns );
+      },
+
+      updateSize: function () {
+        this.$.list.updateSize();
+      },
+
+      searchHandler: function () {
+       console.log('TODO send event for reload search');
+      },
+      onTapLine: function() {
+
+      }
+
+    }, ttColumnUtilsMixin));
+
+  </script>
+</polymer-element>

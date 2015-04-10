@@ -98,6 +98,7 @@ var path = {
   app: 'web',
   sass: 'sass',
   build: 'build',
+  buildSass: 'build/sass',
   buildMap: 'build/maps',
   buildVulcanized: 'build/vulcanized',
   buildCCA: 'build/cca',
@@ -230,7 +231,7 @@ var configCp = {
 
 // Copy - Internal
 var cpFunc = function () {
-  var DEST_DIR = path.buildVulcanized;
+  var DEST_DIR = path.buildSass;
   var assets = $.useref.assets();
   return gulp.src(configCp.cpGlob, {cwd: path.app, base: path.app})
     .pipe(cache('cping', {optimizeMemory: true}))
@@ -242,6 +243,7 @@ var cpFunc = function () {
     .pipe(assets.restore())
     .pipe($.useref())
     .pipe(gulp.dest(DEST_DIR))
+    .pipe(gulp.dest(path.buildVulcanized))
     .pipe(livereload());
   // .pipe(browserSyncReload({stream: true}));
 
@@ -496,13 +498,13 @@ gulp.task('connect', function () {
 });
 
 // Start liveReload Server. Options : --build
-gulp.task('serve', ['connect', 'watch'], function () {
+gulp.task('serveLR', ['connect', 'watch'], function () {
   return require('opn')('http://' + server.httpHost + ':' + server.httpPort);
 });
 
 
 // Start CSS Injection Server. Options : --build
-gulp.task('serveBS', ['watch'], function () {
+gulp.task('serve', ['watch'], function () {
   // Proxy Server
   // -------------
   var url = require('url');

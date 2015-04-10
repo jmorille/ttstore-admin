@@ -11,7 +11,7 @@ ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 
 # Config proxy env
 # #######################
-# ENV http_proxy="http://webcache.groupe.generali.fr:3128" https_proxy="http://webcache.groupe.generali.fr:3128" no_proxy="*.groupe.generali.fr" HTTP_PROXY="http://webcache.groupe.generali.fr:3128" HTTPS_PROXY="http://webcache.groupe.generali.fr:3128" NO_PROXY="*.groupe.generali.fr"
+ENV http_proxy="http://webcache.groupe.generali.fr:3128" https_proxy="http://webcache.groupe.generali.fr:3128" no_proxy="*.groupe.generali.fr" HTTP_PROXY="http://webcache.groupe.generali.fr:3128" HTTPS_PROXY="http://webcache.groupe.generali.fr:3128" NO_PROXY="*.groupe.generali.fr"
 
 
 
@@ -37,12 +37,15 @@ CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
 # Install dependencies
 # #######################
 RUN apt-get update -qq && \
-    apt-get install -yqq \
+    apt-get install -yqq --force-yes  --fix-missing \
        build-essential \
-       libpcre3 libpcre3-dev libssl-dev libperl-dev \
-       zlib1g-dev \
        wget zip \
        openssl ca-certificates
+
+RUN apt-get update -qq && \
+    apt-get install -yqq --force-yes  --fix-missing   zlib1g-dev \
+              libpcre3 libpcre3-dev libssl-dev libperl-dev
+
 
 
 # From instructions here: https://github.com/pagespeed/ngx_pagespeed

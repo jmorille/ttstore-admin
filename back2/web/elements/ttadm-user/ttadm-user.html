@@ -1,7 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="ttadm-result-list.html">
 
-<polymer-element name="admin-user-search" selected="user" attributes="selected searchtext">
+<polymer-element name="ttadm-user"   attributes="searchtext">
   <template>
 
     <style>
@@ -51,43 +52,29 @@
         <paper-fab icon="add" title="Add" on-tap="{{entityAddHandler}}"></paper-fab>
 
         <template if="{{data.hits.total}}">
-          <div><em>{{data.hits.total}} records found in {{data.took}} ms</em></div>
+          <div><em><span>{{data.hits.total}}</span> records found in <span>{{data.took}}</span> ms</em></div>
         </template>
 
         <!-- Result List-->
         <section class="list">
-             <!--<tt-table-flexbox data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{searchHandler}}" >-->
-              <!--<tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>-->
-              <!--<tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>-->
-            <!--</tt-table-flexbox>-->
 
-          <tt-table-corelist data="{{data.hits.hits}}" sort="{{searchOpt.sort}}" on-sort="{{searchHandler}}" style="height: 100%" >
+
+          <ttadm-result-list id="list" data="{{data}}"  on-tap-line="{{entityEditHandler}}" style="height: 100%" >
+              <tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>
+              <tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>
+            </ttadm-result-list>
+
+        <!--  <tt-table-corelist id="list" data="{{data.hits.hits}}" sort="{{searchOpt.sort}}"
+                             on-tap-line="{{entityEditHandler}}" on-sort="{{searchHandler}}" style="height: 100%" >
             <tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>
             <tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>
           </tt-table-corelist>
-
-           <!--<div on-tap="{{handleUpdateSizeList}}">--- Update Size ---</div>-->
-          <!--<div id="listContainer" style="height: 100%;  ">-->
-          <!--<div>&nbsp;</div>-->
-          <!--<core-list id="list" data="{{data.hits.hits}}" on-core-activate="{{entityEditHandler}}"-->
-          <!--scrollTarget="{{$.listContainer}}" style="height: inherit">-->
-          <!--<template>-->
-          <!--<article class="row" layout horizontal center>-->
-          <!--<core-image src="{{model._source.avatar}}" data-index="{{index}}" preload sizing="cover">-->
-          <!--</core-image>-->
-          <!--<div data-index="{{index}}" flex>{{model._source.firstname}} {{model._source.lastname}}</div>-->
-          <!--</article>-->
-
-          <!--</template>-->
-          <!--</core-list>-->
-
-          <!--</div>-->
 
             <tt-paginator range="{{rangeSize}}"
                           from="{{searchOpt.from}}" size="{{searchOpt.size}}"
                           total="{{data.hits.total}}"
                           on-change="{{searchHandler}}">
-            </tt-paginator>
+            </tt-paginator>-->
 
         </section>
       </div>
@@ -97,7 +84,7 @@
 
   <script>
     'use strict';
-    Polymer('admin-user-search', {  // jshint ignore:line
+    Polymer('ttadm-user', {  // jshint ignore:line
       // Search Datas
       data: undefined,
       searchOptDefault: undefined,
@@ -150,11 +137,7 @@
 //        this.handleUpdateSizeList();
 //      },
       handleUpdateSizeList: function () {
-        this.async(function () {
-          console.log('------------------- handleUpdateSizeList', this.data);
           this.$.list.updateSize();
-        }, null, 1);
-
       },
       // --- List Action
       // ------------------
@@ -164,8 +147,8 @@
       },
 
       entityEditHandler: function (event, detail, sender) {
-        console.log('entityEditHandler', detail.data._id);
-        MoreRouting.navigateTo('user-edit', {entityid: detail.data._id});
+        console.log('entityEditHandler', detail);
+        MoreRouting.navigateTo('user-edit', {entityid: detail._id});
       },
 
       // --- Search Event
