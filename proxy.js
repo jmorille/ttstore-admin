@@ -19,9 +19,14 @@ var compression = require('compression');
 var serveStatic = require('serve-static');
 var logger  = require('morgan');
 
+
+
 // redirect
 var url = require('url');
 var http = require('http');
+
+// Security
+var securityJWT = require('./models/security-jwt');
 
 // Model
 var users = require('./server/src/models/users');
@@ -84,6 +89,8 @@ var jsonParser = bodyParser.json({ type: 'text/plain' });
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
+//Module
+securityJWT(app);
 oauth2(app, client);
 users(app, client);
 

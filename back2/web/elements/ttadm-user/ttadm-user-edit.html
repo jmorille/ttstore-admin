@@ -9,6 +9,9 @@
       }
     </style>
 
+    <!-- Service URI-->
+    <ttadm-app-globals id="globals"></ttadm-app-globals>
+
     <ttadmin-layout-edit routeback="user" bannertitle="User" bannericon="supervisor-account">
       <!-- Banner Title -->
       <div bannertitle>
@@ -17,7 +20,7 @@
       </div>
 
       <!-- Edit From -->
-      <tt-crud data="{{data}}" entityid="{{entityid}}"  endpoint="/s/users" autosave main>
+      <tt-crud data="{{data}}" entityid="{{entityid}}"  endpoint="{{$.globals.apiUrl}}/s/users" autosave main>
         <section id="formContainer">
           <paper-input-decorator floatingLabel label="First name" autoValidate>
             <input is="core-input" value="{{ data._source.firstname}}" required>

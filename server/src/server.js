@@ -50,6 +50,9 @@ var holding = require('./models/holding');
 
 var oauth2 = require('./models/oauth2');
 
+var securityJWT = require('./models/security-jwt');
+
+
 var oneDay = 86400000;
 
 // https://github.com/strongloop/express/tree/master/examples
@@ -87,6 +90,7 @@ cspViolation(app, client);
 
 
 // Business module
+securityJWT(app);
 oauth2(app, client);
 users(app, client);
 
@@ -144,6 +148,7 @@ app.route('/esx/*')
 
 // logon : https://github.com/strongloop/express/blob/master/examples/auth/app.js
 
+// Error handler - has to be last
 app.use(errorHandler({
     dumpExceptions: true,
     showStack: true
