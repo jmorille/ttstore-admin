@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-<polymer-element name="ttadmin-layout-search" attributes="routeback bannertitle">
+<polymer-element name="ttadmin-layout-search" attributes="routeback bannertitle searchtext bannerMenuTemplate">
 
   <template>
     <style>
@@ -70,7 +70,8 @@
           <tt-chrome-detector></tt-chrome-detector>
           <span flex></span>
           <template bind ref="siteBannerMenu" if="{{!isContentSiteBannerMenu}}"></template>
-          <content id="contentSiteBannerMenu" select="[banner-menu]"></content>
+          <!--<content id="contentSiteBannerMenu" select="[banner-menu]"></content>-->
+          <template ref="{{bannerMenuTemplate || 'defaultSearchBanner'}}" bind></template>
           <!--<paper-progress class="bottom fit" value="{{progress}}"></paper-progress>-->
         </core-toolbar>
         <!-- Content -->
@@ -81,6 +82,10 @@
     </core-drawer-panel>
 
 
+    <template id="defaultSearchBanner">
+      <tt-input-search class="searchBox" value="{{searchtext}}"></tt-input-search>
+    </template>
+
 
   </template>
   <script>
@@ -90,7 +95,13 @@
       created: function() {
         this.routeback = this.routeback || 'home';
       },
-
+      attached: function() {
+        this.template = this.querySelector(this.bannerMenuTemplate);
+        if (!this.template.bindingDelegate) {
+          this.template.bindingDelegate = this.element.syntax;
+        }
+        this.resizableAttachedHandler();
+      },
       siteMenuHeaderTapHandler: function () {
         MoreRouting.navigateTo(this.routeback );
       },
