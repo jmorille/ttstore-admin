@@ -16,7 +16,7 @@ function registerIndex(payload) {
   }
   payload._sourceExclude = ['secured'];
   return payload;
-}
+};
 
 
 function users(app, client) {
@@ -39,7 +39,7 @@ function users(app, client) {
   app.put('/s/' + index + '/:id', crudapi.update);
   app.delete('/s/' + index + '/:id', crudapi.delete);
 
-}
+};
 
 
 module.exports = users;

@@ -1,0 +1,20 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+<polymer-element name="ttadm-app-globals" hidden attributes="">
+
+  <script>
+    'use strict';
+    (function() {
+      // these variables are shared by all instances of app-globals
+      var apiUrl = '';
+
+      Polymer('ttadm-app-globals', {  // jshint ignore:line
+        ready: function() {
+          // copy global values into instance properties
+          this.apiUrl = apiUrl;
+        }
+      });
+    })();
+  </script>
+</polymer-element>

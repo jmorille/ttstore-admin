@@ -21,13 +21,18 @@
         z-index: 200;
       }
 
-
+      .resultList {
+        height: 100%;
+      }
 
     </style>
 
 
     <tt-lodash></tt-lodash>
-    <tt-es-search id="service" endpoint="/s/users/_search" options="{{searchOpt}}" response="{{data}}"
+
+    <!-- Service URI-->
+    <ttadm-app-globals id="globals"></ttadm-app-globals>
+    <tt-es-search id="service" endpoint="{{$.globals.apiUrl}}/s/users/_search" options="{{searchOpt}}" response="{{data}}"
                   on-response="{{handleUpdateSizeList}}"></tt-es-search>
     <!-- -->
 
@@ -56,10 +61,7 @@
         </template>
 
         <!-- Result List-->
-        <section class="list">
-
-
-          <ttadm-result-list id="list" data="{{data}}"  on-tap-line="{{entityEditHandler}}" style="height: 100%" >
+          <ttadm-result-list id="list" data="{{data}}"  on-tap-line="{{entityEditHandler}}" class="resultList" >
               <tt-column column="lastname" sortable="$.raw" rowClass="u-Flex-grow4">Nom</tt-column>
               <tt-column column="firstname" sortable="$.raw" rowClass="u-Flex-grow4">Prénom</tt-column>
             </ttadm-result-list>
@@ -76,7 +78,6 @@
                           on-change="{{searchHandler}}">
             </tt-paginator>-->
 
-        </section>
       </div>
     </ttadmin-layout-search>
 
