@@ -1,10 +1,10 @@
 var express = require("express"),
-    app = express(),
-    bodyParser = require('body-parser'),
-    errorHandler = require('errorhandler'),
-    methodOverride = require('method-override'),
-    port = parseInt(process.env.PORT, 10) || 8000;
-    portHttps = parseInt(process.env.PORT_HTTPS, 10) || 8443;
+  app = express(),
+  bodyParser = require('body-parser'),
+  errorHandler = require('errorhandler'),
+  methodOverride = require('method-override'),
+  port = parseInt(process.env.PORT, 10) || 8000;
+portHttps = parseInt(process.env.PORT_HTTPS, 10) || 8443;
 
 
 // Https
@@ -29,7 +29,6 @@ var http = require('http');
 var securityJWT = require('./server/src/models/security-jwt');
 var securityLogin = require('./server/src/models/security-login');
 
-
 // Model
 var users = require('./server/src/models/users');
 var oauth2 = require('./server/src/models/oauth2');
@@ -53,25 +52,25 @@ app.use(logger('dev'));
 
 app.use(methodOverride());
 app.use(bodyParser.json({
-    limit: '1mb'
+  limit: '1mb'
 }));
 
 
 app.use(compression({
-    threshold: 512
+  threshold: 512
 }));
 
 
 
 
 app.route('/bower_components/*')
-    .get(function (req, res, next) {
-        console.log(new Date(Date.now()).toUTCString(), "-", req.method, "-", req.url);
-        res.setHeader("Cache-Control", "public, max-age=" + oneDay); // 1 days
-        res.setHeader("Expires", new Date(Date.now() + oneDay * 1000).toUTCString());
-        res.setHeader("Pragma", "cache");
-        next();
-    });
+  .get(function (req, res, next) {
+    console.log(new Date(Date.now()).toUTCString(), "-", req.method, "-", req.url);
+    res.setHeader("Cache-Control", "public, max-age=" + oneDay); // 1 days
+    res.setHeader("Expires", new Date(Date.now() + oneDay * 1000).toUTCString());
+    res.setHeader("Pragma", "cache");
+    next();
+  });
 
 var elasticsearch = require('elasticsearch');
 //host: '192.168.1.100:9200',
@@ -95,58 +94,57 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 //Module
 securityJWT(app);
 securityLogin(app, client);
-
 oauth2(app, client);
 users(app, client);
 
 
 app.route('/esx/*')
-    .all(function (request, response, next) {
-        var start = new Date();
+  .all(function (request, response, next) {
+    var start = new Date();
 
-        // https://gist.github.com/cmawhorter/a527a2350d5982559bb6
-        console.log('******', new Date(Date.now()).toUTCString(), "-", request.method, "-", request.url);
-        console.log("request content-type", request.headers['content-type']);
-        // request.pause(); // Pause the request
-        // Construct Redirect
-        var redirectPath = request.url.slice(3);
+    // https://gist.github.com/cmawhorter/a527a2350d5982559bb6
+    console.log('******', new Date(Date.now()).toUTCString(), "-", request.method, "-", request.url);
+    console.log("request content-type", request.headers['content-type']);
+    // request.pause(); // Pause the request
+    // Construct Redirect
+    var redirectPath = request.url.slice(3);
 
-        //console.log('****** redirect path', redirectPath);
+    //console.log('****** redirect path', redirectPath);
 
-         var options = url.parse("http://192.168.1.100:9200" + redirectPath);
-        //var options = url.parse("http://localhost:9200" + redirectPath);
+    var options = url.parse("http://192.168.1.100:9200" + redirectPath);
+    //var options = url.parse("http://localhost:9200" + redirectPath);
 
-        options.headers = request.headers;
-        options.method = request.method;
-        // options.agent = new http.Agent();
-        // options.agent.maxSockets = 1000000;
+    options.headers = request.headers;
+    options.method = request.method;
+    // options.agent = new http.Agent();
+    // options.agent.maxSockets = 1000000;
 
 
-        // Init connector : http://stackoverflow.com/questions/6209042/node-js-http-request-slows-down-under-load-testing-am-i-doing-something-wrong
-        var esConnector = http.request(options, function (res) {
-            console.log("Redirect", options);
-            response.writeHead(res.statusCode, res.headers);
-            res.pipe(response, {end: true })
-                .on('error', function (e) {
-                    console.error("Error in pipe redirect", e);
-                });//tell 'response' end=true
-            console.log('    *', new Date(Date.now()).toUTCString(), "-", "statusCode", res.statusCode);
-        });
-        esConnector.on('error', function (e) {
-            console.error("Error in request redirect", e);
-        });
-        request.pipe(esConnector, {end: true});
+    // Init connector : http://stackoverflow.com/questions/6209042/node-js-http-request-slows-down-under-load-testing-am-i-doing-something-wrong
+    var esConnector = http.request(options, function (res) {
+      console.log("Redirect", options);
+      response.writeHead(res.statusCode, res.headers);
+      res.pipe(response, {end: true })
+        .on('error', function (e) {
+          console.error("Error in pipe redirect", e);
+        });//tell 'response' end=true
+      console.log('    *', new Date(Date.now()).toUTCString(), "-", "statusCode", res.statusCode);
+    });
+    esConnector.on('error', function (e) {
+      console.error("Error in request redirect", e);
+    });
+    request.pipe(esConnector, {end: true});
 
 
 //        request.on('data', function (chunk) {
 //            console.log("Received body data:");
 //            console.log(chunk);
-        //           connector.write(chunk);
-        //       });
+    //           connector.write(chunk);
+    //       });
 
 
-        // request.resume();// Resume the request
-    });
+    // request.resume();// Resume the request
+  });
 
 
 //app.use(express.static(__dirname + '/back'));
@@ -155,8 +153,8 @@ app.route('/esx/*')
 // logon : https://github.com/strongloop/express/blob/master/examples/auth/app.js
 
 app.use(errorHandler({
-    dumpExceptions: true,
-    showStack: true
+  dumpExceptions: true,
+  showStack: true
 }));
 
 
