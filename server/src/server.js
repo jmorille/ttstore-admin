@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express'),
     app = express(),
     bodyParser = require('body-parser'),
@@ -51,6 +53,7 @@ var holding = require('./models/holding');
 var oauth2 = require('./models/oauth2');
 
 var securityJWT = require('./models/security-jwt');
+var securityLogin = require('./models/security-login');
 
 
 var oneDay = 86400000;
@@ -84,6 +87,8 @@ var client = new elasticsearch.Client({
 var jsonParser = bodyParser.json({  type: ['application/json', 'application/csp-report'] });
 // create application/x-www-form-urlencoded parser
 
+app.use(bodyParser.urlencoded());
+
 // CSP report Violation
 var cspViolation = require('./models/cspViolation');
 cspViolation(app, client);
@@ -91,6 +96,7 @@ cspViolation(app, client);
 
 // Business module
 securityJWT(app);
+securityLogin(app, client);
 oauth2(app, client);
 users(app, client);
 
