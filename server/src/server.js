@@ -51,7 +51,7 @@ var holding = require('./models/holding');
 var oauth2 = require('./models/oauth2');
 
 var securityJWT = require('./models/security-jwt');
-
+var securityLogin = require('./models/security-login');
 
 var oneDay = 86400000;
 
@@ -83,6 +83,7 @@ var client = new elasticsearch.Client({
 // it seems chrome is doing it well: https://w3c.github.io/webappsec/specs/content-security-policy/
 var jsonParser = bodyParser.json({  type: ['application/json', 'application/csp-report'] });
 // create application/x-www-form-urlencoded parser
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // CSP report Violation
 var cspViolation = require('./models/cspViolation');
@@ -91,6 +92,7 @@ cspViolation(app, client);
 
 // Business module
 securityJWT(app);
+securityLogin(app, client);
 oauth2(app, client);
 users(app, client);
 

@@ -26,7 +26,8 @@ var url = require('url');
 var http = require('http');
 
 // Security
-var securityJWT = require('./models/security-jwt');
+var securityJWT = require('./server/src/models/security-jwt');
+var securityLogin = require('./server/src/models/security-login');
 
 // Model
 var users = require('./server/src/models/users');
@@ -81,6 +82,7 @@ var client = new elasticsearch.Client({
 
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
 
 // create application/json parser
 var jsonParser = bodyParser.json({ type: 'text/plain' });
@@ -91,6 +93,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 //Module
 securityJWT(app);
+securityLogin(app, client);
 oauth2(app, client);
 users(app, client);
 
