@@ -10,7 +10,7 @@ function registerIndex(payload) {
   if (!payload.type) {
     payload.type = 'userlogin';
   }
-  payload._sourceExclude = ['secured'];
+  //payload._sourceExclude = ['secured'];
   return payload;
 }
 
@@ -31,23 +31,29 @@ function securityLogin(app, client) {
 
 }
 
+function fetchHeaderAuth(headers) {
+  if (headers && headers.authorization) {
+    var authorization = headers.authorization;
+    var part = authorization.split(' ');
+    if (part.length === 2) {
+      var token = part[1];
+      return token;
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
+}
+
+function comparePassword(passwdCand, passwdRef, cb) {
+  cb(null, passwdRef === passwdCand);
+}
+
 function loginApi(client) {
   return {
 
-    fetchHeaderAuth: function (headers) {
-      if (headers && headers.authorization) {
-        var authorization = headers.authorization;
-        var part = authorization.split(' ');
-        if (part.length === 2) {
-          var token = part[1];
-          return token;
-        } else {
-          return null;
-        }
-      } else {
-        return null;
-      }
-    },
+
     logout: function (req, res, next) {
       delete req.user;
       return res.status(200).json({
@@ -89,39 +95,66 @@ function loginApi(client) {
       });
     },
     verify: function (req, res, next) {
-      debug("Verifying token");
+      console.log('Verifying token', fetchHeaderAuth);
       var token = fetchHeaderAuth(req.headers);
       var secret = req.app.get('secret');
       jwt.verify(token, secret, function (err, decode) {
         if (err) {
           req.user = undefined;
-          return next(new UnauthorizedAccessError("invalid_token"));
+          return next(new UnauthorizedAccessError('invalid_token'));
         }
         console.log('token deploy', decode);
+        var username = decode.username;
         debug(decode);
         next();
-        //exports.retrieve(token, function (err, data) {
-        //  if (err) {
-        //    req.user = undefined;
-        //    return next(new UnauthorizedAccessError("invalid_token", data));
-        //  }
-        //  req.user = data;
-        //  next();
-        //});
-
+        var optSearchUser = registerIndex({body: {query: {term: {login: username}}}});
+        client.search(optSearchUser, function (error, response) {
+          console.log('Search User error', error);
+          console.log('Search User response', response);
+          if (error || response.hits.total !== 1) {
+            req.user = undefined;
+            return next(new UnauthorizedAccessError('invalid_token'));
+          }
+          console.log('Search User response Hits', response.hits.hits);
+          // check password
+          req.user = response;
+          next();
+        });
       });
     },
 
 
     authenticate: function (req, res, next) {
-//Client will call this method to query a token
+      //Client will call this method to query a token
       var username = req.body.username,
         password = req.body.password;
       // Surface Control
       if (_.isEmpty(username) || _.isEmpty(password)) {
-        return next(new UnauthorizedAccessError("401", {message: 'Invalid username or password'}));
+        return next(new UnauthorizedAccessError('401', {message: 'Invalid username or password'}));
       }
       // Search User
+      var optSearchUser = registerIndex({body: {query: {term: {login: username}}}});
+      client.search(optSearchUser, function (error, response) {
+        if (error) {
+          // TODO Tech Error
+        }
+        if (error || response.hits.total !== 1) {
+          req.user = undefined;
+          return next(new UnauthorizedAccessError('401', {message: 'Invalid username or password'}));
+        }
+        var user = response.hits.hits;
+        console.log('Search User response Hits', user);
+        // check password
+        comparePassword(password, user._source.secured.password, function (err, isMatch) {
+          if (isMatch && !err) {
+            console.log('Password User match', user);
+          }
+        });
+        req.user = response;
+        next();
+      });
+
+
       // Compare password
 
       if (true) {
@@ -140,8 +173,8 @@ function loginApi(client) {
       debug('authenticate', token);
       console.log('authenticate token', token);
 
-    },
-
+    }
+    ,
 
 
   }

@@ -152,6 +152,7 @@ app.route('/esx/*')
 
 // Error handler - has to be last
 app.use(errorHandler({
+  type: 'json',
   dumpExceptions: true,
   showStack: true
 }));
