@@ -19,7 +19,11 @@ var del = require('del');
 var install = require("gulp-install");
 var $ = require('gulp-load-plugins')();
 
+// LiveRlead
+var nodemon = require('gulp-nodemon'),
+  livereload = require('gulp-livereload');
 
+// Config
 var path = {
   source: 'src',
   dist: 'dist',
@@ -48,7 +52,6 @@ gulp.task('lint', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Dist
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 gulp.task('cp:src', function () {
   var DEST_DIR = path.distServer;
   return gulp.src(path.source + '/**', {base: './'})
@@ -66,6 +69,23 @@ gulp.task('cp:package', function () {
     .pipe(debug({title: 'source :'}))
     .pipe(gulp.dest(DEST_DIR))
     .pipe(install({production: true}));
+});
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// LiveReload
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gulp.task('serve', function () {
+  livereload.listen();
+  nodemon({
+    script: 'src/server.js'
+    , ext: 'js'
+    , env: { ES_ADDR: 'localhost' }
+  }).on('restart', function () {
+    setTimeout(function () {
+
+      livereload.changed(__dirname);
+    }, 500);
+  });
 });
 
 
@@ -104,7 +124,7 @@ gulp.task('build:docker', ['build'], function () {
 
 gulp.task('dist:docker', ['build:docker'], function () {
   var DEST_DIR = path.dist + '/docker-server';
-  var DEST_TAR =  dockerOpt.image + '.tar';
+  var DEST_TAR = dockerOpt.image + '.tar';
   return gulp.src('docker/README.md')
     .pipe(gulp.dest(DEST_DIR))
     .pipe($.shell(['docker save --output ' + DEST_TAR + ' ' + dockerOpt.namespace + '/' + dockerOpt.image], {

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Moon walk</title>
+  <style>
+    body {
+      background-color: #1A181D;
+    }
+
+    #conteneur {
+      position: relative;
+      width: 360px;
+      margin: 15% auto;
+    }
+    .planete{
+      position: absolute;
+      animation: orbit 60s linear infinite;
+      top: 120px;
+      left: 120px;
+    }
+    .anneau {
+      animation: orbit 36s linear infinite reverse;
+    }
+    @keyframes orbit {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+  </style>
+
+</head>
+<body>
+<div id="conteneur">
+  <img src="earth.png"  class="planete">
+  <img src="moon-orbit.png" class="anneau">
+</div>
+
+
+</body>
+</html>
