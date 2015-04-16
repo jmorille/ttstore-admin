@@ -52,8 +52,8 @@ function fetchHeaderAuth(headers) {
   }
 }
 
-function comparePassword(passwdCand, passwdRef, cb) {
-  cb(null, passwdRef === passwdCand);
+function comparePassword(passwdCandidate, passwdRef, cb) {
+  cb(null, passwdRef === passwdCandidate);
 }
 
 
