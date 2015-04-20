@@ -1,50 +1,46 @@
 "use strict";
 
 
-var taskController = require('controllers/task');
-var taskValidate = require('validate/task');
+var taskController = require('./../controllers/task');
+//var taskValidate = require('./../validate/task');
 
 module.exports = function(plugin, options, next) {
-  //var es = plugin.plugins['elasticsearch-hapi-plugin'].es;
+  //var es = plugin['elasticsearch-hapi-plugin'].es;
+  console.log('taskController initialisation');
   return [
     {
       method: 'GET',
       path: '/tasks/{task_id}',
       config : {
-        handler: taskController.findByID,
-        validate: taskValidate.findByID
+        handler: taskController.findByID
       }
     },
     {
       method: 'GET',
       path: '/tasks',
       config : {
-        handler: taskController.find,
-        validate : taskValidate.find
+        handler: taskController.find
       }
     },
     {
       method: 'POST',
       path: '/tasks',
       config : {
-        handler : taskController.insert,
-        validate : taskValidate.insert
+        handler : taskController.insert
       }
     },
     {
       method: 'PUT',
       path: '/tasks/{task_id}',
       config : {
-        handler: taskController.update,
-        validate : taskValidate.update
+        handler: taskController.update
       }
     },
     {
       method: 'DELETE',
       path: '/tasks/{task_id}',
       config : {
-        handler: taskController.delete,
-        validate : taskValidate.delete
+        handler: taskController.delete
       }
     }
   ];

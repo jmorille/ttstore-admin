@@ -76,9 +76,9 @@ gulp.task('cp:package', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('serve', function () {
   livereload.listen();
+  //    exec: "--use_strict --harmony",
   nodemon({
     script: 'src/index.js',
-    exec: "--use_strict --harmony",
     watch: ['src/**/*.js'],
     ext: 'js',
     env: { ES_ADDR: 'localhost' }

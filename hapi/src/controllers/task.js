@@ -7,7 +7,9 @@ TaskDAO.prototype = (function () {
 
   return {
     findByID: function findByID(request, callback) {
-      var es =  request.server.plugins['elasticsearch-hapi-plugin'];
+      console.log('---- TaskDAO findByID ', 'init');
+      var es =  request.server.plugins['hapi-es'].client;
+      console.log('---- TaskDAO findByID ', es);
       var opt = {
         body: {
           query: {
@@ -17,10 +19,13 @@ TaskDAO.prototype = (function () {
           }
         }
       };
+
       es.search(opt, callback);
     },
     find: function find(request, callback) {
-      var es =  request.server.plugins['elasticsearch-hapi-plugin'];
+      console.log('---- TaskDAO find ', 'init');
+      var es =  request.server.plugins['hapi-es'].client;
+      console.log('---- TaskDAO find ', es);
       var opt = {
         body: {query: {term: {userId: request.userId}}}
       };
