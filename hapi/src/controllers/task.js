@@ -1,4 +1,5 @@
-"use strict";
+'use strict';
+var hoek = require('hoek'); // hapi utilities https://github.com/hapijs/hoek
 
 
 function TaskDAO() {};
@@ -7,9 +8,7 @@ TaskDAO.prototype = (function () {
 
   return {
     findByID: function findByID(request, callback) {
-      console.log('---- TaskDAO findByID ', 'init');
       var es =  request.server.plugins['hapi-es'].client;
-      console.log('---- TaskDAO findByID ', es);
       var opt = {
         body: {
           query: {
@@ -23,16 +22,14 @@ TaskDAO.prototype = (function () {
       es.search(opt, callback);
     },
     find: function find(request, callback) {
-      console.log('---- TaskDAO find ', 'init');
       var es =  request.server.plugins['hapi-es'].client;
-      console.log('---- TaskDAO find ', es);
       var opt = {
         body: {query: {term: {userId: request.userId}}}
       };
       es.search(opt, callback);
     },
     insert: function insert(request, callback) {
-      var es =  request.server.plugins['elasticsearch-hapi-plugin'];
+      var es =  request.server.plugins['hapi-es'].client;
       var values = [
         request.userId,
         request.description
@@ -49,7 +46,7 @@ TaskDAO.prototype = (function () {
       });
     },
     update: function update(params, callback) {
-
+      var es =  request.server.plugins['hapi-es'].client;
       var values = [
         params.description,
         params.userId,
@@ -68,7 +65,7 @@ TaskDAO.prototype = (function () {
       });
     },
     delete: function (params, callback) {
-
+      var es =  request.server.plugins['hapi-es'].client;
       var values = [
         params.taskId,
         params.userId
