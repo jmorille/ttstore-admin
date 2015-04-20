@@ -81,7 +81,7 @@ gulp.task('serve', function () {
     script: 'src/index.js',
     watch: ['src/**/*.js'],
     ext: 'js',
-    env: { ES_ADDR: 'localhost' }
+    env: {ES_ADDR: 'localhost'}
   }).on('restart', function () {
     setTimeout(function () {
       livereload.changed(__dirname);
@@ -89,6 +89,20 @@ gulp.task('serve', function () {
   });
 });
 
+gulp.task('serveHome', function () {
+  livereload.listen({port: 35739});
+  //    exec: "--use_strict --harmony",
+  nodemon({
+    script: 'src/index.js',
+    watch: ['src/**/*.js'],
+    ext: 'js',
+    env: {ES_ADDR: '192.168.1.100'}
+  }).on('restart', function () {
+    setTimeout(function () {
+      livereload.changed(__dirname);
+    }, 500);
+  });
+});
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Build
