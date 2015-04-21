@@ -12,7 +12,7 @@ var internals = {}; // Declare internals >> see: http://hapijs.com/styleguide
 
 internals.defaultSettings = {
   host: 'http://localhost:9200',
-  apiVersion: '1.1'
+   apiVersion: '1.5'
 };
 
 exports.register = function (server, options, next) {
@@ -37,6 +37,23 @@ exports.register = function (server, options, next) {
       client.search(params, reply);
     };
 
+  });
+
+  ['search', 'update', 'create', 'delete', 'exists', 'suggest', 'index'].forEach(function (item) {
+    server.method({
+      name: 'es.'.item,
+      method: function (options, next) {
+        client[item](options, function (err, res) {
+          if (err) {
+            var error = Boom.create(res.status, res.error, options);
+            next(error, null);
+          } else {
+            next(err, res);
+          }
+        });
+      },
+      options: {}
+    });
   });
 
   server.method({
