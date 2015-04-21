@@ -75,7 +75,7 @@ gulp.task('cp:package', function () {
 // LiveReload
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('serve', function () {
-  livereload.listen();
+  livereload.listen({port: 35739});
   //    exec: "--use_strict --harmony",
   nodemon({
     script: 'src/index.js',

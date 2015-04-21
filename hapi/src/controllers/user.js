@@ -29,23 +29,24 @@ UserDAO.prototype = (function () {
       var opt = registerIndex({
         id: entityId
       });
-      var es = request.server.plugins['hapi-es'].client;
-      es.get(opt, callback);
-    },
-    search: function find(request, callback) {
-      var opt = registerIndex(request.payload);
-   //   var es = request.server.plugins['hapi-es'].client;
-     // es.search(opt, callback);
-      request.server.methods.essearch(opt, function (err, res) {
+      request.server.methods.es.get(opt, function (err, res) {
         callback(err, res);
       });
     },
-    create: function insert(request, callback) {
-      var opt = registerIndex(request.body, true);
-      var es = request.server.plugins['hapi-es'].client;
-      es.create(opt, callback);
+    search: function find(request, reply) {
+      var opt = registerIndex(request.payload);
+      request.server.methods.es.search(opt, function (err, res) {
+        reply(err, res);
+      });
     },
-    update: function update(request, callback) {
+    create: function insert(request, reply) {
+      var opt = registerIndex(request.body, true);
+      request.server.methods.es.create(opt, function (err, res) {
+        reply(err, res);
+      });
+
+    },
+    update: function update(request, reply) {
       // Compplete the request
       var entityId = request.params.id;
       var opt = registerIndex(request.payload, true);
@@ -55,11 +56,8 @@ UserDAO.prototype = (function () {
       if (!opt.version) {
 //        Boom.preconditionFailed( 'Document Version is required for update', [data]);
       }
-
-   //   var es = request.server.plugins['hapi-es'].client;
-   //   es.update(opt, callback);
-      request.server.methods.esupdate(opt, function (err, res) {
-        callback(err, res);
+      request.server.methods.es.update(opt, function (err, res) {
+        reply(err, res);
       });
 
     },
@@ -67,10 +65,9 @@ UserDAO.prototype = (function () {
       var entityId = request.params.id;
       var opt = registerIndex(request.payload, true);
       opt.id = entityId;
-
-      var es = request.server.plugins['hapi-es'].client;
-      es.delete(opt, callback);
-
+      request.server.methods.es.delete(opt, function (err, res) {
+        callback(err, res);
+      });
 
     },
   };

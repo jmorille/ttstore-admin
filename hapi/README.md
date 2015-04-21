@@ -1,5 +1,7 @@
 
 
+
+
 # Sample Apps With es
 https://github.com/ideaq/time/blob/0a5ec8711840528a4960c388825fb883fabddd76/app.js
 
@@ -18,3 +20,7 @@ https://github.com/avbel/es6-hapi-demo
 
 # Test Apis
 curl -v  http://127.0.0.1:8000/hello
+
+
+# Authentification
+curl -v -d "username=demo&password=demo" --user admin:admin  http://127.0.0.1:8000/login

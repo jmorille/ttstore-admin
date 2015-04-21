@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "aguid": "^1.0.3",
+    "bcrypt": "^0.8.2",
     "boom": "^2.7.1",
     "elasticsearch": "^4.0.2",
     "elasticsearch-hapi-logger": "0.0.1",
@@ -18,11 +19,14 @@
     "good-console": "^5.0.0",
     "handlebars": "^3.0.2",
     "hapi": "^8.4.0",
+    "hapi-auth-basic": "^2.0.0",
     "hapi-auth-jwt2": "^4.3.0",
+    "hapi-swagger": "^0.7.3",
     "hoek": "^2.12.0",
     "joi": "^6.2.0",
     "jsonwebtoken": "^5.0.0",
-    "lodash": "^3.7.0"
+    "lodash": "^3.7.0",
+    "tv": "^4.1.0"
   },
   "devDependencies": {
     "del": "^1.1.1",
