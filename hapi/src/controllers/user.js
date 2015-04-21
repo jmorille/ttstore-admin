@@ -24,7 +24,7 @@ function UserDAO() {
 UserDAO.prototype = (function () {
 
   return {
-    findByID: function findByID(request, callback) {
+    findByID: function get(request, callback) {
       var entityId = request.params.id;
       var opt = registerIndex({
         id: entityId
@@ -33,13 +33,13 @@ UserDAO.prototype = (function () {
         callback(err, res);
       });
     },
-    search: function find(request, reply) {
+    search: function search(request, reply) {
       var opt = registerIndex(request.payload);
       request.server.methods.es.search(opt, function (err, res) {
         reply(err, res);
       });
     },
-    create: function insert(request, reply) {
+    create: function create(request, reply) {
       var opt = registerIndex(request.body, true);
       request.server.methods.es.create(opt, function (err, res) {
         reply(err, res);

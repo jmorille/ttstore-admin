@@ -17,7 +17,7 @@ server.connection({port: port});
 var plugins = [
   {register: require('./plugins/hapi-auth-basic') },
   {register: require('hapi-auth-jwt2') },
-  {register: require('./plugins/hapi-es'), options: constants.es},
+  {register: require('./plugins/hapi-es'), options: constants.es },
   {register: require('hapi-swagger'), options: constants.swagger},
   {register: require('tv'), options: constants.tv },
   {

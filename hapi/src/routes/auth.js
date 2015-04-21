@@ -1,5 +1,8 @@
 'use strict';
 
+var Boom = require('boom'); // error handling https://github.com/hapijs/boom
+var bcrypt = require('bcrypt'); // import the module we are using to encrypt passwords
+
 var JWT = require('../security/auth_jwt_sign.js');
 
 module.exports = function (plugin, options, next) {
@@ -9,7 +12,7 @@ module.exports = function (plugin, options, next) {
       method: 'POST',
       path: '/login',
       handler: function (request, reply) {
-        JWT(request, function(token, res){
+        JWT(request, function (token, res) {
           return reply(res).header("Authorization", token);
         });
       },
@@ -22,12 +25,43 @@ module.exports = function (plugin, options, next) {
     {
       method: 'POST',
       path: '/signin',
-      handler: function (request, reply) {
-        var options =  {
+      handler: function (req, reply) {
+        var es = request.server.methods.es;
+        var email = req.payload.email;
+        var user = {
           index: "users",
-          type: "user", 
-          email: req.payload.email
-        }
+          type: "user",
+          body: {
+            email: email
+          }
+        };
+        var optExist = {
+          index: "users",
+          type: "user",
+          "query": {
+            "term": {"eamil": email}
+          }
+        };
+        es.searchExists(optExist, function (err, res) {
+          if (err) {
+            return reply(err, res);
+          }
+          if (res.found) {
+            return reply(Boom.badRequest('Email address already registered'));
+          }
+          bcrypt.genSalt(12, function (err, salt) { //encrypt the password
+            bcrypt.hash(req.payload.password, salt, function (err, hash) {
+              user.secured.password = hash;
+              es.create(user, function (err, res) {
+                Hoek.assert(res.created, 'User NOT Registered!'); // only if DB fails!
+                JWT(req, function (token, esres) {
+                  return reply(res).header("Authorization", token);
+                }); // Asynchronous
+              });
+            });
+          });
+        });
+
       },
       config: {
         auth: 'basic',
@@ -35,6 +69,5 @@ module.exports = function (plugin, options, next) {
         description: 'Login an User'
       }
     }
-
-    ]
+  ]
 }();

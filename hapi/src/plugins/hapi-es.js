@@ -15,14 +15,31 @@ internals.defaultSettings = {
   method_prefix: 'es'
 };
 
+internals.wrapError = function (err, res) {
+  if (!err) {
+    return err;
+  }
+  if (res.status) {
+    return Boom.create(res.status, res.error, options);
+  }
+  if (res.hasOwnProperty('found') && res.found === false) {
+    return Boom.notFound(JSON.stringify(err), res);
+  }
+  return Boom.badImplementation(JSON.stringify(err), res);
+};
+
 exports.register = function (server, options, next) {
-  // Es Settings
+
+  // --- Es Settings
+  // --- ----------
   var settings = Hoek.applyToDefaults(internals.defaultSettings, options);
   settings.log = require('elasticsearch-hapi-logger')(server);
-  server.log(['es', 'info'], 'Initializing elasticsearch connection with settings ' + JSON.stringify(settings));
-  // Es Client
+  server.log(['es', 'info'], 'Initializing Elasticsearch connection with settings ' + JSON.stringify(settings));
+
+  // --- Es Client
+  // --- ----------
   var client = new es.Client(settings);
-  server.log(['hapi-es', 'info'], 'Created client');
+  server.log(['es', 'info'], 'Created Elastic client');
   server.expose('client', client);
   // Expose Search
 
@@ -38,30 +55,21 @@ exports.register = function (server, options, next) {
   //  };
   //});
 
-  ['search', 'get', 'update', 'create', 'delete', 'index', 'exists', 'suggest'].forEach(function (item) {
+  // --- Register client Api
+  // --- --------------------
+  ['search', 'searchExists', 'get', 'update', 'create', 'delete', 'index', 'exists', 'suggest'].forEach(function (item) {
     server.method({
       name: settings.method_prefix + '.' + item,
       method: function (options, next) {
         client[item](options, function (err, res) {
-          if (err) {
-            console.log('ES error', res, err);
-            if (res.status) {
-              var error = Boom.create(res.status, res.error, options);
-              return next(error, res);
-            } else if (res.hasOwnProperty('found') && res.found === false ) {
-              return next(Boom.notFound(null, res), res);
-            }
-          } else {
-            next(err, res);
-          }
+          next(internals.wrapError(err), res);
         });
       },
       options: {}
     });
   });
 
-
-  // Next
+  // End Register
   next();
 };
 
