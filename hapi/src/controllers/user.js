@@ -140,7 +140,7 @@ UserDAO.prototype.updatePasswordById = function (request, reply) {
       id: entityId,
       body: {
         doc: {
-          'secured.password': password
+          'secured.password': hash
         }
       }
     });
