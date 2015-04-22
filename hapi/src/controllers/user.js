@@ -1,7 +1,7 @@
 'use strict';
 var hoek = require('hoek'); // hapi utilities https://github.com/hapijs/hoek
 var Boom = require('boom'); // error handling https://github.com/hapijs/boom
-
+var Bcrypt = require('bcrypt');
 
 var registerIndex = function (payload, refresh) {
   payload.index = 'users';
@@ -59,7 +59,6 @@ UserDAO.prototype = (function () {
       request.server.methods.es.update(opt, function (err, res) {
         reply(err, res);
       });
-
     },
     delete: function (params, callback) {
       var entityId = request.params.id;
@@ -68,8 +67,19 @@ UserDAO.prototype = (function () {
       request.server.methods.es.delete(opt, function (err, res) {
         callback(err, res);
       });
-
     },
+    passwordEncode: function (password, callback) {
+      Bcrypt.genSalt(12, function (err, salt) { //encrypt the password
+        Bcrypt.hash(password, salt, function (err, hash) {
+          callback(err, hash);
+        });
+      });
+    },
+    passwordVerify: function (passwordClear, passwordEncoded, callback) {
+      Bcrypt.compare(passwordClear, passwordEncoded, function (err, isValid) {
+        callback(err, isValid);
+      });
+    }
   };
 })();
 

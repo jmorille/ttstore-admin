@@ -4,6 +4,8 @@ var Boom = require('boom'); // error handling https://github.com/hapijs/boom
 var bcrypt = require('bcrypt'); // import the module we are using to encrypt passwords
 
 var JWT = require('../security/auth_jwt_sign.js');
+var userController = require('./../controllers/user');
+
 
 module.exports = function (plugin, options, next) {
   console.log('authController initialisation');
@@ -39,7 +41,7 @@ module.exports = function (plugin, options, next) {
           index: "users",
           type: "user",
           "query": {
-            "term": {"eamil": email}
+            "term": {"email": email}
           }
         };
         es.searchExists(optExist, function (err, res) {

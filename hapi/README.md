@@ -24,3 +24,10 @@ curl -v  http://127.0.0.1:8000/hello
 
 # Authentification
 curl -v -d "username=demo&password=demo" --user admin:admin  http://127.0.0.1:8000/login
+
+# Authorization
+https://github.com/mark-bradshaw/mrhorse
+https://github.com/toymachiner62/hapi-authorization
+
+# Crypto
+https://code.google.com/p/crypto-js/
