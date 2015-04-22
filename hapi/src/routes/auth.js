@@ -30,6 +30,8 @@ module.exports = function (plugin, options, next) {
       handler: function (req, reply) {
         var es = request.server.methods.es;
         var email = req.payload.email;
+        var password = req.payload.password;
+
         var user = {
           index: "users",
           type: "user",
@@ -51,17 +53,13 @@ module.exports = function (plugin, options, next) {
           if (res.found) {
             return reply(Boom.badRequest('Email address already registered'));
           }
-          bcrypt.genSalt(12, function (err, salt) { //encrypt the password
-            bcrypt.hash(req.payload.password, salt, function (err, hash) {
-              user.secured.password = hash;
-              es.create(user, function (err, res) {
-                Hoek.assert(res.created, 'User NOT Registered!'); // only if DB fails!
-                JWT(req, function (token, esres) {
-                  return reply(res).header("Authorization", token);
-                }); // Asynchronous
-              });
-            });
+          userController.passwordEncode(password, function (err, hash) {
+            Hoek.assert(res.created, 'User NOT Registered!'); // only if DB fails!
+            JWT(req, function (token, esres) {
+              return reply(res).header("Authorization", token);
+            }); // Asynchronous
           });
+
         });
 
       },

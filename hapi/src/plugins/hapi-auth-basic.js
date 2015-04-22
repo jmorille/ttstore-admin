@@ -64,7 +64,7 @@ internals.implementation = function (server, options) {
       }
 
       settings.validateFunc(request, username, password, function (err, isValid, credentials) {
-
+        console.log('----------------- hapi-auth-basic authenticate validateFunc');
         credentials = credentials || null;
 
         if (err) {
