@@ -11,7 +11,10 @@
   "dependencies": {
     "aguid": "^1.0.3",
     "bcrypt": "^0.8.2",
+    "bell": "^2.3.0",
     "boom": "^2.7.1",
+    "confidence": "^1.0.0",
+    "crypto-js": "^3.1.4",
     "elasticsearch": "^4.0.2",
     "elasticsearch-hapi-logger": "0.0.1",
     "glib": "0.0.3",

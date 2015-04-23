@@ -23,8 +23,14 @@ curl -v  http://127.0.0.1:8000/hello
 
 
 # Authentification
-curl -v -d "username=demo&password=demo" --user admin:admin  http://127.0.0.1:8000/login
+## Google Auth
+https://github.com/santbob/hapi-auth-example
 
+## Test Method
+curl -v -d "username=demo&password=demo" --user admin:admin  http://127.0.0.1:8000/login
+curl -v -d "username=demo&password=demo" --user admin:admin  http://127.0.0.1:8000/changePassword
+
+changePassword
 # Authorization
 https://github.com/mark-bradshaw/mrhorse
 https://github.com/toymachiner62/hapi-authorization

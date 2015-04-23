@@ -15,11 +15,11 @@ server.connection({port: port});
 
 
 var plugins = [
+  {register: require('bell')  },
   {register: require('./plugins/hapi-auth-basic') },
   {register: require('hapi-auth-jwt2') },
   {register: require('./plugins/hapi-es'), options: constants.es },
   {register: require('hapi-swagger'), options: constants.swagger},
-  {register: require('tv'), options: constants.tv },
   {
     register: Good,
     options: {
@@ -34,6 +34,10 @@ var plugins = [
   }
 ];
 
+if (true) {
+  plugins.push(  {register: require('tv'), options: constants.tv });
+  plugins.push(   {register: require('hapi-swagger'), options: constants.swagger});
+}
 
 server.register(plugins, function (err) {
   if (err) {
@@ -41,6 +45,15 @@ server.register(plugins, function (err) {
     throw err; // something bad happened loading the plugin
   }
 
+
+
+  server.auth.strategy('google', 'bell', {
+    provider: 'google',
+    password: 'cookie_encryption_password',
+    clientId: 'my_twitter_client_id',
+    clientSecret: 'my_twitter_client_secret',
+    isSecure: false     // Terrible idea but required if not using HTTPS
+  });
 
   server.auth.strategy('basic', 'basic', {
     validateFunc: require('./security/auth_basic_validate.js')
