@@ -1,8 +1,29 @@
 var Confidence = require("confidence");
 var CryptoJS = require("crypto-js");
 
-var config = {};
 var internals = {};
+var config = {};
+
+
+config.app = {
+  $filter: 'env',
+  production: { // this is the default configuration if no env.ENVIRONMENT varaible is set.
+    port: parseInt(process.env.PORT, 10) || 8000,
+
+  },
+  $default: { // this is the default configuration if no env.ENVIRONMENT varaible is set.
+    port: parseInt(process.env.PORT, 10) || 8000,
+    console: {
+      reporters: [{
+        reporter: require('good-console'),
+        events: {
+          response: '*',
+          log: ['error', 'info', 'debug']
+        }
+      }]
+    }
+  }
+};
 
 config.provider = {
   $filter: 'env',
@@ -34,6 +55,11 @@ config.elastic = {
   production: {
     client: {
       host: 'http://es:9200'
+    }
+  },
+  home: {
+    client: {
+      host: 'http://192.168.1.100:9200'
     }
   },
   $default: { // this is the default configuration if no env.ENVIRONMENT varaible is set.

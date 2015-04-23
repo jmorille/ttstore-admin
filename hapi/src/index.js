@@ -2,41 +2,27 @@ var Hapi = require('hapi');
 var Good = require('good');
 
 var routes = require('./routes');
-var constants = require('./config/constants.js');
+var Config = require("./config");
+var Providers = Config.get('/provider');
+var ConfigApp = Config.get('/app');
 
-// Config
-var port = constants.app['port'];
 
 // Http Server
 var server = new Hapi.Server(); //{ debug: { request: ['info', 'error'] } }
-server.connection({port: port});
-
-
+server.connection({port: ConfigApp.port});
 
 
 var plugins = [
-  {register: require('bell')  },
-  {register: require('./plugins/hapi-auth-basic') },
-  {register: require('hapi-auth-jwt2') },
-  {register: require('./plugins/hapi-es'), options: constants.es },
-  {register: require('hapi-swagger'), options: constants.swagger},
-  {
-    register: Good,
-    options: {
-      reporters: [{
-        reporter: require('good-console'),
-        events: {
-          response: '*',
-          log: ['error', 'info', 'debug']
-        }
-      }]
-    }
-  }
+  {register: Good, options: ConfigApp.console},
+  {register: require('bell')},
+  {register: require('./plugins/hapi-auth-basic')},
+  {register: require('hapi-auth-jwt2')},
+  {register: require('./plugins/hapi-es'), options: Config.get('/elastic').client}
 ];
 
 if (true) {
-  plugins.push(  {register: require('tv'), options: constants.tv });
-  plugins.push(   {register: require('hapi-swagger'), options: constants.swagger});
+  plugins.push({register: require('tv'), options: Config.get('/tv')});
+  plugins.push({register: require('hapi-swagger'), options: Config.get('/swagger')});
 }
 
 server.register(plugins, function (err) {
@@ -45,15 +31,7 @@ server.register(plugins, function (err) {
     throw err; // something bad happened loading the plugin
   }
 
-
-
-  server.auth.strategy('google', 'bell', {
-    provider: 'google',
-    password: 'cookie_encryption_password',
-    clientId: 'my_twitter_client_id',
-    clientSecret: 'my_twitter_client_secret',
-    isSecure: false     // Terrible idea but required if not using HTTPS
-  });
+  //server.auth.strategy('google', 'bell', Providers.google);
 
   server.auth.strategy('basic', 'basic', {
     validateFunc: require('./security/auth_basic_validate.js')
