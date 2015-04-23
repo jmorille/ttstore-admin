@@ -115,8 +115,7 @@ UserDAO.prototype.verifyPasswordById = function (request, password, callback) {
   });
 };
 
-UserDAO.prototype.verifyPasswordByEmail = function (request, password, callback) {
-  var email = request.payload.email;
+UserDAO.prototype.verifyPasswordByEmail = function (request, email, password, callback) {
   var opt = Hoek.applyToDefaults(internals.table, {
     query: {
       term: {email: email}
@@ -133,9 +132,10 @@ UserDAO.prototype.verifyPasswordByEmail = function (request, password, callback)
 };
 
 UserDAO.prototype.updatePasswordById = function (request, reply) {
-  var entityId = request.params.id;
+  var entityId = request.params.userId;
   var password = request.payload.password;
   internals.passwordEncode(password, function (err, hash) {
+    //console.log('password', password, ' = ', hash);
     var opt = Hoek.applyToDefaults(internals.table, {
       id: entityId,
       body: {

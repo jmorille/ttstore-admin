@@ -31,8 +31,8 @@ config.provider = {
     google: {
       provider: 'google',
       password: 'hapiauth',
-      clientId: '', // fill in your Google ClientId here
-      clientSecret: '', // fill in your Google Client Secret here
+      clientId: '584480502162-tujkhqf3lfr3adqidnnr5g7qnqshodqg.apps.googleusercontent.com', // fill in your Google ClientId here
+      clientSecret: '4hIB8jVeAm4xBnm2ocNca0gF', // fill in your Google Client Secret here
       isSecure: false // Terrible idea but required if not using HTTPS
     }
   },
@@ -43,8 +43,8 @@ config.provider = {
     google: {
       provider: 'google',
       password: 'hapiauth',
-      clientId: '', // fill in your Google ClientId here
-      clientSecret: '', // fill in your Google Client Secret here
+      clientId: '584480502162-tujkhqf3lfr3adqidnnr5g7qnqshodqg.apps.googleusercontent.com', // fill in your Google ClientId here
+      clientSecret: '4hIB8jVeAm4xBnm2ocNca0gF', // fill in your Google Client Secret here
       isSecure: false // Terrible idea but required if not using HTTPS
     },
   }

@@ -19,8 +19,7 @@ module.exports = function sign(request, callback) {
     payload.iss = "anonymous";
   } // this will need to be extended for other auth: http://git.io/pc1c
 
-  var jwtSecret = Providers.jwt.jwtSecret;
-  var token = JWT.sign(payload, jwtSecret); // https://github.com/docdis/learn-json-web-tokens
+  var token = JWT.sign(payload,  Providers.jwt.jwtSecret); // https://github.com/docdis/learn-json-web-tokens
 
   var session = {   // set up session record for inserting into ES
     index: "session",

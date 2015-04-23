@@ -28,7 +28,7 @@ https://github.com/santbob/hapi-auth-example
 
 ## Test Method
 curl -v -d "username=demo&password=demo" --user admin:admin  http://127.0.0.1:8000/login
-curl -v -d "username=demo&password=demo" --user admin:admin  http://127.0.0.1:8000/changePassword
+curl -v -d "username=demo&password=demo"   http://127.0.0.1:8000/changePassword/AAApkZAAOAAAQJrAAA
 
 changePassword
 # Authorization

@@ -26,13 +26,13 @@ module.exports = function (plugin, options, next) {
     },
     {
       method: 'POST',
-      path: '/changePassword',
+      path: '/changePassword/{userId}',
       handler: userController.updatePasswordById,
       config: {
-        auth: 'basic',
         tags: ['api', 'login'],
         description: 'Login an User'
       }
     }
   ]
 }();
+//         auth: 'basic',

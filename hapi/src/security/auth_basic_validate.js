@@ -13,7 +13,7 @@ module.exports = function validate (request, email, password, callback) {
     id: aguid(email)
   }
   request.server.methods.es.get(record, function (err, res) {
-    console.log('Es search for login', res);
+    server.log(['info'], 'Es search for login', res);
     if(res.found) { // compare to bcrypt hash on file
       Bcrypt.compare(password, res._source.secured.password, function (err, isValid) {
         callback(err, isValid, { id: res._id, email: res._source.email });
