@@ -120,14 +120,17 @@ UserDAO.prototype.verifyPasswordById = function (request, password, callback) {
 UserDAO.prototype.verifyPasswordByEmail = function (request, email, password, callback) {
   var opt = Hoek.applyToDefaults(internals.table, {
     query: {
-      term: {email: email}
+      term: { email: email}
     },
-    _sourceInclude: 'secured'
+    _sourceInclude: ['email', 'secured']
   });
-  request.server.methods.es.get(opt, function (err, res) {
-    if (res.found) {
+  console.log('verifyPasswordByEmail', opt);
+  request.server.methods.es.search(opt, function (err, res) {
+    console.log('Find verifyPasswordByEmail : --- ', err, JSON.stringify(res));
+    if (res && res.found) {
       internals.passwordVerify(password, res._source.secured.password, function (err, isValid) {
-        callback(err, isValid);
+        delete res.secured;
+        callback(err, isValid, res);
       });
     } else {
       callback(err, false);
