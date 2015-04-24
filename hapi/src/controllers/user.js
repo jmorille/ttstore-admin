@@ -110,6 +110,8 @@ UserDAO.prototype.verifyPasswordById = function (request, password, callback) {
     if (res.found) {
       internals.passwordVerify(password, res._source.secured.password, callback);
     } else {
+      // Replace erru with not found
+
       callback(err, false);
     }
   });
@@ -124,7 +126,9 @@ UserDAO.prototype.verifyPasswordByEmail = function (request, email, password, ca
   });
   request.server.methods.es.get(opt, function (err, res) {
     if (res.found) {
-      internals.passwordVerify(password, res._source.secured.password, callback);
+      internals.passwordVerify(password, res._source.secured.password, function (err, isValid) {
+        callback(err, isValid);
+      });
     } else {
       callback(err, false);
     }

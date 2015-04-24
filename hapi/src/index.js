@@ -41,8 +41,7 @@ server.register(plugins, function (err) {
   //  validateFunc: require('./security/auth_jwt_validate.js')
   //});
 
-
-// Add all the routes within the routes folder
+ // Add all the routes within the routes folder
   for (var route in routes) {
     //console.log('-- Route', routes[route]);
     server.route(routes[route]);

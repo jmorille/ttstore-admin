@@ -19,13 +19,22 @@ internals.wrapError = function (err, res) {
   if (!err) {
     return err;
   }
-  if (res.status) {
-    return Boom.create(res.status, res.error, options);
+  console.log('-- err', err);
+  console.log('-- res', res);
+  if (res) {
+    // Generate Error From res data
+    var resMsg  = res.error ? res.error : (  err.message ?  err.message  : JSON.stringify(err) ) ;
+    if (res.status) {
+      return Boom.create(res.status,resMsg, res);
+    }
+    if (res.hasOwnProperty('found') && res.found === false) {
+      return Boom.notFound(resMsg, res);
+    }
   }
-  if (res.hasOwnProperty('found') && res.found === false) {
-    return Boom.notFound(JSON.stringify(err), res);
-  }
-  return Boom.badImplementation(JSON.stringify(err), res);
+  // Generate Error From error data
+  var errStatus = err.status ? err.status : 500;
+  var errMsg = err.message ? err.message : JSON.stringify(err);
+  return Boom.create(errStatus, errMsg, res);
 };
 
 exports.register = function (server, options, next) {
@@ -62,7 +71,7 @@ exports.register = function (server, options, next) {
       name: settings.method_prefix + '.' + item,
       method: function (options, next) {
         client[item](options, function (err, res) {
-          next(internals.wrapError(err), res);
+          next(internals.wrapError(err,  res), res);
         });
       },
       options: {}
