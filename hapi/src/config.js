@@ -38,6 +38,7 @@ config.provider = {
   },
   $default: { // this is the default configuration if no env.ENVIRONMENT varaible is set.
     jwt: {
+      'expTime' :  (  7 * 24 * 60 * 60 * 1000 ),// + 1 week (JS timestamp is ms...)
       jwtSecret: process.env.JWT_SECRET || 'ejaojeaomlelujua46z485eaz4!!aza'
     },
     google: {
@@ -81,16 +82,7 @@ config.tv = {
   }
 };
 
-config.jwt = {
-  $filter: 'env',
-  production: {
-    'jwtSecret': process.env.JWT_SECRET || 'ejaojeaomlelujua46z485eaz4!!aza'
 
-  },
-  $default: { // this is the default configuration if no env.ENVIRONMENT varaible is set.
-    'jwtSecret': process.env.JWT_SECRET || 'ejaojeaomlelujua46z485eaz4!!aza'
-  }
-};
 
 var store = new Confidence.Store(config);
 

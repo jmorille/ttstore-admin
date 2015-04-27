@@ -36,10 +36,10 @@ server.register(plugins, function (err) {
   server.auth.strategy('basic', 'basic', {
     validateFunc: require('./security/auth_basic_validate.js')
   });
-  //server.auth.strategy('jwt', 'jwt', 'required',  {
-  //  key: constants.app.jwtSecret,
-  //  validateFunc: require('./security/auth_jwt_validate.js')
-  //});
+  server.auth.strategy('jwt', 'jwt', 'required',  {
+    key:Providers.jwt.jwtSecret,
+    validateFunc: require('./security/auth_jwt_validate.js')
+  });
 
  // Add all the routes within the routes folder
   for (var route in routes) {

@@ -16,10 +16,7 @@
           "enabled": true
         },
         "properties": {
-          "name" : {
-            "type": "string",
-            "index": "analyzed"
-          }
+          "name" : {  "type": "string", "index": "analyzed" }
         }
       },
         "user": {
@@ -35,31 +32,25 @@
                     "type": "string",
                     "index": "analyzed",
                     "fields": {
-                        "raw": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        }
+                        "raw": { "type": "string", "index": "not_analyzed" }
                     }
                 },
                 "lastname": {
                     "type": "string",
                     "index": "analyzed",
                     "fields": {
-                        "raw": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        }
+                        "raw": { "type": "string",  "index": "not_analyzed" }
                     }
                 },
-                "email": {
-                    "type": "string",
-                    "index": "not_analyzed"
+                "email": { "type": "string", "index": "not_analyzed" },
+                "secured": {
+                  "type":         "object",
+                  "properties": {
+                    "password":  { "type": "string" ,   "index": "not_analyzed"}
+                  }
                 },
-                "suggest": {
-                    "type": "completion",
-                    "index_analyzer": "simple",
-                    "search_analyzer": "simple"
-                }
+                "suggest": {  "type": "completion",  "index_analyzer": "simple",  "search_analyzer": "simple"  }
+
             }
         }
     }

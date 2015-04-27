@@ -37,6 +37,19 @@ internals.wrapError = function (err, res) {
   return Boom.create(errStatus, errMsg, res);
 };
 
+internals.validateQuery = {};
+internals.validateQuery.search =  function (options, next) {
+    if (options.body && options.body.query) {
+      // Valid Query
+      return true;
+    } else if (options.q) {
+      // Valid Query
+      return true;
+    }
+    return false;
+};
+
+
 exports.register = function (server, options, next) {
 
   // --- Es Settings

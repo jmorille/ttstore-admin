@@ -14,12 +14,7 @@ https://github.com/docdis/learn-api-design
 # Tutorial Rest 
 https://gist.github.com/agendor/9922151
 
-# Es6 
-https://github.com/avbel/es6-hapi-demo
-
-
-# Test Apis
-curl -v  http://127.0.0.1:8000/hello
+   
 
 
 # Authentification
@@ -27,8 +22,13 @@ curl -v  http://127.0.0.1:8000/hello
 https://github.com/santbob/hapi-auth-example
 
 ## Test Method
-curl -v -d "username=jmorille@gmail.com&password=demo" --user admin:admin  http://127.0.0.1:8000/login
-curl -v -d "username=demo&password=admin"   http://127.0.0.1:8000/changePassword/admin
+curl -v -d "password=admin"   http://127.0.0.1:8000/changePassword/admin
+curl -v  -XPOST  --user jmorille@gmail.com:admin  http://127.0.0.1:8000/login
+
+curl -v -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI3MDEyZjcxYy05MmVhLTQ2ZDYtYmQ2OC01ODkyNjNlN2IzZTQiLCJpYXQiOjE0MzAxNDg1NDczMDgsImV4cCI6MTQzMDc1MzM0NzMwOCwiYWdlbnQiOiJjdXJsLzcuMzUuMCJ9.6B4kR9ImWW_87h0Shl5G0ebVQ2P7nSsbLxHpayejt-Q" \
+  http://127.0.0.1:8000/login/jwt
+
+
 
 changePassword
 # Authorization
@@ -37,3 +37,8 @@ https://github.com/toymachiner62/hapi-authorization
 
 # Crypto
 https://code.google.com/p/crypto-js/
+
+
+# Test Analyser 
+curl -XGET 'localhost:9200/_analyze?pretty&analyzer=standard' -d 'jmorille@gmail.com'
+curl -XGET 'localhost:9200/_analyze?pretty&analyzer=uax_url_email' -d 'jmorille@gmail.com'
