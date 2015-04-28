@@ -3,13 +3,24 @@
 var Boom = require('boom'); // error handling https://github.com/hapijs/boom
 var bcrypt = require('bcrypt'); // import the module we are using to encrypt passwords
 
-var JWT = require('../security/auth_jwt_sign.js');
+var JwtSign = require('../security/auth_jwt_sign.js');
 var userController = require('./../controllers/user');
 
 // https://github.com/ideaq/hapi-auth-jwt2/blob/master/example/simple_server.js
 module.exports = function (plugin, options, next) {
   console.log('authController initialisation');
   return [
+    {
+      method: 'GET',
+      path: '/hello',
+      handler: function (req, reply) {
+        console.log('Hello  Request Auth ', req.auth);
+        reply(req.auth);
+      },
+      config: {
+        auth: 'jwt'
+      }
+    },
     {
       method: 'GET',
       path: '/login/jwt',
@@ -27,10 +38,10 @@ module.exports = function (plugin, options, next) {
       method: 'POST',
       path: '/login',
       handler: function (request, reply) {
-        console.log('Login Request ', request);
+        console.log('Login  Request Auth ', request.auth);
         //reply({text: 'You Succefully Login and Attach a JWT token '})
         //  .header("Authorization", request.headers.authorization);
-        JWT(request, function (token, res) {
+        JwtSign(request, function (token, res) {
           return reply(res).header("Authorization", token);
         });
       },

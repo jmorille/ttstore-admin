@@ -13,9 +13,6 @@ module.exports = function sign(request, callback) {
 
   // payload is the object that will be signed by JWT below
   var now = new Date().getTime();
-  console.log('Sign Token Exp Now : ', now);
-  console.log('Sign Token Exp Time : ', Providers.jwt.expTime);
-  console.log('Sign Token Exp  : ', now + Providers.jwt.expTime);
   var payload = {
     jti: aguid(),
     iat : now,
@@ -25,6 +22,7 @@ module.exports = function sign(request, callback) {
 
   if (request.auth && request.auth.isAuthenticated) {
     payload.iss = request.auth.credentials._id;
+    payload.userId =  request.auth.credentials.userId;
   } // see: http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#issDef
   else { // no email is set (means an anonymous person)
     payload.iss = "anonymous";
@@ -44,6 +42,7 @@ module.exports = function sign(request, callback) {
     }
   };
   request.server.methods.es.index(session, function (err, res) {
+    console.log('JWT SIGN   return   -- ', token, res);
     return callback(token, res);
   });
 

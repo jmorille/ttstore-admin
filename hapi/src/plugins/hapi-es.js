@@ -19,8 +19,8 @@ internals.wrapError = function (err, res) {
   if (!err) {
     return err;
   }
-  console.log('-- err', err);
-  console.log('-- res', res);
+  //console.log('-- err', err);
+  //console.log('-- res', res);
   if (res) {
     // Generate Error From res data
     var resMsg  = res.error ? res.error : (  err.message ?  err.message  : JSON.stringify(err) ) ;

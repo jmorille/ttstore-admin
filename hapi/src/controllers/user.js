@@ -18,8 +18,12 @@ internals.registerIndexTable = function (payload) {
   return payload;
 };
 
-
+// OpenBSD's Blowfish password hashing code, as described in "A Future-Adaptable Password Scheme" by Niels Provos and David Mazières.
+// http://www.openbsd.org/papers/bcrypt-paper.ps
+// http://www.mindrot.org/projects/jBCrypt/
 internals.passwordEncode = function (password, callback) {
+  // gensalt's log_rounds parameter determines the complexity
+// the work factor is 2**log_rounds, and the default is 10
   Bcrypt.genSalt(12, function (err, salt) { //encrypt the password
     Bcrypt.hash(password, salt, function (err, hash) {
       callback(err, hash);

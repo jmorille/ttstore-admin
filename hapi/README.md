@@ -25,12 +25,23 @@ https://github.com/santbob/hapi-auth-example
 curl -v -d "password=admin"   http://127.0.0.1:8000/changePassword/admin
 curl -v  -XPOST  --user jmorille@gmail.com:admin  http://127.0.0.1:8000/login
 
-curl -v -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI3MDEyZjcxYy05MmVhLTQ2ZDYtYmQ2OC01ODkyNjNlN2IzZTQiLCJpYXQiOjE0MzAxNDg1NDczMDgsImV4cCI6MTQzMDc1MzM0NzMwOCwiYWdlbnQiOiJjdXJsLzcuMzUuMCJ9.6B4kR9ImWW_87h0Shl5G0ebVQ2P7nSsbLxHpayejt-Q" \
-  http://127.0.0.1:8000/login/jwt
+curl -v -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxZDFkYmFkZi02NjBkLTQ1NWMtODIyZi05NjBhYmJhZDc2NWQiLCJpYXQiOjE0MzAyMTczNzY3NjMsImV4cCI6MTQzMDgyMjE3Njc2MywiYWdlbnQiOiJjdXJsLzcuMzUuMCJ9.vO_AeAo8pZL_FFquo-u2_bL2gJNbcyx4N7kXBj4W7W8" \
+  http://127.0.0.1:8000/hello
 
 
+# Google Token
+https://developers.google.com/identity/protocols/OAuth2UserAgent#validatetoken
+==> JWT https://developers.google.com/identity/protocols/OAuth2?hl=fr#serviceaccount
 
-changePassword
+
+# Google Open ID
+https://developers.google.com/identity/protocols/OpenIDConnect
+==>  scope ="openid"
+https://developers.google.com/+/api/openidconnect/getOpenIdConnect
+
+# Google Identity Toolkit 
+https://developers.google.com/identity/toolkit/web/quickstart/nodejs
+
 # Authorization
 https://github.com/mark-bradshaw/mrhorse
 https://github.com/toymachiner62/hapi-authorization
