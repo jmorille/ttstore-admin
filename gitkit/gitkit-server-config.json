@@ -1,0 +1,7 @@
+{
+  "clientId" : "584480502162-rug38s6ac9g5i4r68t5b3k0tl24tv5oo.apps.googleusercontent.com",
+  "serviceAccountEmail" : "584480502162-h72nu55g356jqamumt14qlaf74lhkd4k@developer.gserviceaccount.com",
+  "serviceAccountPrivateKeyFile" : "private/jmorille-c2d9dae475b4.pem",
+  "widgetUrl" : "http://localhost:8000/gitkit",
+  "cookieName" : "gtoken"
+}
