@@ -12,20 +12,24 @@
                      scopes="{{scopes}}"
                      approval_prompt="force" offline="true" height="short"
                      labelSignin="Identifiez vous"
+                     height="wide"
+                     on-google-signin-success="{{signIn}}"
+                     on-google-signed-out="{{signedOut}}"
+                     on-google-signin-offline="{{signedInOffline}}"
                      theme="light">
 
       </google-signin>
     </div>
     <div>
-      <google-signin-aware  scopes="{{scopes}}"
-        on-google-signin-aware-success="{{signIn}}"
-        on-google-signin-aware-signed-out="{{signedOut}}">
-      </google-signin-aware>
+      <!--<google-signin-aware  scopes="{{scopes}}"-->
+        <!--on-google-signin-aware-success="{{signIn}}"-->
+        <!--on-google-signin-aware-signed-out="{{signedOut}}">-->
+      <!--</google-signin-aware>-->
 
       <p>Testing <code>google-signin-aware</code>: {{status}}</p>
     </div>
 
-    <core-ajax id="service" url="/s/oauth2callback" handleAs="json"
+    <core-ajax id="service" url="/s/login/google" handleAs="json"
                contentType="application/json"
                body="{{bodyString}}"
                method="POST"
@@ -44,20 +48,25 @@
     Polymer('tt-login', {  // jshint ignore:line
       status: 'Not granted',
       bodyString: undefined,
-      signIn: function (response) {
+      signIn: function (response, detail) {
         this.status = 'Signin granted';
         //ss
-        var googleAuth = response.detail.result;
+        var googleAuth = detail.result;
         //
-        var accessToken = googleAuth.access_token;
-        ///
         console.log('Signin Response', response);
-        console.dir(googleAuth);
+        console.log('Signin Response Detail ', detail);
+        var accessToken = googleAuth.access_token;
+        var offlineToken = googleAuth.code;
+        ///
+        console.log('googleAuth : ', googleAuth);
         // this.$.googleCal.displayCalendars();
         console.log('delte g-oauth-window : ', googleAuth['g-oauth-window']);
         delete googleAuth['g-oauth-window'];
         this.bodyString = JSON.stringify(googleAuth);
         this.$.service.go();
+      },
+      signedInOffline: function (event, detail) {
+        console.log('Signin OffLine', detail);
       },
       signedOut: function (event, response) {
         this.status = 'Not granted';
