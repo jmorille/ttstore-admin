@@ -43,11 +43,10 @@ config.provider = {
     },
     google: {
       provider: 'google',
-      password: 'hapiauth',
       clientId: '584480502162-tujkhqf3lfr3adqidnnr5g7qnqshodqg.apps.googleusercontent.com', // fill in your Google ClientId here
       clientSecret: '4hIB8jVeAm4xBnm2ocNca0gF', // fill in your Google Client Secret here
-      isSecure: false // Terrible idea but required if not using HTTPS
-    },
+      redirectUrl: undefined  // fill in your Google redirect URL
+    }
   }
 };
 
@@ -63,7 +62,7 @@ config.elastic = {
       host: 'http://192.168.1.100:9200'
     }
   },
-  $default: { // this is the default configuration if no env.ENVIRONMENT varaible is set.
+  $default: { // this is the default configuration if no env.ENVIRONMENT variable is set.
     client: {
       host: 'http://localhost:9200'
     }

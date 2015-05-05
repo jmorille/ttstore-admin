@@ -2,6 +2,7 @@
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 
+
 // Help
 require('gulp-task-list')(gulp);
 var taskListing = require('gulp-task-listing');
@@ -31,7 +32,7 @@ var debug = require('gulp-debug');
 
 // Command line conf
 var gutil = require('gulp-util'),
-  prod = gutil.env.prod;
+  prod = gulp.prod =  gutil.env.prod;
 
 // Browser reload
 var livereload = require('gulp-livereload');
@@ -94,7 +95,7 @@ var AUTOPREFIXER_BROWSERS = [
 ];
 
 // Config
-var path = {
+var path = gulp.paths =  {
   app: 'web',
   sass: 'sass',
   build: 'build',
@@ -112,6 +113,7 @@ var path = {
   sources: ['elements/**/*.html', 'scripts/{,*/}*.js']
 };
 
+
 //bower_components: ['bower_components{,/**/*}', '!bower_components{,/**/package.json,/**/bower.json,/**/index.html,/**/metadata.html,/**/*.md,/**/demo*,/**/demo**/**,/**/test,/**/test/**}'],
 var src = {
   bowerComponents: ['bower_components{,/**}'],
@@ -121,6 +123,22 @@ var src = {
 };
 
 //TODO in module cf https://github.com/greypants/gulp-starter/tree/master/gulp/tasks
+
+var dockerOpt = gulp.dockerOpt = {
+  namespace: 'jmorille',
+  image: 'nginx-webapp',
+  registryHost: '178.255.97.203:5000'
+};
+
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Load FOR 'gulp' Tasks
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+var requireDir = require('require-dir');
+requireDir('./gulp_tasks');
+
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // DEFAULT FOR 'gulp' COMMAND
@@ -528,73 +546,6 @@ gulp.task('serve', ['watch'], function () {
 });
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
-// Chrome App Mobile TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ChromeApp Mobile - Check Env configuration
-gulp.task('cca:check', function () {
-  return gulp.src('.', {read: false})
-    .pipe($.shell(['cca checkenv']));
-});
-
-
-// ChromeApp Mobile - Create Project
-gulp.task('cca:create', ['cca:check', 'build'], function () {
-  var ccaAction = ' --link-to=';
-  //var ccaAction = ' --copy-from=';
-  return gulp.src('.')
-    .pipe(debug({title: 'cca create :'}))
-    .pipe($.shell(['cca checkenv', 'cca create ' + path.buildCCA + ccaAction + path.buildVulcanized + '/manifest.json'], {ignoreErrors: true}));
-});
-
-// ChromeApp Mobile - Prepare for Build
-gulp.task('cca:prepare', function () {
-  return gulp.src('*', {read: false, cwd: path.buildCCA})
-    .pipe($.shell(['cca prepare'], {cwd: path.buildCCA}));
-});
-
-
-// ChromeApp Mobile - Push to Mobile Device
-gulp.task('cca:push', function () {
-  return gulp.src('*', {read: false, cwd: path.buildCCA})
-    .pipe($.shell(['cca push --watch'], {cwd: path.buildCCA}));
-});
-
-// ChromeApp Mobile - Build (in ./build folder)
-gulp.task('cca:build', ['cca:create'], function () {
-  var releaseOpts = prod ? ' --release' : '';
-  return gulp.src('*', {read: false, cwd: path.buildCCA})
-    .pipe($.shell(['cca build' + releaseOpts], {cwd: path.buildCCA}));
-});
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Cordova App Mobile TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// Cordova Mobile - Create Project
-gulp.task('cordova:create', ['build'], function () {
-  var ccaAction = ' --link-to=';
-  //var ccaAction = ' --copy-from=';
-  return gulp.src('.')
-    .pipe($.shell(['cordova create ' + path.buildCordova + ccaAction + path.buildVulcanized], {ignoreErrors: true}));
-});
-
-// Cordova Mobile - Config Project
-gulp.task('cordova:config', ['cordova:create'], function () {
-  var configPlateform = 'android';
-  return gulp.src('*', {read: false, cwd: path.buildCordova})
-    .pipe($.shell(['cordova platform add ' + configPlateform], {cwd: path.buildCordova, ignoreErrors: true}));
-});
-
-
-// Cordova Mobile - Build (in ./build folder)
-gulp.task('cordova:build', ['cordova:config'], function () {
-  var releaseOpts = prod ? ' --release' : '';
-  return gulp.src('*', {read: false, cwd: path.buildCordova})
-    .pipe($.shell(['cordova build' + releaseOpts], {cwd: path.buildCordova}));
-});
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -666,59 +617,8 @@ gulp.task('dist:cordova', ['cordova:build'], function (cb) {
 });
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Docker TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-var dockerOpt = {
-  namespace: 'jmorille',
-  image: 'nginx-webapp',
-  registryHost: '178.255.97.203:5000'
-};
-
-// Docker Web - Build Image
-gulp.task('build:docker', ['dist:web'], function () {
-  var DEST_DIR = path.dist;
-  return gulp.src('docker/Dockerfile')
-    .pipe(cache('Dockerfile'))
-    .pipe(debug({title: 'docker :'}))
-    .pipe(gulp.dest(DEST_DIR))
-    .pipe($.shell(['docker build --rm -t ' + dockerOpt.namespace + '/' + dockerOpt.image + ' .'], {
-      cwd: path.dist,
-      ignoreErrors: false
-    }));
-});
-
-// Docker Web - Distribution (in ./dist folder)
-gulp.task('dist:docker', ['build:docker'], function () {
-  var DEST_DIR = path.dist + '/docker-web';
-  var DEST_TAR = dockerOpt.image + '.tar';
-  return gulp.src('docker/README.md')
-    .pipe(gulp.dest(DEST_DIR))
-    .pipe($.shell(['docker save --output ' + DEST_TAR + ' ' + dockerOpt.namespace + '/' + dockerOpt.image], {
-      cwd: DEST_DIR,
-      ignoreErrors: false
-    }));
-});
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Release TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// Docker Web - Tag and Push Image (to Docker Registry)
-gulp.task('release:docker', ['build:docker'], function () {
-  // Config Tag
-  var fs = require('fs');
-  var packageJson = JSON.parse(fs.readFileSync('package.json'));
-  var dockerLocalName = dockerOpt.namespace + '/' + dockerOpt.image;
-  var dockerRegistryName = dockerOpt.registryHost + '/' + dockerOpt.image;
-  var dockerVersion = packageJson.version;
-  // Call Docker Cmd
-  return gulp.src('Dockerfile', {read: false, cwd: path.dist})
-    .pipe($.shell(['docker tag -f ' + dockerLocalName + ' ' + dockerRegistryName + ':latest'], {cwd: path.dist}))
-    .pipe($.shell(['docker tag -f ' + dockerLocalName + ' ' + dockerRegistryName + ':' + dockerVersion], {cwd: path.dist}))
-    .pipe($.shell(['docker push ' + dockerRegistryName], {cwd: path.dist, ignoreErrors: false}));
-});
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Maven TASKS

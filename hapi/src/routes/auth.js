@@ -7,7 +7,7 @@ var jwtSign = require('../security/auth_jwt_sign.js');
 var userController = require('./../controllers/user');
 
 var google = require('googleapis');
-//google.options({ proxy: 'http://proxy.example.com', auth: auth });
+//google.options({ proxy: 'http://webcache.generali.fr:3128', auth: auth });
 
 var plus = google.plus('v1');
 var OAuth2 = google.auth.OAuth2;
