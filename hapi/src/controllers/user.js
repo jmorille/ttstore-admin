@@ -121,6 +121,40 @@ UserDAO.prototype.verifyPasswordById = function (request, password, callback) {
   });
 };
 
+UserDAO.prototype.verifyByEmail = function (request, email, callback) {
+  var opt = Hoek.applyToDefaults(internals.table, {
+    body: {
+      query: {
+        term: {email: email}
+      }
+    },
+    _sourceInclude: ['email', 'verified_email' ]
+  });
+  request.server.methods.es.search(opt, function (err, res) {
+    if (err || !res) {
+      return callback(err, false);
+    }
+    var result = res.hits;
+    if (result.total === 1) {
+      var user = result.hits[0];
+      //console.log('** Find ONE verifyPasswordByEmail : --- ', err, JSON.stringify(res));
+      return callback(err, true, user);
+    } else if (result.total > 1) {
+      // TODO manage Multiple email
+      //request.server.log(['es', 'login', 'error', 'validation'], '** Find MULTIPLE user for verifyPasswordByEmail : --- ', JSON.stringify(opt));
+      //request.server.log(['es', 'login', 'error', 'validation'], '** Find MULTIPLE user for verifyPasswordByEmail : --- ', JSON.stringify(res));
+      //console.log('** Find MULTIPLE user for verifyPasswordByEmail : --- ', JSON.stringify(opt));
+      //console.log('** Find MULTIPLE user for verifyPasswordByEmail : --- ', JSON.stringify(res));
+      return callback(err, false);
+    } else {
+      console.log('** Find OTHER verifyPasswordByEmail : --- ', err, JSON.stringify(res));
+      return callback(err, false);
+    }
+
+  });
+
+};
+
 UserDAO.prototype.verifyPasswordByEmail = function (request, email, password, callback) {
   var opt = Hoek.applyToDefaults(internals.table, {
     body: {
@@ -128,7 +162,7 @@ UserDAO.prototype.verifyPasswordByEmail = function (request, email, password, ca
         term: {email: email}
       }
     },
-    _sourceInclude: ['email', 'secured.password']
+    _sourceInclude: ['email', 'verified_email' , 'secured.password']
   });
   console.log('verifyPasswordByEmail', opt);
   request.server.methods.es.search(opt, function (err, res) {

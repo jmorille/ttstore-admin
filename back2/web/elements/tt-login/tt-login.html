@@ -33,6 +33,7 @@
                contentType="application/json"
                body="{{bodyString}}"
                method="POST"
+               headers="{{headers}}"
                on-core-error="{{handleError}}"
                on-core-response="{{handleResponse}}">
     </core-ajax>
@@ -48,10 +49,15 @@
     Polymer('tt-login', {  // jshint ignore:line
       status: 'Not granted',
       bodyString: undefined,
+      headers: undefined,
+
       signIn: function (response, detail) {
         this.status = 'Signin granted';
         //ss
-        var googleAuth = detail.result;
+        var googleUser = detail.user;
+        console.log('-----------detail', googleUser);
+        var googleAuth = googleUser.UT;
+        var googleInfo = googleUser.B;
         //
         console.log('Signin Response', response);
         console.log('Signin Response Detail ', detail);
@@ -61,8 +67,9 @@
         console.log('googleAuth : ', googleAuth);
         // this.$.googleCal.displayCalendars();
         console.log('delte g-oauth-window : ', googleAuth['g-oauth-window']);
-        delete googleAuth['g-oauth-window'];
-        this.bodyString = JSON.stringify(googleAuth);
+      //  delete googleAuth['g-oauth-window'];
+        this.bodyString = JSON.stringify(googleUser);
+        this.headers= { "Authorization" : 'Bearer ' + accessToken };
         this.$.service.go();
       },
       signedInOffline: function (event, detail) {

@@ -16,6 +16,7 @@ var plugins = [
   {register: Good, options: ConfigApp.console},
   {register: require('bell')},
   {register: require('./plugins/hapi-auth-basic')},
+  {register: require('./plugins/hapi-auth-google-tokens'), options:  Providers.google},
   {register: require('hapi-auth-jwt2')},
   {register: require('./plugins/hapi-es'), options: Config.get('/elastic').client}
 ];
@@ -36,6 +37,10 @@ server.register(plugins, function (err) {
   server.auth.strategy('basic', 'basic', {
     validateFunc: require('./security/auth_basic_validate.js')
   });
+  server.auth.strategy('google-tokens', 'google-tokens', {
+    validateFunc: require('./security/auth_google_validate.js')
+  });
+
   server.auth.strategy('jwt', 'jwt', 'required',  {
     key:Providers.jwt.jwtSecret,
     validateFunc: require('./security/auth_jwt_validate.js')

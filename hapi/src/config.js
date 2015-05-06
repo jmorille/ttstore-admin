@@ -43,8 +43,8 @@ config.provider = {
     },
     google: {
       provider: 'google',
-      clientId: '584480502162-tujkhqf3lfr3adqidnnr5g7qnqshodqg.apps.googleusercontent.com', // fill in your Google ClientId here
-      clientSecret: '4hIB8jVeAm4xBnm2ocNca0gF', // fill in your Google Client Secret here
+      clientId: '584480502162-rug38s6ac9g5i4r68t5b3k0tl24tv5oo.apps.googleusercontent.com', // fill in your Google ClientId here
+      clientSecret: 'YVhYGiKAxxBL22n-e3HAyfK4', // fill in your Google Client Secret here
       redirectUrl: undefined  // fill in your Google redirect URL
     }
   }

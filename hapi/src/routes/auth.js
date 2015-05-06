@@ -65,13 +65,25 @@ module.exports = function (plugin, options, next) {
       path: '/s/login/google',
       handler: function (request, reply) {
         // https://github.com/google/google-api-nodejs-client
-        console.log('Login  Request Paylaod ', request.payload);
+        var auth =   request.auth;
+
+        console.log('------------------------------------------------------------- ');
+        console.log('---', auth);
+        console.log('------------------------------------------------------------- ');
+        console.log('Login  Request Paylaod ', JSON.stringify( request.payload) );
         var tokens = request.payload;
         //reply({text: 'You Succefully Login and Attach a JWT token '})
         //  .header("Authorization", request.headers.authorization);
-        var accessToken = tokens.access_token,
-          refreshToken = tokens.code || null; // refresh_token
+        var accessToken = tokens.UT.access_token,
+         refreshToken = tokens.UT.code || null; // refresh_token
 
+        // Check Auth
+        var credentials = auth.credentials;
+        if (!credentials.verified_email && credentials.google_tokeninfo.verified_email) {
+          // TODO Set Email as Checked
+        } else {
+          // TODO redirect to Verify Email
+        }
 
         var oauth2Client = new OAuth2(GoogleProviders.clientId, GoogleProviders.clientSecret, GoogleProviders.redirectUrl);
         oauth2Client.setCredentials({
@@ -88,20 +100,14 @@ module.exports = function (plugin, options, next) {
           console.log('Google people error', err);
           console.log('Google people profile', response);
         });
-        oauth2.tokeninfo({
-          access_token: tokens.access_token,
-          auth: oauth2Client
-        }, function (err, tokens) {
-          console.log('tokeninfo error', err);
-          console.log('tokeninfo', tokens);
-        });
+
 
         //jwtSign(request, function (token, res) {
         //  return reply(res).header("Authorization", token);
         //});
       },
       config: {
-        auth: false,
+        auth: 'google-tokens',
         tags: ['api', 'login', 'googleapi'],
         description: 'Login an User'
       }
@@ -111,6 +117,7 @@ module.exports = function (plugin, options, next) {
       path: '/changePassword/{userId}',
       handler: userController.updatePasswordById,
       config: {
+        auth: false,
         tags: ['api', 'login'],
         description: 'Login an User'
       }
