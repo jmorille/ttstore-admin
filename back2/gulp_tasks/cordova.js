@@ -34,3 +34,21 @@ gulp.task('cordova:build', ['cordova:config'], function () {
   return gulp.src('*', {read: false, cwd: paths.buildCordova})
     .pipe($.shell(['cordova build' + releaseOpts], {cwd: paths.buildCordova}));
 });
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Dist TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+// Cordova Mobile - Distribution (in ./dist folder)
+gulp.task('dist:cordova', ['cordova:build'], function (cb) {
+  gulp.src('platforms/android/ant-build/**/*.apk', {cwd: path.buildCordova})
+    .pipe(debug({title: 'android dist :'}))
+    .pipe($.flatten())
+    .pipe(gulp.dest(path.distCordovaAndroid));
+  //gulp.src('platforms/ios/*.xcodeproj', {cwd: path.buildCordova})
+  //  .pipe(debug({title: 'android dist :'}))
+  //  .pipe(gulp.dest(path.distCcaIOS));
+  cb();
+});
+

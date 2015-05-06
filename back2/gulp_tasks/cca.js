@@ -51,3 +51,21 @@ gulp.task('cca:build', ['cca:create'], function () {
     .pipe($.shell(['cca build' + releaseOpts], {cwd: paths.buildCCA}));
 });
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Dist TASKS
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+// Chrome App Mobile - Distribution (in ./dist folder)
+gulp.task('dist:cca', ['cca:build'], function (cb) {
+  gulp.src('platforms/android/build/outputs/**/*.apk', {cwd: path.buildCCA})
+    .pipe(debug({title: 'android dist :'}))
+    .pipe($.flatten())
+    .pipe(gulp.dest(path.distCcaAndroid));
+  gulp.src('platforms/ios/*.xcodeproj', {cwd: path.buildCCA})
+    .pipe(debug({title: 'android dist :'}))
+    .pipe(gulp.dest(path.distCcaIOS));
+  cb();
+});
+
+
