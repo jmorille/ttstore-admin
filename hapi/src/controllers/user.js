@@ -1,7 +1,7 @@
 'use strict';
 var Hoek = require('hoek'); // hapi utilities https://github.com/hapijs/hoek
 var Boom = require('boom'); // error handling https://github.com/hapijs/boom
-var Bcrypt = require('bcrypt');
+var Bcrypt = require('bcryptjs');
 
 var internals = {};
 
