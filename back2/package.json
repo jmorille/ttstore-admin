@@ -1,9 +1,14 @@
 {
   "name": "back2",
   "version": "0.0.1",
+  "description": "Sample App",
   "scripts": {
     "npmdeps": "npm-check-updates",
     "deps": "bower-update"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jmorille/ttstore-admin.git"
   },
   "devDependencies": {
     "browser-sync": "^2.7.1",
@@ -60,7 +65,6 @@
     "require-dir": "^0.3.0",
     "serve-index": "^1.6.3",
     "serve-static": "^1.9.2",
-    "url": "^0.10.3",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.2.1",
