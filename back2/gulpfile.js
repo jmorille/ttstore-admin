@@ -183,37 +183,6 @@ gulp.task('watch', ['watch:sass', 'cp:watch', 'watch:images', 'watch:vulcanize']
 });
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Lint TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// Lint - the sources App
-gulp.task('lint', function () {
-  return gulp.src(path.sources, {cwd: path.app})
-    .pipe(cache('appSrc'))
-    .pipe($.jshint.extract('auto'))
-    .pipe($.jshint())
-    .pipe($.jshint.reporter('jshint-stylish'));
-});
-
-gulp.task('watch:lint', ['lint'], function (cb) {
-  gulp.watch(path.sources, {cwd: path.app}, ['lint']);
-  cb();
-});
-
-
-// Lint - the build script
-gulp.task('lint:gulp', function () {
-  return gulp.src('gulpfile.js')
-    .pipe($.jshint())
-    .pipe(cache('gulpfile'))
-    .pipe($.jshint.reporter('jshint-stylish'));
-});
-
-gulp.task('watch:lint:gulp', ['lint:gulp'], function (cb) {
-  gulp.watch('gulpfile.js', ['lint:gulp']);
-  cb();
-});
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
