@@ -32,7 +32,7 @@ var debug = require('gulp-debug');
 
 // Command line conf
 var gutil = require('gulp-util'),
-  prod = gulp.prod =  gutil.env.prod;
+  prod = gulp.prod = gutil.env.prod;
 
 // Browser reload
 var livereload = require('gulp-livereload');
@@ -95,7 +95,7 @@ var AUTOPREFIXER_BROWSERS = [
 ];
 
 // Config
-var path = gulp.paths =  {
+var path = gulp.paths = {
   app: 'web',
   sass: 'sass',
   build: 'build',
@@ -131,13 +131,11 @@ var dockerOpt = gulp.dockerOpt = {
 };
 
 
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Load FOR 'gulp' Tasks
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var requireDir = require('require-dir');
 requireDir('./gulp_tasks');
-
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -160,6 +158,11 @@ gulp.task('clean', function (cb) {
 // CLean css file
 gulp.task('clean:css', function (cb) {
   del(withNotGlob([path.app + '/**/*.css'], [path.app + '/' + src.bowerComponents]), cb);
+});
+
+// CLean css file
+gulp.task('clean:bower', function (cb) {
+  del(path.app + '/' + src.bowerComponents, cb);
 });
 
 // Build app
@@ -376,7 +379,7 @@ gulp.task('watch:sass', ['sass'], function (cb) {
 // Vulcanize - Internal
 var vulcanizeFunc = function (cb) {
   var DEST_DIR = path.buildVulcanized + '/elements';
-  return gulp.src('elements/elements.html', {cwd: path.app, base: path.app })
+  return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
     //.pipe(cache('vulcanizingDD')) // NOT WORKING BUT WHY ?
     .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
     .pipe(debug({title: 'vulcanize :'}))
@@ -529,7 +532,7 @@ gulp.task('serve', ['watch'], function () {
   var proxy = require('proxy-middleware');
   var proxyOptions = url.parse('http://127.0.0.1:8000/s/');
   proxyOptions.route = '/s/';
-   var proxies = [ proxy(proxyOptions)];
+  var proxies = [proxy(proxyOptions)];
   // browserSync Server
   // ------------------
   var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
@@ -544,8 +547,6 @@ gulp.task('serve', ['watch'], function () {
     }
   });
 });
-
-
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -591,8 +592,6 @@ gulp.task('dist:ca', ['build'], function (cb) {
     .pipe(gulp.dest(path.dist));
   cb();
 });
-
-
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

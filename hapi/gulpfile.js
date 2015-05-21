@@ -40,6 +40,11 @@ gulp.task('clean', function (cb) {
   del([path.dist], cb); // Delete dist and build to allow for nice, clean files!
 });
 
+// Clean all files
+gulp.task('clean:npm', function (cb) {
+  del('node_modules{,/**}', cb); // Delete dist and build to allow for nice, clean files!
+});
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Lint TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

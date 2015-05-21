@@ -91,16 +91,19 @@
   <script>
     'use strict';
     Polymer('ttadmin-layout-search', {  // jshint ignore:line
+      bannerMenuTemplate: 'template',
 
       created: function() {
         this.routeback = this.routeback || 'home';
       },
       attached: function() {
-        this.template = this.querySelector(this.bannerMenuTemplate);
-        if (!this.template.bindingDelegate) {
+        this.template = this.querySelector('template');
+//        this.template = this.querySelector(this.bannerMenuTemplate);
+        console.log('Template search '+ this.bannerMenuTemplate +':', this.template);
+        if (this.template && !this.template.bindingDelegate) {
           this.template.bindingDelegate = this.element.syntax;
         }
-        this.resizableAttachedHandler();
+      //   this.resizableAttachedHandler();
       },
       siteMenuHeaderTapHandler: function () {
         MoreRouting.navigateTo(this.routeback );
