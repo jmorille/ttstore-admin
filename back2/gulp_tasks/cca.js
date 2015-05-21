@@ -10,6 +10,25 @@ var prod = gulp.prod;
 // plugins
 var $ = require('gulp-load-plugins')();
 
+// packages
+var path = require('path');
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//  Chrome App Mobile Wrapper
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+var runCca = function (command, options, stream) {
+  command = typeof command === 'string' ? [command] : command;
+  options = options || {cwd: paths.buildCCA};
+  var ccaBin = path.resolve('node_modules/cca/src/cca.js');
+  var cmdLines = Array.prototype.map.call(command, function (elt) {
+    return ccaBin + ' ' + elt;
+  });
+  console.log('Run CCA : ', cmdLines);
+  // create new stream if not provided
+  stream = stream || gulp.src('.', {read: false});
+  return stream.pipe($.shell(cmdLines, options));
+};
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
 // Chrome App Mobile TASKS
@@ -17,38 +36,40 @@ var $ = require('gulp-load-plugins')();
 
 // ChromeApp Mobile - Check Env configuration
 gulp.task('cca:check', function () {
-  return gulp.src('.', {read: false})
-    .pipe($.shell(['cca checkenv']));
+  return runCca('checkenv', {ignoreErrors: false});
 });
 
-
 // ChromeApp Mobile - Create Project
-gulp.task('cca:create', ['cca:check', 'build'], function () {
+gulp.task('cca:create', ['build'], function () {
   var ccaAction = ' --link-to=';
   //var ccaAction = ' --copy-from=';
-  return gulp.src('.')
-    .pipe($.debug({title: 'cca create :'}))
-    .pipe($.shell(['cca checkenv', 'cca create ' + paths.buildCCA + ccaAction + paths.buildVulcanized + '/manifest.json'], {ignoreErrors: true}));
+  return runCca([
+    'checkenv',
+    'create ' + paths.buildCCA + ccaAction + paths.buildVulcanized + '/manifest.json'
+  ], {ignoreErrors: true});
 });
 
 // ChromeApp Mobile - Prepare for Build
 gulp.task('cca:prepare', function () {
-  return gulp.src('*', {read: false, cwd: paths.buildCCA})
-    .pipe($.shell(['cca prepare'], {cwd: paths.buildCCA}));
+  return runCca('prepare');
+  //return gulp.src('*', {read: false, cwd: paths.buildCCA})
+  //    .pipe($.shell(['cca prepare'], {cwd: paths.buildCCA}));
 });
 
 
 // ChromeApp Mobile - Push to Mobile Device
 gulp.task('cca:push', function () {
-  return gulp.src('*', {read: false, cwd: paths.buildCCA})
-    .pipe($.shell(['cca push --watch'], {cwd: paths.buildCCA}));
+  return runCca('push --watch');
+  //return gulp.src('*', {read: false, cwd: paths.buildCCA})
+  //    .pipe($.shell(['cca push --watch'], {cwd: paths.buildCCA}));
 });
 
 // ChromeApp Mobile - Build (in ./build folder)
 gulp.task('cca:build', ['cca:create'], function () {
   var releaseOpts = prod ? ' --release' : '';
-  return gulp.src('*', {read: false, cwd: paths.buildCCA})
-    .pipe($.shell(['cca build' + releaseOpts], {cwd: paths.buildCCA}));
+  //return gulp.src('*', {read: false, cwd: paths.buildCCA})
+  //    .pipe($.shell(['cca build' + releaseOpts], {cwd: paths.buildCCA}));
+  return runCca('build' + releaseOpts);
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
