@@ -1,0 +1,17 @@
+{
+  "name": "back2",
+  "version": "0.0.1",
+  "dependencies": {
+    "webcomponentsjs": "^0.7.2"
+    "polymer": "Polymer/polymer#^1.0.0",
+    "core-elements": "Polymer/iron-elements#^1.0.0",
+    "paper-elements": "Polymer/paper-elements#^1.0.0",
+    "google-signin": "^0.3.0",
+    "elastic.js": "^1.2.0",
+    "lodash": "^3.8.0",
+    "more-routing": "Polymore/more-routing#^0.5.0",
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^3.1.3"
+  } 
+}
