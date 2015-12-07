@@ -7,7 +7,7 @@
     "polymer": "Polymer/polymer#^0.5.6",
     "tt-crud": "https://github.com/tt-components/tt-crud.git#master",
     "tt-paginator": "https://github.com/tt-components/tt-paginator.git#master",
-    "google-signin": "^0.3.0",
+    "google-signin": "^1.2.0",
     "elastic.js": "^1.2.0",
     "lodash": "^3.8.0",
     "more-routing": "Polymore/more-routing#^0.5.0",

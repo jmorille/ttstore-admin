@@ -11,14 +11,13 @@ ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 
 # Config proxy env
 # #######################
-ENV http_proxy="http://webcache.groupe.generali.fr:3128" https_proxy="http://webcache.groupe.generali.fr:3128" no_proxy="*.groupe.generali.fr" HTTP_PROXY="http://webcache.groupe.generali.fr:3128" HTTPS_PROXY="http://webcache.groupe.generali.fr:3128" NO_PROXY="*.groupe.generali.fr"
 
 
 
 # #######################
 # Install  NGINX
 # #######################
-ENV NGINX_VERSION="1.7.12"
+ENV NGINX_VERSION="1.9.7"
 
 
 # Expose
@@ -87,7 +86,7 @@ RUN cd /tmp/nginx-${NGINX_VERSION} \
       --with-http_ssl_module \
       --with-http_stub_status_module \
       --with-http_realip_module \
-      --with-http_spdy_module \
+      --with-http_v2_module \
       --with-http_gzip_static_module \
       --with-http_gunzip_module \
       --with-ipv6 \
@@ -100,7 +99,7 @@ RUN cd /tmp/nginx-${NGINX_VERSION} \
 # #######################
 #RUN rm -Rf /tmp/ngx_pagespeed-1.8.31.3-beta
 RUN rm -Rf /tmp/nginx-${NGINX_VERSION} \
-    apt-get purge \
+    apt-get apt-utils purge \
       build-essential \
       libpcre3 libpcre3-dev libssl-dev libperl-dev \
       zlib1g-dev \

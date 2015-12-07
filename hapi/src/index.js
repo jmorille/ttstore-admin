@@ -14,6 +14,7 @@ server.connection({port: ConfigApp.port});
 
 var plugins = [
   {register: Good, options: ConfigApp.console},
+
   {register: require('bell')},
   {register: require('./plugins/hapi-auth-basic')},
   {register: require('./plugins/hapi-auth-google-tokens'), options:  Providers.google},
@@ -22,8 +23,10 @@ var plugins = [
 ];
 
 if (true) {
-  plugins.push({register: require('tv'), options: Config.get('/tv')});
+  plugins.push({register: require('inert')});
+  plugins.push({register: require('vision')});
   plugins.push({register: require('hapi-swagger'), options: Config.get('/swagger')});
+  plugins.push({register: require('tv'), options: Config.get('/tv')});
 }
 
 server.register(plugins, function (err) {
