@@ -25,6 +25,7 @@ web:
    - "80:80"
   volumes:
    - ~/project/ttstore-admin/back2:/data/wwww
-   - /data/download/ttstore/ngnix/logs:/var/log/nginx
+   - /data/download/ttstore/ngnix/logs:/etc/nginx/logs
   links:
+   - "es:es"
    - "ttserver:ttserver"

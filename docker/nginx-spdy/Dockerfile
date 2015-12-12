@@ -17,26 +17,15 @@ ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 # #######################
 # Install  NGINX
 # #######################
-ENV NGINX_VERSION="1.9.7"
+ENV NGINX_VERSION="1.9.9"
 
-
-# Expose
-# #######################
-EXPOSE 80 443
-VOLUME ["/data/wwww", "/etc/nginx/logs", "/var/lib/nginx", "/etc/nginx/ssl" ]
-
-
-# Start Command
-# #######################
-# WORKDIR /etc/nginx/
-#CMD ["/usr/sbin/nginx"]
-CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
 
 
 # Install dependencies
 # #######################
 RUN apt-get update -qq && \
     apt-get install -yqq --force-yes  --fix-missing \
+       apt-utils \
        build-essential \
        wget zip \
        openssl ca-certificates
@@ -74,9 +63,11 @@ RUN  sed -i'' 's/\#define NGINX_VER          "nginx\/" NGINX_VERSION/#define NGI
 
 # Compile Ngnix
 # #######################
+
 RUN cd /tmp/nginx-${NGINX_VERSION} \
-&& ./configure --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx \
-	  --http-client-body-temp-path=/var/lib/nginx/body_temp \
+&& ./configure --prefix=/usr/local/nginx --pid-path=/run/nginx.pid \
+      --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log \
+	    --http-client-body-temp-path=/var/lib/nginx/body_temp \
       --http-proxy-temp-path=/var/lib/nginx/proxy_temp \
       --http-fastcgi-temp-path=/var/lib/nginx/fastcgi_temp  \
       --http-scgi-temp-path=/var/lib/nginx/scgi_temp  \
@@ -111,17 +102,13 @@ RUN rm -Rf /tmp/nginx-${NGINX_VERSION} \
 # #######################
 ADD build/ssl /etc/nginx/ssl
 
+RUN apt-get install -yqq --force-yes curl
 
 # Configure nginx
 # #######################
-COPY build/nginx.conf /etc/nginx/conf/nginx.conf
-COPY /build/sites-enabled /etc/nginx/sites-enabled
+COPY build/nginx.conf /usr/local/nginx/conf/nginx.conf
+COPY /build/sites-enabled /usr/local/nginx/sites-enabled
 
-
-# Install build
-# #######################
-# ADD build build
-# RUN [ "/build/install.sh" , "setup" ]
 
 
 # forward request and error logs to docker log collector
@@ -129,6 +116,18 @@ COPY /build/sites-enabled /etc/nginx/sites-enabled
 #RUN ln -sf /dev/stdout /var/log/nginx/access.log
 #RUN ln -sf /dev/stderr /var/log/nginx/error.log
 
+# Expose
+# #######################
+EXPOSE 80 443
+VOLUME ["/data/wwww", "/var/log/nginx", "/var/lib/nginx", "/etc/nginx/ssl" ]
+
+
+
+# Start Command
+# #######################
+# WORKDIR /etc/nginx/
+#CMD ["/usr/sbin/nginx"]
+CMD ["/usr/local/nginx/sbin/nginx"]
 
 
 

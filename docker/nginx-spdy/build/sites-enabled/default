@@ -1,16 +1,11 @@
 # env APP_ES_1_PORT_9200_TCP_ADDR
 # env APP_ES_1_PORT_9200_TCP_PORT
 
-upstream lb-es {
-      ip_hash;
-      server es:9200 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-1
-   #   server 192.168.1.101:9200 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-2
-   # server $ENV{"APP_ES_1_PORT_9200_TCP_ADDR"}:$ENV{"APP_ES_1_PORT_9200_TCP_PORT"} weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-2
-}
 
 upstream lb-ttserver {
-      ip_hash;
-      server ttserver:8000 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-1
+   ip_hash;
+   server es:9200 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-1
+   #   server ttserver:8000 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-1
    #   server 192.168.1.101:9200 weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-2
    # server $ENV{"TTSERVER_1_PORT_8000_TCP_ADDR"}:$ENV{"TTSERVER_1_PORT_8000_TCP_PORT"} weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-2
    # server $ENV{"TTSERVER_2_PORT_8000_TCP_ADDR"}:$ENV{"TTSERVER_2_PORT_8000_TCP_PORT"} weight=10 max_fails=3 fail_timeout=30s; # Reverse proxy to machine-2
@@ -54,15 +49,12 @@ server {
 
     # OCSP Stapling ---
     # fetch OCSP records from URL in ssl_certificate and cache them
-    ssl_stapling on;
-    ssl_stapling_verify on;
+    # ssl_stapling on;
+    # ssl_stapling_verify on;
 
     location / {
      # gzip_static on;
      #  gunzip on;
-
-
-
        root /data/wwww;
        index index.html index.html;
        expires 0;
@@ -77,20 +69,6 @@ server {
        add_header Cache-Control "private";
      }
 
-     location /esd/ {
-        rewrite  ^/esd/(.*)  /$1 break;
-
-        proxy_pass http://lb-es; # Load balance the URL location "/" to the upstream lb-subprint
-        proxy_http_version 1.1;
-
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-
-        # proxy_read_timeout 600s;
-        # proxy_buffering off;
-     }
 
      location /s/ {
 
@@ -107,14 +85,5 @@ server {
          stub_status;
      }
 
-     location /head {
-        proxy_pass http://lb-es/_plugin/head; # Load balance the URL location "/" to the upstream lb-subprint
-        proxy_http_version 1.1;
-
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-     }
 
 }

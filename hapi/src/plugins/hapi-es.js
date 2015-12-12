@@ -11,7 +11,7 @@ var internals = {}; // Declare internals >> see: http://hapijs.com/styleguide
 
 internals.defaultSettings = {
   host: 'http://localhost:9200',
-  apiVersion: '1.5',
+  apiVersion: '2.1',
   method_prefix: 'es'
 };
 
