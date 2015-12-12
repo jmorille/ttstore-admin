@@ -1,0 +1,5 @@
+{"index":{"_index" : "userauth", "_type": "back", "_id" : "admin"}}
+{ "username":"admin",    "password": "$2a$12$9ZJhw2bPvDlsvp9Oj1f2deST37nf5516nWEehvOkAJGxWufeiuBye"  }
+{"index":{"_index":"userauth","_type":"back","_id":1}}
+{"username":"john","password":"$2a$10$iqJSHD.BGr0E2IxQwYgJmeP3NvhPrXAeLSaGCj6IR/XU5QtjVu5Tm"}
+

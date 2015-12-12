@@ -40,11 +40,6 @@ gulp.task('clean', function (cb) {
   del([path.dist], cb); // Delete dist and build to allow for nice, clean files!
 });
 
-// Clean all files
-gulp.task('clean:npm', function (cb) {
-  del('node_modules{,/**}', cb); // Delete dist and build to allow for nice, clean files!
-});
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Lint TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,34 +75,19 @@ gulp.task('cp:package', function () {
 // LiveReload
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gulp.task('serve', function () {
-  livereload.listen({port: 35739});
-  //    exec: "--use_strict --harmony",
+  livereload.listen();
   nodemon({
-    script: 'src/index.js',
-    watch: ['src/**/*.js'],
-    ext: 'js',
-    env: {ES_ADDR: 'localhost'}
+    script: 'src/server.js'
+    , ext: 'js'
+    , env: { ES_ADDR: 'localhost' }
   }).on('restart', function () {
     setTimeout(function () {
+
       livereload.changed(__dirname);
     }, 500);
   });
 });
 
-gulp.task('serveHome', function () {
-  livereload.listen({port: 35739});
-  //    exec: "--use_strict --harmony",
-  nodemon({
-    script: 'src/index.js',
-    watch: ['src/**/*.js'],
-    ext: 'js',
-    env: {ES_ADDR: '192.168.1.100'}
-  }).on('restart', function () {
-    setTimeout(function () {
-      livereload.changed(__dirname);
-    }, 500);
-  });
-});
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Build

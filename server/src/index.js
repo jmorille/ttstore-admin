@@ -12,17 +12,16 @@ const server = new Hapi.Server(); //{ debug: { request: ['info', 'error'] } }
 server.connection({port: ConfigApp.port});
 
 
-var plugins = [
+const plugins = [
   {register: Good, options: ConfigApp.console},
+  {register: require('./plugins/hapi-es'), options: Config.get('/elastic').client},
 
+  {register: require('hapi-auth-basic')},
   {register: require('bell')},
-  {register: require('./plugins/hapi-auth-basic')},
-  {register: require('./plugins/hapi-auth-google-tokens'), options:  Providers.google},
-  {register: require('hapi-auth-jwt2')},
-  {register: require('./plugins/hapi-es'), options: Config.get('/elastic').client}
+  {register: require('hapi-auth-jwt2')}
 ];
 
-if (true) {
+if (false) {
   plugins.push({register: require('inert')});
   plugins.push({register: require('vision')});
   plugins.push({register: require('hapi-swagger'), options: Config.get('/swagger')});
@@ -37,17 +36,10 @@ server.register(plugins, function (err) {
 
   //server.auth.strategy('google', 'bell', Providers.google);
 
-  server.auth.strategy('basic', 'basic', {
+  server.auth.strategy('simple', 'basic', {
     validateFunc: require('./security/auth_basic_validate.js')
   });
-  server.auth.strategy('google-tokens', 'google-tokens', {
-    validateFunc: require('./security/auth_google_validate.js')
-  });
 
-  server.auth.strategy('jwt', 'jwt', 'required',  {
-    key:Providers.jwt.jwtSecret,
-    validateFunc: require('./security/auth_jwt_validate.js')
-  });
 
  // Add all the routes within the routes folder
   for (var route in routes) {
