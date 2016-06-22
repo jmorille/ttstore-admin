@@ -8,8 +8,18 @@ es:
    - /data/download/ttstore/es/logs:/var/log/elasticsearch
    - /data/download/ttstore/es/data:/usr/share/elasticsearch/data
    - /data/download/ttstore/es/work:/work
+  ulimits:
+     nproc: 65535
+     nofile:
+       soft: 20000
+       hard: 40000
+
+cert:
+  build: cert
+
 ttserver:
   build: server
+  container_name: jmorille/ttserver
   ports:
    - "8000:8000"
   expose:
@@ -18,13 +28,30 @@ ttserver:
    - ~/project/ttstore-admin/server:/opt/ttserver
   links:
    - "es:es"
+
 web:
   build: nginx-spdy
   ports:
    - "443:443"
    - "80:80"
+  volumes_from:
+   - cert
   volumes:
    - ~/project/ttstore-admin/back2:/data/wwww
    - /data/download/ttstore/ngnix/logs:/var/log/nginx
   links:
    - "ttserver:ttserver"
+
+quic:
+  image: devsisters/quic-reverse-proxy
+  ports:
+   - "8080:8080"
+   - "8080:8080/udp"
+  volumes_from:
+   - cert
+  environment:
+   - cert=/data/cert/server.crt
+   - key=/data/cert/server.key
+   - port=8080
+  links:
+   - "web:web"

@@ -63,8 +63,14 @@ exports.register = function (server, options, next) {
   var client = new es.Client(settings);
   server.log(['es', 'info'], 'Created Elastic client');
   server.expose('client', client);
-  // Expose Search
+  // Decorate
+  let decorationClient = function () {
+    return client;
+  };
+  server.decorate('request', 'clientEs', decorationClient, { apply: false });
+  server.decorate('server', 'clientEs', decorationClient, { apply: false });
 
+  // Expose Search
   //server.handler('essearch', function (route, options) {
   //  return function (request, reply) {
   //    var params = request.query;

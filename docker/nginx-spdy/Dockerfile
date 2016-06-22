@@ -11,29 +11,39 @@ ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 
 # Config proxy env
 # #######################
+# ENV http_proxy="http://proxy:3128"  no_proxy=""
+# HTTP_PROXY="$http_proxy" https_proxy="$http_proxy" HTTPS_PROXY="$http_proxy" NO_PROXY="$no_proxy"
 
 
 
 # #######################
 # Install  NGINX
 # #######################
-ENV NGINX_VERSION="1.9.9"
+ENV NGINX_VERSION="1.9.12"
 
+
+# Expose
+# #######################
+EXPOSE 80 443
+VOLUME ["/data/wwww", "/var/log/nginx", "/var/lib/nginx", "/data/cert" ]
 
 
 # Install dependencies
 # #######################
 RUN apt-get update -qq && \
     apt-get install -yqq --force-yes  --fix-missing \
+       apt-utils
+
+RUN apt-get install -yqq --force-yes  --fix-missing \
        apt-utils \
        build-essential \
        wget zip \
        openssl ca-certificates
 
-RUN apt-get update -qq && \
-    apt-get install -yqq --force-yes  --fix-missing   zlib1g-dev \
+RUN apt-get install -yqq --force-yes  --fix-missing   zlib1g-dev \
               libpcre3 libpcre3-dev libssl-dev libperl-dev
 
+# RUN apt-get install -yqq --force-yes curl
 
 
 # From instructions here: https://github.com/pagespeed/ngx_pagespeed
@@ -100,9 +110,8 @@ RUN rm -Rf /tmp/nginx-${NGINX_VERSION} \
 
 # TLS Certificat
 # #######################
-ADD build/ssl /etc/nginx/ssl
+ADD build/ssl /data/cert
 
-RUN apt-get install -yqq --force-yes curl
 
 # Configure nginx
 # #######################
@@ -115,11 +124,6 @@ COPY /build/sites-enabled /usr/local/nginx/sites-enabled
 # #######################
 #RUN ln -sf /dev/stdout /var/log/nginx/access.log
 #RUN ln -sf /dev/stderr /var/log/nginx/error.log
-
-# Expose
-# #######################
-EXPOSE 80 443
-VOLUME ["/data/wwww", "/var/log/nginx", "/var/lib/nginx", "/etc/nginx/ssl" ]
 
 
 

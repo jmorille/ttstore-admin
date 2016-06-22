@@ -76,12 +76,21 @@ config.tv = {
     endpoint: '/debug/console',
     authenticateEndpoint: false
   },
-  $default: { // this is the default configuration if no env.ENVIRONMENT varaible is set.
+  $default: { // this is the default configuration if no env.ENVIRONMENT variable is set.
     endpoint: '/debug/console',
     authenticateEndpoint: false
   }
 };
 
+config.authorization = {
+  $filter: 'env',
+  production: {
+    roles: false
+  },
+  $default: { // this is the default configuration if no env.ENVIRONMENT variable is set.
+    roles: false
+  }
+};
 
 
 var store = new Confidence.Store(config);

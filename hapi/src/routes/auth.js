@@ -1,19 +1,22 @@
 'use strict';
 
-var Boom = require('boom'); // error handling https://github.com/hapijs/boom
-var bcrypt = require('bcrypt'); // import the module we are using to encrypt passwords
+const Boom = require('boom'); // error handling https://github.com/hapijs/boom
+const bcrypt = require('bcrypt'); // import the module we are using to encrypt passwords
 
-var jwtSign = require('../security/auth_jwt_sign.js');
-var userController = require('./../controllers/user');
+const jwtSign = require('../security/auth_jwt_sign.js');
+const userController = require('./../controllers/user');
 
-var google = require('googleapis');
-//google.options({ proxy: 'http://webcache.generali.fr:3128', auth: auth });
+const google = require('googleapis');
+//google.options({ proxy: 'http://webcache.proxy.fr:3128', auth: auth });
 
-var plus = google.plus('v1');
-var OAuth2 = google.auth.OAuth2;
-var oauth2 = google.oauth2('v2');
-var Config = require("../config");
-var GoogleProviders = Config.get('/provider').google;
+const plus = google.plus('v1');
+const OAuth2 = google.auth.OAuth2;
+const oauth2 = google.oauth2('v2');
+const Config = require("../config");
+const GoogleProviders = Config.get('/provider').google;
+
+const GoogleTokenSingin = require("../security/google_token_signin");
+
 
 // https://github.com/ideaq/hapi-auth-jwt2/blob/master/example/simple_server.js
 module.exports = function (plugin, options, next) {
@@ -58,6 +61,16 @@ module.exports = function (plugin, options, next) {
         auth: 'basic',
         tags: ['api', 'login'],
         description: 'Login an User'
+      }
+    },
+    {
+      method: 'POST',
+      path: '/s/google/tokensignin',
+      handler: GoogleTokenSingin,
+      config: {
+        auth: false,
+        tags: ['api', 'login', 'googleapi'],
+        description: 'Veirfy Google Token '
       }
     },
     {

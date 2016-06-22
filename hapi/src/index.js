@@ -1,4 +1,8 @@
+'use strict';
+const fs = require('fs');
+
 const Hapi = require('hapi');
+const Http2 = require('http2');
 const Good = require('good');
 
 const routes = require('./routes');
@@ -6,10 +10,30 @@ const Config = require("./config");
 const Providers = Config.get('/provider');
 const ConfigApp = Config.get('/app');
 
+console.log('-----', fs.realpathSync('./cert/'));
+
+// Http2
+var tls = {
+  key: fs.readFileSync('./cert/server.key'),
+  cert: fs.readFileSync('./cert/server.crt')
+};
+//let listener = Http2.createServer(tls);
+//if (!listener.address) {
+//  listener.address = function() {
+//    return this._server.address()
+//  }
+//};
 
 // Http Server
 const server = new Hapi.Server(); //{ debug: { request: ['info', 'error'] } }
-server.connection({port: ConfigApp.port});
+server.connection({ port: ConfigApp.port });
+//server.connection({ port: 8001, tls: tls  });
+
+//server.connection({
+//  listener: listener,
+//  port: ConfigApp.port,
+//  tls: true
+//});
 
 
 var plugins = [

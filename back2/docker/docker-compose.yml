@@ -9,8 +9,10 @@ es:
    - /data/ttstore/data:/data
    - /data/ttstore/work:/work
    - /data/ttstore/tmp:/tmp
+
 ttserverData:
   image: jmorille/ttstore-back-server
+
 ttserver:
   image: jmorille/ttserver
   ports:
@@ -21,8 +23,10 @@ ttserver:
    - ttserverData
   links:
    - "es:es"
+
 webapp:
   image: jmorille/nginx-webapp
+
 web:
   image: jmorille/nginx-spdy
   ports:
