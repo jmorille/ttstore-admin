@@ -7,7 +7,10 @@
 export CA_PASS=agrica
 export CERTIFCATE_PASS=acirga
 
-# Keystore 
+export CA_SUBJ="/C=FR/ST=France/L=Paris/O=Organisation/OU=DSI/CN=root" 
+export CERT_SUBJ="/C=FR/ST=France/L=Paris/O=<organisation/OU=DITW/CN=localhost"
+
+# KeyStore
 export FILE_KEYSTORE_JKS="keystore-server.jks"
 export FILE_KEYSTORE_PKCS12="server.p12"
 
@@ -19,7 +22,7 @@ function docCertificateSubject {
 
   echo "###  Create the Server Key and Certificate Signing Request"
   echo "### ########################################################"
-  echo "### First parameter :  $KEY_PASS"
+  echo "### First parameter :  $CERTIFCATE_PASS"
   echo "/C  =  Country	                 GB"
   echo "/ST =  State	                 London"
   echo "/L  =  Location	                 London"
@@ -39,10 +42,9 @@ function createCA {
   # openssl rsa  -passin pass:$CA_PASS -in ca.key -out ca.key.unsecure
 
   # Créez un certificat auto-signé (structure X509) à l'aide de la clé RSA que vous venez de générer (la sortie sera au format PEM) :
-  openssl req -passin pass:$CA_PASS -new -x509 -nodes -sha1 -days 365 -key ca.key -out ca.crt -extensions usr_cert  -subj "/C=FR/ST=France/L=Paris/O=Organisation/OU=DSI/CN=root" 
+  openssl req -passin pass:$CA_PASS -new -x509 -nodes -sha1 -days 365 -key ca.key -out ca.crt -extensions usr_cert  -subj $CA_SUBJ
 
-  # Vous pouvez afficher les détails de ce certificat avec :
-  # openssl x509 -passin pass:$CA_PASS -noout -text -in ca.crt
+  # printCA
 }
 
 function printCA {
@@ -61,13 +63,13 @@ function createCertificateTls {
  # openssl rsa -passin pass:$CERTIFCATE_PASS -noout -text -in server.key
  
  # Créez une Demande de signature de Certificat (CSR) à l'aide de la clé privée précédemment générée (la sortie sera au format PEM):
- openssl req -passin pass:$CERTIFCATE_PASS -new -key server.key -out server.csr  -subj "/C=FR/ST=France/L=Paris/O=<organisation/OU=DITW/CN=localhost"
+ openssl req -passin pass:$CERTIFCATE_PASS -new -key server.key -out server.csr  -subj $CERT_SUBJ
+
  # Vous devez entrer le Nom de Domaine Pleinement Qualifié ("Fully Qualified Domain Name" ou FQDN) 
  # de votre serveur lorsqu'OpenSSL vous demande le "CommonName", 
  # c'est à dire que si vous générez une CSR pour un site web auquel on accèdera par l'URL https://www.foo.dom/, le FQDN sera "www.foo.dom". 
  
- #Vous pouvez afficher les détails de ce CSR avec :
- # openssl req -passin pass:$CERTIFCATE_PASS -noout -text -in server.csr
+ # printCsr
 
 }
 
@@ -81,7 +83,6 @@ function signCertificateTlsWithCa {
   # La commande qui signe la demande de certificat est la suivante : ==>  CRT ( = CSR + CA sign
   openssl x509 -passin pass:$CA_PASS -req -in server.csr -out server.crt -CA ca.crt -CAkey ca.key -CAcreateserial -CAserial ca.srl
   
-  # Une fois la CSR signée, vous pouvez afficher les détails du certificat comme suit :
   # printCrt
 }
 
@@ -104,19 +105,31 @@ function mergeAllCertificats {
 
 function createNewKeystorePKCS12 {
  # -->  server.p12
- if [ -f "$FILE_KEYSTORE_PKCS12" ]
+   if [ -f "$FILE_KEYSTORE_PKCS12" ]
    then
 	echo "$FILE_KEYSTORE_PKCS12 found."
         rm $FILE_KEYSTORE_PKCS12
    else
 	echo "$FILE_KEYSTORE_PKCS12 not found."
    fi
- # Tomcat currently operates only on JKS, PKCS11 or PKCS12 format keystores.
- openssl pkcs12 -passin pass:$CERTIFCATE_PASS -passout pass:$KEYSTORE_PK12_PASS  -export -in server.crt -inkey server.key -out $FILE_KEYSTORE_PKCS12 -name tomcat -CAfile allcacerts.crt -caname root -chain
+
+   # Test for all Certificate File
+   FILE_ALL_CERT=allcacerts.crt
+   if [ -f "$FILE_ALL_CERT" ]
+   then
+	echo "$FILE_ALL_CERT found."
+        rm $FILE_ALL_CERT
+   else
+	echo "$FILE_ALL_CERT not found."
+        mergeAllCertificats
+   fi
+
+   # create PKCS12 format keystores.
+   openssl pkcs12 -passin pass:$CERTIFCATE_PASS -passout pass:$KEYSTORE_PK12_PASS  -export -in server.crt -inkey server.key -out $FILE_KEYSTORE_PKCS12 -name tomcat -CAfile allcacerts.crt -caname root -chain
  }
 
- function createNewKeystoreJKS {
-  
+function createNewKeystoreJKS {
+   # Keystore Vide
    if [ -f "$FILE_KEYSTORE_JKS" ]
    then
 	echo "$FILE_KEYSTORE_JKS found."
@@ -124,15 +137,17 @@ function createNewKeystorePKCS12 {
    else
 	echo "$FILE_KEYSTORE_JKS not found."
    fi
-   # Keystore Vide
+
    #keytool -certreq -keyalg RSA -alias server -file server.csr -keystore server-keystore.jks -storepass $CA_PASS01 -keypass $CA_PASS01
    # keytool -genkey -alias server -keyalg rsa -keysize 1024 -keystore server-keystore.jks -storetype JKS -storepass $CA_PASS01 -keypass $CA_PASS01 -dname "CN=integ2, OU=COM, O=$CA_PASS, L=PARIS, ST=PARIS, C=FR, emailAddress=test@$CA_PASS.fr" 
+
    keytool -genkey -alias tomcat -keyalg RSA  -keysize 4096 -keypass $CERTIFCATE_PASS -keystore $FILE_KEYSTORE_JKS -storetype JKS -storepass $KEYSTORE_JKS_PASS -dname "CN=integ2, OU=COM, O=Organisation, L=PARIS, ST=PARIS, C=FR, emailAddress=test@organisation.fr" 
- }
+}
 
 function importKeystoreJKSCertificates { 
  # Import the Chain Certificate into your keystore   
  # keytool -import -alias root -keystore $FILE_KEYSTORE_JKS -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  allcacerts.crt
+
  # keytool -import -alias root -keystore $FILE_KEYSTORE_JKS -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  ca.crt
  # keytool -import -alias tomcat -keystore $FILE_KEYSTORE_JKS -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  server.crt
  
@@ -214,11 +229,9 @@ function setup {
   
   # KeyStore JKS  ==>  keystore-server.jks 
   createNewKeystoreJKS || exit 1
-  importKeystoreJKSCertificates || exit 1
-  
-  # Clean
-  # cleanBuildInstall || exit 1
+  importKeystoreJKSCertificates || exit 1 
 }
+
 
 case "$1" in
   setup)
@@ -242,6 +255,10 @@ case "$1" in
   sign)
     signCertificateTlsWithCa $2 || exit 1
     ;;
+  certSign)
+    createCertificateTls $2 || exit 1
+    signCertificateTlsWithCa $2 || exit 1
+    ;;
   keystoreJKS)
     createNewKeystoreJKS $2 || exit 1
     ;;
@@ -249,7 +266,7 @@ case "$1" in
     printKeystoreJKSCertificates $2 || exit 1
     ;;
   *)
-    echo "Usage: $0 setup | ca | cert | sign | printCA | printCsr | printCrt | keystoreJKS | printJKS " >&2
+    echo "Usage: $0 setup | ca | cert | sign | certSign | printCA | printCsr | printCrt | keystoreJKS | printJKS " >&2
     exit 1
     ;;
 esac
