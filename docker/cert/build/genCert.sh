@@ -8,7 +8,7 @@ export CA_PASS=agrica
 export CERTIFCATE_PASS=acirga
 
 export CA_SUBJ="/C=FR/ST=France/L=Paris/O=Organisation/OU=DSI/CN=root" 
-export CERT_SUBJ="/C=FR/ST=France/L=Paris/O=<organisation/OU=DITW/CN=localhost"
+export CERT_SUBJ="/C=FR/ST=France/L=Paris/O=Organisation/OU=DITW/CN=localhost"
 
 # KeyStore
 export FILE_KEYSTORE_JKS="keystore-server.jks"
