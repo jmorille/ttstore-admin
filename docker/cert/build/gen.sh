@@ -80,20 +80,24 @@ function mergeAllCertificats {
 function createNewKeystorePKCS12 {
  # -->  server.p12
  # Tomcat currently operates only on JKS, PKCS11 or PKCS12 format keystores.
- openssl pkcs12 -passin pass:$CERTIFCATE_PASS -passout pass:keystorePKCS12pass  -export -in server.crt -inkey server.key -out server.p12 -name tomcat -CAfile allcacerts.crt -caname root -chain
+ openssl pkcs12 -passin pass:$CERTIFCATE_PASS -passout pass:$KEYSTORE_PK12_PASS  -export -in server.crt -inkey server.key -out server.p12 -name tomcat -CAfile allcacerts.crt -caname root -chain
  }
 
  function createNewKeystoreJKS {
    # Keystore Vide
    #keytool -certreq -keyalg RSA -alias server -file server.csr -keystore server-keystore.jks -storepass $CA_PASS01 -keypass $CA_PASS01
    # keytool -genkey -alias server -keyalg rsa -keysize 1024 -keystore server-keystore.jks -storetype JKS -storepass $CA_PASS01 -keypass $CA_PASS01 -dname "CN=integ2, OU=COM, O=$CA_PASS, L=PARIS, ST=PARIS, C=FR, emailAddress=test@$CA_PASS.fr" 
-   keytool -genkey -alias tomcat -keyalg RSA  -keysize 4096 -keypass $CERTIFCATE_PASS -keystore keystore-server.jks -storetype JKS -storepass keystoreJKSPass -dname "CN=integ2, OU=COM, O=$CA_PASS, L=PARIS, ST=PARIS, C=FR, emailAddress=test@$CA_PASS.fr" 
+   keytool -genkey -alias tomcat -keyalg RSA  -keysize 4096 -keypass $CERTIFCATE_PASS -keystore keystore-server.jks -storetype JKS -storepass $KEYSTORE_JKS_PASS -dname "CN=integ2, OU=COM, O=$CA_PASS, L=PARIS, ST=PARIS, C=FR, emailAddress=test@$CA_PASS.fr" 
  }
 
 function importKeystoreJKSCertificates { 
  #Import the Chain Certificate into your keystore   
- keytool -import -alias root -keystore keystore-server.jks -storepass keystoreJKSPass -trustcacerts -file  allcacerts.crt
- # TODO auto Yes
+ keytool -import -alias root -keystore keystore-server.jks -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  allcacerts.crt
+ # keytool -import -alias root -keystore keystore-server.jks -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  ca.crt
+ # keytool -import -alias tomcat -keystore keystore-server.jks -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  server.crt
+ 
+ # List KeyStore
+ keytool -list -v -keystore keystore-server.jks -storepass $KEYSTORE_JKS_PASS
 }
  
 function createTlsCertificateOri {
@@ -134,7 +138,6 @@ function createTlsCertificateOri {
   echo ""
   echo "### Sign your SSL Certificate"
   openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
-
 }
 
 function createDHECertificateOld {
