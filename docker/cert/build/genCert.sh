@@ -2,10 +2,18 @@
 
 # Doc : http://www.linux-france.org/prj/edu/archinet/systeme/ch24s03.html
 # Apache https://httpd.apache.org/docs/2.4/fr/ssl/ssl_faq.html
-CA_PASS=agrica
-CERTIFCATE_PASS=acirga
-KEYSTORE_PK12_PASS=keystorePKCS12pass
-KEYSTORE_JKS_PASS=keystoreJKSPass
+
+# Certificate
+export CA_PASS=agrica
+export CERTIFCATE_PASS=acirga
+
+# Keystore 
+export FILE_KEYSTORE_JKS="keystore-server.jks"
+export FILE_KEYSTORE_PKCS12="server.p12"
+
+export KEYSTORE_PK12_PASS=keystorePKCS12pass
+export KEYSTORE_JKS_PASS=keystoreJKSPass
+
 
 function docCertificateSubject {
 
@@ -77,24 +85,40 @@ function mergeAllCertificats {
  cat server.crt ca.crt > allcacerts.crt
 }
 
+
 function createNewKeystorePKCS12 {
  # -->  server.p12
+ if [ -f "$FILE_KEYSTORE_PKCS12" ]
+   then
+	echo "$FILE_KEYSTORE_PKCS12 found."
+        rm $FILE_KEYSTORE_PKCS12
+   else
+	echo "$FILE_KEYSTORE_PKCS12 not found."
+   fi
  # Tomcat currently operates only on JKS, PKCS11 or PKCS12 format keystores.
- openssl pkcs12 -passin pass:$CERTIFCATE_PASS -passout pass:$KEYSTORE_PK12_PASS  -export -in server.crt -inkey server.key -out server.p12 -name tomcat -CAfile allcacerts.crt -caname root -chain
+ openssl pkcs12 -passin pass:$CERTIFCATE_PASS -passout pass:$KEYSTORE_PK12_PASS  -export -in server.crt -inkey server.key -out $FILE_KEYSTORE_PKCS12 -name tomcat -CAfile allcacerts.crt -caname root -chain
  }
 
  function createNewKeystoreJKS {
+  
+   if [ -f "$FILE_KEYSTORE_JKS" ]
+   then
+	echo "$FILE_KEYSTORE_JKS found."
+        rm $FILE_KEYSTORE_JKS
+   else
+	echo "$FILE_KEYSTORE_JKS not found."
+   fi
    # Keystore Vide
    #keytool -certreq -keyalg RSA -alias server -file server.csr -keystore server-keystore.jks -storepass $CA_PASS01 -keypass $CA_PASS01
    # keytool -genkey -alias server -keyalg rsa -keysize 1024 -keystore server-keystore.jks -storetype JKS -storepass $CA_PASS01 -keypass $CA_PASS01 -dname "CN=integ2, OU=COM, O=$CA_PASS, L=PARIS, ST=PARIS, C=FR, emailAddress=test@$CA_PASS.fr" 
-   keytool -genkey -alias tomcat -keyalg RSA  -keysize 4096 -keypass $CERTIFCATE_PASS -keystore keystore-server.jks -storetype JKS -storepass $KEYSTORE_JKS_PASS -dname "CN=integ2, OU=COM, O=$CA_PASS, L=PARIS, ST=PARIS, C=FR, emailAddress=test@$CA_PASS.fr" 
+   keytool -genkey -alias tomcat -keyalg RSA  -keysize 4096 -keypass $CERTIFCATE_PASS -keystore $FILE_KEYSTORE_JKS -storetype JKS -storepass $KEYSTORE_JKS_PASS -dname "CN=integ2, OU=COM, O=$CA_PASS, L=PARIS, ST=PARIS, C=FR, emailAddress=test@$CA_PASS.fr" 
  }
 
 function importKeystoreJKSCertificates { 
- #Import the Chain Certificate into your keystore   
- keytool -import -alias root -keystore keystore-server.jks -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  allcacerts.crt
- # keytool -import -alias root -keystore keystore-server.jks -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  ca.crt
- # keytool -import -alias tomcat -keystore keystore-server.jks -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  server.crt
+ # Import the Chain Certificate into your keystore   
+ # keytool -import -alias root -keystore $FILE_KEYSTORE_JKS -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  allcacerts.crt
+ # keytool -import -alias root -keystore $FILE_KEYSTORE_JKS -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  ca.crt
+ # keytool -import -alias tomcat -keystore $FILE_KEYSTORE_JKS -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  server.crt
  
  # List KeyStore
  keytool -list -v -keystore keystore-server.jks -storepass $KEYSTORE_JKS_PASS
@@ -148,7 +172,9 @@ function createDHECertificateOld {
 function setup {
 
   # Script Start
-  chmod +x /build/*.sh
+  # chmod +x /build/*.sh
+  mkdir tls
+  cd tls
 
   # Create Ca Certificate ==> ca.crt 
   createCA|| exit 1
