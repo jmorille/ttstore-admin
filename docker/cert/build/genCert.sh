@@ -39,9 +39,15 @@ function createCA {
   # openssl rsa  -passin pass:$CA_PASS -in ca.key -out ca.key.unsecure
 
   # Créez un certificat auto-signé (structure X509) à l'aide de la clé RSA que vous venez de générer (la sortie sera au format PEM) :
-  openssl req -passin pass:$CA_PASS -new -x509 -nodes -sha1 -days 365 -key ca.key -out ca.crt -extensions usr_cert  -subj "/C=FR/ST=France/L=Paris/O=$CA_PASS/OU=DSI/CN=root"
-  # Cette commande signe le certificat du serveur et produit un fichier server.crt. Vous pouvez afficher les détails de ce certificat avec :
+  openssl req -passin pass:$CA_PASS -new -x509 -nodes -sha1 -days 365 -key ca.key -out ca.crt -extensions usr_cert  -subj "/C=FR/ST=France/L=Paris/O=Organisation/OU=DSI/CN=root" 
+
+  # Vous pouvez afficher les détails de ce certificat avec :
   # openssl x509 -passin pass:$CA_PASS -noout -text -in ca.crt
+}
+
+function printCA {
+   # Vous pouvez afficher les détails de ce certificat avec :
+   openssl x509 -passin pass:$CA_PASS -noout -text -in ca.crt
 }
 
 function createCertificateTls {
@@ -55,7 +61,7 @@ function createCertificateTls {
  # openssl rsa -passin pass:$CERTIFCATE_PASS -noout -text -in server.key
  
  # Créez une Demande de signature de Certificat (CSR) à l'aide de la clé privée précédemment générée (la sortie sera au format PEM):
- openssl req -passin pass:$CERTIFCATE_PASS -new -key server.key -out server.csr  -subj "/C=FR/ST=France/L=Paris/O=$CA_PASS/OU=DITW/CN=localhost"
+ openssl req -passin pass:$CERTIFCATE_PASS -new -key server.key -out server.csr  -subj "/C=FR/ST=France/L=Paris/O=<organisation/OU=DITW/CN=localhost"
  # Vous devez entrer le Nom de Domaine Pleinement Qualifié ("Fully Qualified Domain Name" ou FQDN) 
  # de votre serveur lorsqu'OpenSSL vous demande le "CommonName", 
  # c'est à dire que si vous générez une CSR pour un site web auquel on accèdera par l'URL https://www.foo.dom/, le FQDN sera "www.foo.dom". 
@@ -65,11 +71,21 @@ function createCertificateTls {
 
 }
 
+function printCsr {
+ # Vous pouvez afficher les détails de ce CSR avec :
+ openssl req -passin pass:$CERTIFCATE_PASS -noout -text -in server.csr
+}
+
 
 function signCertificateTlsWithCa {
   # La commande qui signe la demande de certificat est la suivante : ==>  CRT ( = CSR + CA sign
   openssl x509 -passin pass:$CA_PASS -req -in server.csr -out server.crt -CA ca.crt -CAkey ca.key -CAcreateserial -CAserial ca.srl
   
+  # Une fois la CSR signée, vous pouvez afficher les détails du certificat comme suit :
+  # printCrt
+}
+
+function printCrt {
   # Une fois la CSR signée, vous pouvez afficher les détails du certificat comme suit :
   openssl x509 -noout -text -in server.crt
 }
@@ -111,7 +127,7 @@ function createNewKeystorePKCS12 {
    # Keystore Vide
    #keytool -certreq -keyalg RSA -alias server -file server.csr -keystore server-keystore.jks -storepass $CA_PASS01 -keypass $CA_PASS01
    # keytool -genkey -alias server -keyalg rsa -keysize 1024 -keystore server-keystore.jks -storetype JKS -storepass $CA_PASS01 -keypass $CA_PASS01 -dname "CN=integ2, OU=COM, O=$CA_PASS, L=PARIS, ST=PARIS, C=FR, emailAddress=test@$CA_PASS.fr" 
-   keytool -genkey -alias tomcat -keyalg RSA  -keysize 4096 -keypass $CERTIFCATE_PASS -keystore $FILE_KEYSTORE_JKS -storetype JKS -storepass $KEYSTORE_JKS_PASS -dname "CN=integ2, OU=COM, O=$CA_PASS, L=PARIS, ST=PARIS, C=FR, emailAddress=test@$CA_PASS.fr" 
+   keytool -genkey -alias tomcat -keyalg RSA  -keysize 4096 -keypass $CERTIFCATE_PASS -keystore $FILE_KEYSTORE_JKS -storetype JKS -storepass $KEYSTORE_JKS_PASS -dname "CN=integ2, OU=COM, O=Organisation, L=PARIS, ST=PARIS, C=FR, emailAddress=test@organisation.fr" 
  }
 
 function importKeystoreJKSCertificates { 
@@ -121,9 +137,14 @@ function importKeystoreJKSCertificates {
  # keytool -import -alias tomcat -keystore $FILE_KEYSTORE_JKS -storepass $KEYSTORE_JKS_PASS -trustcacerts -noprompt -file  server.crt
  
  # List KeyStore
- keytool -list -v -keystore keystore-server.jks -storepass $KEYSTORE_JKS_PASS
+ printKeystoreJKSCertificates
 }
  
+function printKeystoreJKSCertificates { 
+ # List KeyStore
+ keytool -list -v -keystore $FILE_KEYSTORE_JKS -storepass $KEYSTORE_JKS_PASS
+}
+
 function createTlsCertificateOri {
    KEY_PASS=$1
    if [ -z $KEY_PASS ]; then
@@ -164,10 +185,7 @@ function createTlsCertificateOri {
   openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 }
 
-function createDHECertificateOld {
-  cd  ssl
-  openssl dhparam -out dhparam.pem 4096
-}
+
 
 function setup {
 
@@ -206,14 +224,32 @@ case "$1" in
   setup)
     setup $2 || exit 1
     ;;
-  createCA)
+  ca)
     createCA $2 || exit 1
     ;;
-  createNewKeystoreJKS)
+  printCA)
+    printCA $2 || exit 1
+    ;;
+  cert)
+    createCertificateTls $2 || exit 1
+    ;;
+  printCsr)
+    printCsr $2 || exit 1
+    ;;
+  printCrt)
+    printCrt $2 || exit 1
+    ;;
+  sign)
+    signCertificateTlsWithCa $2 || exit 1
+    ;;
+  keystoreJKS)
     createNewKeystoreJKS $2 || exit 1
     ;;
+  printJKS)
+    printKeystoreJKSCertificates $2 || exit 1
+    ;;
   *)
-    echo "Usage: $0 setup" >&2
+    echo "Usage: $0 setup | ca | cert | sign | printCA | printCsr | printCrt | keystoreJKS | printJKS " >&2
     exit 1
     ;;
 esac
