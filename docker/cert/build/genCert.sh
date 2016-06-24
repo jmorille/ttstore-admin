@@ -117,8 +117,7 @@ function createNewKeystorePKCS12 {
    FILE_ALL_CERT=allcacerts.crt
    if [ -f "$FILE_ALL_CERT" ]
    then
-	echo "$FILE_ALL_CERT found."
-        rm $FILE_ALL_CERT
+	echo "$FILE_ALL_CERT found." 
    else
 	echo "$FILE_ALL_CERT not found."
         mergeAllCertificats
