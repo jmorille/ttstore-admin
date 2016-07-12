@@ -19,7 +19,7 @@ ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 # #######################
 # Install  NGINX
 # #######################
-ENV NGINX_VERSION="1.9.12"
+ENV NGINX_VERSION="1.11.2"
 
 
 # Expose
