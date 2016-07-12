@@ -19,8 +19,7 @@ ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 # #######################
 # Install  NGINX
 # #######################
-ENV NGINX_VERSION="1.11.2"
-
+ENV NGINX_VERSION="1.11.2"  NPS_VERSION="1.11.33.2"
 
 # Expose
 # #######################
@@ -48,9 +47,9 @@ RUN apt-get install -yqq --force-yes  --fix-missing   zlib1g-dev \
 
 # From instructions here: https://github.com/pagespeed/ngx_pagespeed
 # Download ngx_pagespeed
-# RUN cd /tmp && wget -q -O - https://github.com/pagespeed/ngx_pagespeed/archive/v1.8.31.3-beta.tar.gz | tar zxf -
-# RUN cd /tmp/ngx_pagespeed-1.8.31.3-beta/ && wget -q -O - https://dl.google.com/dl/page-speed/psol/1.8.31.3.tar.gz | tar zxf -
-# In build --add-module=/tmp/ngx_pagespeed-1.8.31.3-beta
+# RUN cd /tmp && wget -q -O - https://github.com/pagespeed/ngx_pagespeed/archive/v$NPS_VERSION-beta.tar.gz | tar zxf -  && \
+#  cd /tmp/ngx_pagespeed-$NPS_VERSION-beta/ && wget -q -O - https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz | tar zxf -
+# In build --add-module=/tmp/ngx_pagespeed-$NPS_VERSION-beta
 
 
 # Download and build nginx
